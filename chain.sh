@@ -63,6 +63,6 @@ if [ ! "$(docker ps -q -f name=carpet_toolchain)" ]; then
         docker rm carpet_toolchain
     fi
     # run your container
-    docker run -v $PWD -i -d --name carpet_toolchain docker_toolchain_image
+    docker run -v $PWD:$PWD -i -d --name carpet_toolchain docker_toolchain_image
 fi
 

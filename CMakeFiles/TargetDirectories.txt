@@ -1,3 +1,0 @@
-/home/pontus/git/carpet/CMakeFiles/rebuild_cache.dir
-/home/pontus/git/carpet/CMakeFiles/carpet.dir
-/home/pontus/git/carpet/CMakeFiles/edit_cache.dir
