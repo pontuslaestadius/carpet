@@ -13,56 +13,88 @@
 # https://stackoverflow.com/questions/38576337/execute-bash-command-if-docker-container-does-not-exist
 
 # Default to enable building.
-BUILD="no"
-DELETE="no"
+FORCE="no"
+DOCKER_NAME="carpet_toolchain"
+DOCKER_IMAGE="docker_toolchain_image"
 
 # Command-line argument
 for i in "$@"
 do
 case $i in
-    -b=*|--build=*)
-    BUILD="${i#*=}"
+    -b|--build)
+    BUILD="yes"
+
+    docker build -t $DOCKER_IMAGE docker/.
+
     shift # past argument=value
     ;;
-	-d|--delete)
-    DELETE="yes"
+    -l|--local)
+    
+    cd docker/
+    sh docker_runtime.sh
+    exit
+
     shift # past argument=value
     ;;
-	-h|--help)
-	echo "-h		--help			displays this information"
-	# echo "-c		--compliment	prints a nicely formatted compliment"
-	echo "-b		--build			set build status, yes | no (default)"
-	echo "-d		--delete		deletes the toolchain container"
-	exit
+    -f|--force)
+    FORCE="yes"
+    shift # past argument=value
+    ;;
+    -d|--delete)
+    
+    docker rm carpet_toolchain
+    exit
+    
+    shift # past argument=value
+    ;;
+    -h|--help)
+	cat docker/chain_help.txt
+    exit
     shift # past argument=value
     ;;
     *)
-	echo "Unknown argument: '$i'"
+    echo "Unknown argument: '$i'"
           # unknown option
     ;;
 esac
 done
 
-# If we are deleting.
-if [ "${DELETE}" = "yes" ] 
-then
-	docker rm docker_toolchain
-	exit
-fi
-
-# If we are building a new docker image or not.
-if [ "${BUILD}" = "yes" ] 
-then
-	docker build -t docker_toolchain_image docker/.
-fi
-
 # Runs a docker container.
-if [ ! "$(docker ps -q -f name=carpet_toolchain)" ]; then
-    if [ "$(docker ps -aq -f status=exited -f name=carpet_toolchain)" ]; then
-        # cleanup
-        docker rm carpet_toolchain
+# If a container already exists and is running.
+if [ "$(docker ps -aq -f status=running -f name=$DOCKER_NAME)" ]; then
+
+    # Without force, prompt the user with a choice.
+    if [ "${FORCE}" = "no" ];
+        then
+            # clean up with prompt
+            echo "The container is already running. Do you want to continue? [Y/N]:"
+            read -n 1 REPLY
+            echo    # (optional) move to a new line
+
+        else # In force, the user has no option.
+            REPLY="Y" 
+        fi 
+
+    if [[ $REPLY =~ ^[Yy]$ ]];
+    then
+        docker stop $DOCKER_NAME
+    else
+        exit
     fi
-    # run your container
-    docker run -v $PWD:$PWD -i -d --name carpet_toolchain docker_toolchain_image
+
 fi
 
+# If a container already exists.
+if [ "$(docker ps -aq -f status=exited -f name=$DOCKER_NAME)" ]; then
+    # cleanup
+    docker rm $DOCKER_NAME
+fi
+
+# run your container:
+# deletes container on exit.
+# deletes container on host boot.
+# set name to $DOCKER_NAME.
+# mount the volume in current directory.
+#docker run -v $PWD -i --rm -d  $DOCKER_IMAGE
+#docker exec $DOCKER_NAME bash $PWD/docker/docker_runtime.sh
+docker run --rm -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh

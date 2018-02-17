@@ -1,0 +1,5 @@
+-h        --help          displays this information
+-b        --build         set build status, yes | no (default)
+-f        --force         deletes ignores warnings and removes previous container.
+-l        --local         Runs without docker container and without ARM compilation
+-d        --delete        deletes the toolchain container
