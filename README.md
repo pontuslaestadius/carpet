@@ -18,7 +18,7 @@ Following these guidelines: http://nvie.com/posts/a-successful-git-branching-mod
 
 # Dependencies
 [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
-[Cluon] (https://github.com/chrberger/libcluon)
+[Cluon](https://github.com/chrberger/libcluon)
 
 # Installing and Running
 
