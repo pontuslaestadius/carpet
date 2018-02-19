@@ -17,8 +17,8 @@ Test-cases will be put on a separate branch to separate tests and deployment cod
 Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-model/)
 
 ## Dependencies
-*[OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
-*[Cluon](https://github.com/chrberger/libcluon)
+* [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
+* [Cluon](https://github.com/chrberger/libcluon)
 
 ## Installing and Running
 
