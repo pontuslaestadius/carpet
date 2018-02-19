@@ -14,13 +14,14 @@ The development branch serves as a place where tested code is integrated and col
 Development of features is separated into branches with appropriate naming.
 Test-cases will put within a separate folder to separate tests from deployment code.
 
-When merging to master a release will be created to provide tracability.
+When merging to master a release will be created to provide traceability.
 
 Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-model/)
 
 ## Dependencies
 * [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
 * [Cluon](https://github.com/chrberger/libcluon)
+* [Docker](https://www.docker.com/)
 
 ## Installing and Running
 
