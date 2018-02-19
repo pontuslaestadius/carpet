@@ -21,15 +21,15 @@ ENDIF()
  
 # configure a header file to pass some of the CMake settings
 # to the source code
-#configure_file (
-#  "${PROJECT_SOURCE_DIR}/carpetConfig.h.in"
-#  "${PROJECT_BINARY_DIR}/carpetConfig.h"
-#  )
+configure_file (
+  "${PROJECT_SOURCE_DIR}/header/carpetConfig.h.in"
+  "${PROJECT_BINARY_DIR}/header/carpetConfig.h"
+)
  
 # add the binary tree to the search path for include files
 # so that we will find TutorialConfig.h
-include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}/src/")
 
 
-add_executable(carpet main.cpp)
+add_executable(carpet src/main.cpp)
 
