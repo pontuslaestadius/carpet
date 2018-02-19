@@ -6,13 +6,15 @@ Pontus Laestadius
 Elaine Qvarnström
 
 ## Introduction
-An self driving university car project based on the cloun library. The software is able to utitlize the OpenDaVinci library to follow a lane and perform Vehicle to Vehicle communication.
+An self driving university car project based on the cloun library. The software is able to utitlize the OpenDaVinci library to follow a lane and perform Vehicle to Vehicle communication as well as platooning.
 
 
 ## Github Layout
 The development branch serves as a place where tested code is integrated and collected in-between releases, while the master branch will serve as a place for the latest release/stable version.
 Development of features is separated into branches with appropriate naming.
-Test-cases will be put on a separate branch to separate tests and deployment code.
+Test-cases will put within a separate folder to separate tests from deployment code.
+
+When merging to master a release will be created to provide tracability.
 
 Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-model/)
 
