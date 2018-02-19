@@ -14,7 +14,7 @@ The development branch serves as a place where tested code is integrated and col
 Development of features is separated into branches with appropriate naming.
 Test-cases will be put on a separate branch to separate tests and deployment code.
 
-Following these guidelines: http://nvie.com/posts/a-successful-git-branching-model/
+Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-model/)
 
 # Dependencies
 [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
@@ -37,6 +37,8 @@ make .
 ```
 
 How to run the test cases:
+Download all header test: [Catch2](https://github.com/catchorg/Catch2)
+
 ```
 cmake test
 ```
