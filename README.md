@@ -5,7 +5,7 @@ Kosara Golemshinska
 Pontus Laestadius
 Elaine Qvarnström
 
-# Introduction
+## Introduction
 An self driving university car project based on the cloun library. The software is able to utitlize the OpenDaVinci library to follow a lane and perform Vehicle to Vehicle communication.
 
 
@@ -17,8 +17,8 @@ Test-cases will be put on a separate branch to separate tests and deployment cod
 Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-model/)
 
 ## Dependencies
-[OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
-[Cluon](https://github.com/chrberger/libcluon)
+*[OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
+*[Cluon](https://github.com/chrberger/libcluon)
 
 ## Installing and Running
 
@@ -36,7 +36,7 @@ make .
 ./a.out
 ```
 
-How to run the test cases:
+**How to run the test cases:**
 
 Download all header test: [Catch2](https://github.com/catchorg/Catch2)
 
