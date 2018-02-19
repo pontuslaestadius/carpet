@@ -23,7 +23,6 @@ do
 case $i in
     -b|--build)
     BUILD="yes"
-
     docker build -t $DOCKER_IMAGE .
     exit
 
@@ -97,5 +96,5 @@ fi
 # mount the volume in current directory.
 #docker run -v $PWD -i --rm -d  $DOCKER_IMAGE
 #docker exec $DOCKER_NAME bash $PWD/docker/docker_runtime.sh
-docker run --rm -d --net=host --name $DOCKER_NAME -v $PWD:/ $DOCKER_IMAGE /bin/sh
+docker run --rm -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
 
