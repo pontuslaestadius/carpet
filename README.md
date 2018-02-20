@@ -68,10 +68,15 @@ docker run --rm -d pontusla/carpet_deploy
 
 Having linked Travis CI to the repository, tests are run after every pushed commit / during pull-requests.
 
-Download header test file for manual testing: [Catch2](https://github.com/catchorg/Catch2)
+Testing the current software can be done through the following:
 
-Run the following command when testing the cloned software. 
+1. First you need the socat library.
 ```
-make test
+sudo apt-get install socat
 ```
+2. Run the command
+```
+socat UDP4-RECVFROM:1236,ip-add-membership=225.0.0.111:0.0.0.0,fork – 
+```
+
 
