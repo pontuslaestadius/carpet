@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (carpet)
+set(CMAKE_CXX_STANDARD 14)
 
 # The version number.
 set (Tutorial_VERSION_MAJOR 1)
@@ -10,6 +11,8 @@ SET(CMAKE_C_COMPILER arm-linux-gnueabihf-gcc)
 SET(CMAKE_ASM_COMPILER arm-linux-gnueabihf-gcc)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 
+find_package(libcluon REQUIRED)
+include_directories(SYSTEM ${CLUON_INCLUDE_DIRS})
 
 ## Strict warning level
 IF (CMAKE_BUILD_TOOL MATCHES "(msdev|devenv|nmake)")
@@ -64,4 +67,6 @@ include_directories("${PROJECT_BINARY_DIR}/src/")
 
 
 add_executable(carpet src/main.cpp)
+target_link_libraries(${PROJECT_NAME} ${CLUON_LIBRARIES})
+
 
