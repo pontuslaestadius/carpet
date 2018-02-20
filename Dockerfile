@@ -5,12 +5,10 @@ RUN apk update && \
         ca-certificates \
         cmake \
         g++ \
+	docker-ce \
         make && \
     apk add libcluon --no-cache --repository https://chrberger.github.io/libcluon/alpine/v3.7 --allow-untrusted
 ADD . /opt/sources
 WORKDIR /opt/sources
 RUN cd /opt/sources
-RUN mkdir build
-run cd build && \
-    cmake -D CMAKE_BUILD_TYPE=Release .. && \
-    make && make test && cp carpet /tmp
+RUN sh local.sh
