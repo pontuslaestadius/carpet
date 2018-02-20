@@ -15,14 +15,13 @@
 # Default to enable building.
 FORCE="no"
 DOCKER_NAME="carpet_toolchain"
-DOCKER_IMAGE="docker_toolchain_image"
+DOCKER_IMAGE="carpet_toolchain_image"
 
 # Command-line argument
 for i in "$@"
 do
 case $i in
     -b|--build)
-    BUILD="yes"
     docker build -t $DOCKER_IMAGE .
     exit
 
@@ -30,7 +29,7 @@ case $i in
     ;;
     -l|--local)
     
-    sh docker_runtime.sh
+    sh local.sh
     exit
 
     shift # past argument=value
@@ -96,5 +95,4 @@ fi
 # mount the volume in current directory.
 #docker run -v $PWD -i --rm -d  $DOCKER_IMAGE
 #docker exec $DOCKER_NAME bash $PWD/docker/docker_runtime.sh
-docker run --rm -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
-
+docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
