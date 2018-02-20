@@ -59,6 +59,11 @@ sh chain.sh
 sh deploy.sh
 ```
 
+On the desired platform you would have to run the remote docker image. In this example we use our own uploaded hub.
+```
+docker run --rm -d pontusla/carpet_deploy
+```
+
 **How to run the test cases:**
 
 Having linked Travis CI to the repository, tests are run after every pushed commit / during pull-requests.
