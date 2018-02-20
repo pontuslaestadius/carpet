@@ -39,12 +39,21 @@ git clone https://github.com/pontuslaestadius/carpet
 > Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
 ```
 cd carpet/
-sh local.sh /* alternatively: sh chain.sh -l */
+sh local.sh 
+#alternatively: sh chain.sh -l
 ```
 
-4. Finally, when building is done, run the chain.sh to create and fill the docker containers with the necessary material.
+4. Finally, when building is done, run the executable binary to run it on your local machine.
 ```
-./chain.sh
+./carpet
+```
+
+## Deploying
+Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car.
+Uploading to the car is done via a docker image stored on the docker hub.  Which is remotly downlaoded and executed on the desired platform.
+```
+sh chain.sh
+sh deploy.sh
 ```
 
 **How to run the test cases:**
@@ -53,8 +62,8 @@ Having linked Travis CI to the repository, tests are run after every pushed comm
 
 Download header test file for manual testing: [Catch2](https://github.com/catchorg/Catch2)
 
-Run the following command when testing the cloned software.
+Run the following command when testing the cloned software. 
 ```
-cmake test
+make test
 ```
 
