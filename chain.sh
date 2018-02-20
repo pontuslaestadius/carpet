@@ -15,13 +15,21 @@
 # Default to enable building.
 FORCE="no"
 DOCKER_NAME="carpet_toolchain"
-DOCKER_IMAGE="carpet_toolchain_image"
+DOCKER_IMAGE="pontusla/carpet_compile"
 
 # Command-line argument
 for i in "$@"
 do
 case $i in
-    -b|--build)
+
+	-p|--pull)
+	docker pull $DOCKER_IMAGE
+	docker pull pontusla/carpet_deploy
+	exit
+	shift # past argument=value
+    	;;
+
+	-b|--build)
     docker build -t $DOCKER_IMAGE .
     exit
 
@@ -87,7 +95,6 @@ if [ "$(docker ps -aq -f status=exited -f name=$DOCKER_NAME)" ]; then
     # cleanup
     docker rm $DOCKER_NAME
 fi
-
 # run your container:
 # deletes container on exit.
 # deletes container on host boot.
