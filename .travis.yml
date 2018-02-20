@@ -1,0 +1,25 @@
+language: cpp
+compiler: clang
+
+# Retrieve and install cmake
+addons:
+  apt:
+    packages:
+    - cmake
+    sources:
+    - sourceline: 'https://github.com/L2Program/FlintPlusPlus.git'
+
+
+# Only build the master and development branch.
+branches:
+  only:
+  - master
+  - development
+
+# Notified via email if a build is broken or fixed.
+notifications:
+  email:
+    - gusfransse@student.gu.se
+    - gusgolko@student.gu.se
+    - guslaepo@student.gu.se
+    - lainqvrnstrm@gmail.com
