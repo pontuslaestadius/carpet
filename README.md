@@ -16,6 +16,8 @@ Test-cases will put within a separate folder to separate tests from deployment c
 
 When merging to master a release will be created to provide traceability.
 
+Travis CI is used in development to build and test the code. Whenever a contributor pushes a change to the master or development branch and the build/tests fail the contributors to the project are notified via mail. 
+
 Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-model/)
 
 ## Dependencies
@@ -25,11 +27,14 @@ Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-mo
 
 ## Installing and Running
 
-First and foremost, Clone the repository to a local directory.
+1. First and foremost, Clone the repository to a local directory.
 ```
 git clone https://github.com/pontuslaestadius/carpet
 ```
-Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
+2. Make sure that Docker is installed on your machine (link above).
+3. The next step is to install OpenDaVINCI & Cluon (links above).
+
+> Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
 ```
 cd carpet/
 mkdir build/ && cd build/
@@ -41,8 +46,9 @@ make .
 
 **How to run the test cases:**
 
-Download all header test: [Catch2](https://github.com/catchorg/Catch2)
+Download header test file: [Catch2](https://github.com/catchorg/Catch2)
 
+Run the following command when testing the cloned software.
 ```
 cmake test
 ```
