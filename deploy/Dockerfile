@@ -4,5 +4,5 @@ RUN apk update && \
     apk add libcluon --no-cache --repository https://chrberger.github.io/libcluon/alpine/v3.7 --allow-untrusted && \
     mkdir /opt
 WORKDIR /opt
-COPY --from=carpet_toolchain /tmp/carpet .
-CMD ["/opt/helloworld"]
+# COPY --from=builder /tmp/carpet .
+#CMD ["/opt/helloworld"]
