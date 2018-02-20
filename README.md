@@ -45,10 +45,10 @@ cd ../
 make .
 ./a.out
 ```
-
-
-
-
+4. Finally, when building is done, run the chain.sh to create and fill the docker containers with the necessary material.
+```
+./chain.sh
+```
 
 **How to run the test cases:**
 
@@ -58,7 +58,4 @@ Run the following command when testing the cloned software.
 ```
 cmake test
 ```
-
-
-
 
