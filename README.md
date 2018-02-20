@@ -8,7 +8,7 @@
 | Elaine Qvarnström   |
 
 ## Introduction
-An self driving university car project based on the cloun library. The software is able to utitlize the OpenDaVinci library to follow a lane and perform Vehicle to Vehicle communication as well as platooning.
+A self driving university car project based on the cloun library. The software is able to utitlize the OpenDaVinci library to follow a lane and perform Vehicle to Vehicle communication as well as platooning.
 
 
 ## Github Layout
@@ -39,12 +39,9 @@ git clone https://github.com/pontuslaestadius/carpet
 > Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
 ```
 cd carpet/
-mkdir build/ && cd build/
-cmake ..
-cd ../
-make .
-./a.out
+sh local.sh /* alternatively: sh chain.sh -l */
 ```
+
 4. Finally, when building is done, run the chain.sh to create and fill the docker containers with the necessary material.
 ```
 ./chain.sh
