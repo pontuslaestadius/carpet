@@ -29,7 +29,7 @@ Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-mo
 
 ## Installing and Running
 
-1. First and foremost, Clone the repository to a local directory.
+1. First and foremost, clone the repository to a local directory.
 ```
 git clone https://github.com/pontuslaestadius/carpet
 ```
@@ -52,7 +52,9 @@ make .
 
 **How to run the test cases:**
 
-Download header test file: [Catch2](https://github.com/catchorg/Catch2)
+Having linked Travis CI to the repository, tests are run after every pushed commit / during pull-requests.
+
+Download header test file for manual testing: [Catch2](https://github.com/catchorg/Catch2)
 
 Run the following command when testing the cloned software.
 ```
