@@ -51,6 +51,9 @@ sh local.sh
 ## Deploying
 Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car.
 Uploading to the car is done via a docker image stored on the docker hub.  Which is remotly downlaoded and executed on the desired platform.
+
+The deploy.sh deployment shorthand is used to push the images to your docker hub. These are located at pontusla/carpet_compile and pontusla/carpet_deploy respectively.
+To use a different docker hub account, this needs to be specified at the start of the chain.sh script to be customized if prefered.
 ```
 sh chain.sh
 sh deploy.sh
