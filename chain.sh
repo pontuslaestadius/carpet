@@ -54,7 +54,7 @@ case $i in
     shift # past argument=value
     ;;
     -h|--help)
-	cat docker/chain_help.txt
+	cat chain_help.txt
     exit
     shift # past argument=value
     ;;
@@ -81,6 +81,7 @@ if [ "$(docker ps -aq -f status=running -f name=$DOCKER_NAME)" ]; then
             REPLY="Y" 
         fi 
 
+	# Use confirmation.
     if [[ $REPLY =~ ^[Yy]$ ]];
     then
         docker stop $DOCKER_NAME
@@ -95,11 +96,10 @@ if [ "$(docker ps -aq -f status=exited -f name=$DOCKER_NAME)" ]; then
     # cleanup
     docker rm $DOCKER_NAME
 fi
+
 # run your container:
 # deletes container on exit.
 # deletes container on host boot.
 # set name to $DOCKER_NAME.
 # mount the volume in current directory.
-#docker run -v $PWD -i --rm -d  $DOCKER_IMAGE
-#docker exec $DOCKER_NAME bash $PWD/docker/docker_runtime.sh
 docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh

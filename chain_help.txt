@@ -1,4 +1,8 @@
--h        --help          displays this information
+Run with: bash chain.sh [ OPTIONS ]
+alternatively: sh chain.sh
+
+-p	  --pull	  pulls the latest docker images from the docker hub.
+-h        --help          displays usages.
 -b        --build         set build status, yes | no (default)
 -f        --force         deletes ignores warnings and removes previous container.
 -l        --local         Runs without docker container and without ARM compilation
