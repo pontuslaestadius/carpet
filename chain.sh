@@ -24,13 +24,12 @@ case $i in
 
 	-p|--pull)
 	docker pull $DOCKER_IMAGE
-	docker pull pontusla/carpet_deploy
 	exit
 	shift # past argument=value
     	;;
 
 	-b|--build)
-    docker build -t $DOCKER_IMAGE .
+    docker build -t carpet_compile .
     exit
 
     shift # past argument=value
