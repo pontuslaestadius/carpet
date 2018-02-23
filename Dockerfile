@@ -13,7 +13,7 @@ RUN apk update && \
     apk add libcluon --no-cache --repository https://chrberger.github.io/libcluon/alpine/v3.7 --allow-untrusted
 ADD . /opt/sources
 WORKDIR /opt/sources
-RUN sh local.sh
+RUN sh chain.sh -l
 RUN cp build/carpet /tmp
 RUN [ "cross-build-end" ]
 

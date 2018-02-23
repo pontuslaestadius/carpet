@@ -42,8 +42,7 @@ git clone https://github.com/pontuslaestadius/carpet
 > Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
 ```
 cd carpet/
-sh local.sh 
-#alternatively: sh chain.sh -l
+sh chain.sh -l
 ```
 
 4. Finally, when building is done, run the executable binary to run it on your local machine.

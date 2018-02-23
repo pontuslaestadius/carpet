@@ -35,9 +35,15 @@ case $i in
     shift # past argument=value
     ;;
     -l|--local)
-    
-    sh local.sh
-    exit
+	if [ ! -d "build" ]; then
+  	# Control will enter here if $DIRECTORY doesn't exist.
+		mkdir build
+	fi
+
+	cd build
+	cmake -D CMAKE_BUILD_TYPE=Release .. && \
+    	make
+	exit
 
     shift # past argument=value
     ;;
