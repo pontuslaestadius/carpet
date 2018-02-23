@@ -69,4 +69,5 @@ include_directories("${PROJECT_BINARY_DIR}/src/")
 add_executable(carpet src/main.cpp)
 target_link_libraries(${PROJECT_NAME} ${CLUON_LIBRARIES})
 
+include(CTest)
 
