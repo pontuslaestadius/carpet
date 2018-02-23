@@ -22,17 +22,29 @@ for i in "$@"
 do
 case $i in
 
-	-p|--pull)
+	--pull)
 	docker pull $DOCKER_IMAGE
 	exit
 	shift # past argument=value
     	;;
+ 
+	--push)
+	DOCKER_ID_USER=$2
+
+	# Bind the local with the remote.
+	docker tag carpet_compile $DOCKER_ID_USER/carpet_compile
+
+	# Push them to the hub.
+	docker push $DOCKER_ID_USER/carpet_compile
+    	exit
+	shift
+	;;
 
 	-b|--build)
     docker build -t carpet_compile .
     exit
 
-    shift # past argument=value
+   shift # past argument=value
     ;;
     -l|--local)
 	if [ ! -d "build" ]; then
