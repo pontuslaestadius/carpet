@@ -98,7 +98,7 @@ if [ "$(docker ps -aq -f status=running -f name=$DOCKER_NAME)" ]; then
             REPLY="Y" 
         fi 
 
-	# Use confirmation.
+	# Use confirmation. Needs BASH not user shell.
     if [[ $REPLY =~ ^[Yy]$ ]];
     then
         docker stop $DOCKER_NAME
