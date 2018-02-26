@@ -13,6 +13,7 @@
 # https://stackoverflow.com/questions/38576337/execute-bash-command-if-docker-container-does-not-exist
 
 # Default to enable building.
+HELP=".CHAIN_HELP"
 FORCE="no"
 DOCKER_NAME="carpet_toolchain"
 DOCKER_IMAGE="pontusla/carpet_compile"
@@ -71,7 +72,7 @@ case $i in
     shift # past argument=value
     ;;
     -h|--help)
-	cat chain_help.txt
+	cat $HELP
     exit
     shift # past argument=value
     ;;
