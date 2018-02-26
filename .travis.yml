@@ -1,14 +1,17 @@
-language: cpp
+language: cp
 compiler: clang
+dist: trusty # Ubuntu distibution.
+sudo: false # Runs each build in a container on a  shared host via docker.
 
-# Retrieve and install cmake
-addons:
-  apt:
-    packages:
-    - cmake
-    sources:
-    - sourceline: 'https://github.com/L2Program/FlintPlusPlus.git'
+# Retrieve and install cmake, Flint++, libcluon and maybe socat
 
+before_install:
+    - apt-get install cmake
+    - apt-get-repository ppa:chrberger/libcluon
+    - apt-get update
+    - apt-get install libcluon
+    - wget https://github.com/L2Program/FlintPlusPlus.git
+ #   - apt-get install socat
 
 # Only build the master and development branch.
 branches:
