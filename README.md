@@ -50,6 +50,12 @@ sh chain.sh -l
 ./carpet
 ```
 
+
+> If the image is not copied correctly, try pulling it direcly from our hub:
+```
+sh chain.sh --pull
+```
+
 ## Deploying
 Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car.
 Uploading to the car is done via a docker image stored on the docker hub.  Which is remotly downlaoded and executed on the desired platform.
@@ -63,7 +69,7 @@ sh deploy.sh
 
 On the desired platform you would have to run the remote docker image. In this example we use our own uploaded hub.
 ```
-docker run --rm -d pontusla/carpet_deploy
+docker run --rm -ti pontusla/carpet_deploy
 ```
 
 **How to run the test cases:**
