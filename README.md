@@ -29,6 +29,7 @@ Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-mo
 * [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
 * [Cluon](https://github.com/chrberger/libcluon)
 * [Docker](https://www.docker.com/)
+* [Valgrind](http://valgrind.org/)
 
 ## Installing and Running
 

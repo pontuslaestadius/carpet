@@ -53,9 +53,10 @@ case $i in
 		mkdir build
 	fi
 
-	cd build
+	cd build # non-failable action due to previous check.
 	cmake -D CMAKE_BUILD_TYPE=Release .. && \
-    	make
+	ctest -T memcheck && \
+	make
 	exit
 
     shift # past argument=value

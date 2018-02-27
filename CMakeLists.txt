@@ -2,6 +2,11 @@ cmake_minimum_required (VERSION 2.6)
 project (carpet)
 set(CMAKE_CXX_STANDARD 14)
 
+ENABLE_TESTING()
+include(CTest)
+INCLUDE(Dart)
+
+
 # The version number.
 set (Tutorial_VERSION_MAJOR 1)
 set (Tutorial_VERSION_MINOR 0)
@@ -68,7 +73,4 @@ include_directories("${PROJECT_BINARY_DIR}/src/")
 
 add_executable(carpet src/main.cpp)
 target_link_libraries(${PROJECT_NAME} ${CLUON_LIBRARIES})
-
-include(CTest)
-
 
