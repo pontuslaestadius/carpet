@@ -1,4 +1,4 @@
-language: cp
+language: cpp
 compiler: clang
 dist: trusty # Ubuntu distibution.
 sudo: false # Runs each build in a container on a  shared host via docker.
