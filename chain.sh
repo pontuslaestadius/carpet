@@ -47,6 +47,12 @@ case $i in
 
    shift # past argument=value
     ;;
+	--debug)
+
+	valgrind --tool=memcheck --log-file=".valgrind_output" --leak-check=yes ./build/carpet
+	exit
+	shift
+	;;
     -l|--local)
 	if [ ! -d "build" ]; then
   	# Control will enter here if $DIRECTORY doesn't exist.
