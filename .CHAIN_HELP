@@ -1,0 +1,11 @@
+Run with: bash chain.sh [ OPTIONS ]
+It is prefered to delete your build directory before running.
+
+	  --pull	  pulls the latest docker images from the docker hub. 
+          --push	  pushes the to the docker hub of the next argument user id.
+	  --debug	  runs in debug mode using valgrind.
+-h        --help          displays usages.
+-b        --build         set build status, yes | no (default).
+-f        --force         deletes ignores warnings and removes previous container.
+-l        --local         runs without docker container and without ARM compilation
+-d        --delete        deletes the toolchain container.
