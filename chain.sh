@@ -13,6 +13,7 @@
 # https://stackoverflow.com/questions/38576337/execute-bash-command-if-docker-container-does-not-exist
 
 # Default to enable building.
+HELP=".CHAIN_HELP"
 FORCE="no"
 DOCKER_NAME="carpet_toolchain"
 DOCKER_IMAGE="pontusla/carpet_compile"
@@ -22,23 +23,47 @@ for i in "$@"
 do
 case $i in
 
-	-p|--pull)
+	--pull)
 	docker pull $DOCKER_IMAGE
-	docker pull pontusla/carpet_deploy
 	exit
 	shift # past argument=value
     	;;
+ 
+	--push)
+	DOCKER_ID_USER=$2
+
+	# Bind the local with the remote.
+	docker tag carpet_compile $DOCKER_ID_USER/carpet_compile
+
+	# Push them to the hub.
+	docker push $DOCKER_ID_USER/carpet_compile
+    	exit
+	shift
+	;;
 
 	-b|--build)
-    docker build -t $DOCKER_IMAGE .
+    docker build -t carpet_compile .
     exit
 
-    shift # past argument=value
+   shift # past argument=value
     ;;
+	--debug)
+
+	valgrind --tool=memcheck --log-file=".valgrind_output" --leak-check=yes ./build/carpet
+	exit
+	shift
+	;;
     -l|--local)
-    
-    sh local.sh
-    exit
+	if [ ! -d "build" ]; then
+  	# Control will enter here if $DIRECTORY doesn't exist.
+		mkdir build
+	fi
+
+	cd build # non-failable action due to previous check.
+	cmake -D CMAKE_BUILD_TYPE=Release .. && \
+	ctest -T memcheck && \
+	make
+	exit
 
     shift # past argument=value
     ;;
@@ -54,7 +79,7 @@ case $i in
     shift # past argument=value
     ;;
     -h|--help)
-	cat docker/chain_help.txt
+	cat $HELP
     exit
     shift # past argument=value
     ;;
@@ -81,6 +106,7 @@ if [ "$(docker ps -aq -f status=running -f name=$DOCKER_NAME)" ]; then
             REPLY="Y" 
         fi 
 
+	# Use confirmation. Needs BASH not user shell.
     if [[ $REPLY =~ ^[Yy]$ ]];
     then
         docker stop $DOCKER_NAME
@@ -95,11 +121,10 @@ if [ "$(docker ps -aq -f status=exited -f name=$DOCKER_NAME)" ]; then
     # cleanup
     docker rm $DOCKER_NAME
 fi
+
 # run your container:
 # deletes container on exit.
 # deletes container on host boot.
 # set name to $DOCKER_NAME.
 # mount the volume in current directory.
-#docker run -v $PWD -i --rm -d  $DOCKER_IMAGE
-#docker exec $DOCKER_NAME bash $PWD/docker/docker_runtime.sh
 docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh

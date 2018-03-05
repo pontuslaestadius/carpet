@@ -29,6 +29,7 @@ Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-mo
 * [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
 * [Cluon](https://github.com/chrberger/libcluon)
 * [Docker](https://www.docker.com/)
+* [Valgrind](http://valgrind.org/)
 
 ## Installing and Running
 
@@ -42,30 +43,38 @@ git clone https://github.com/pontuslaestadius/carpet
 > Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
 ```
 cd carpet/
-sh local.sh 
-#alternatively: sh chain.sh -l
+sh chain.sh -l
 ```
 
 4. Finally, when building is done, run the executable binary to run it on your local machine.
 ```
+cd build/
 ./carpet
 ```
 
+
+> If the image is not copied correctly, try pulling it direcly from our hub:
+```
+sh chain.sh --pull
+```
+
 ## Deploying
-Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car.
+Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car using a docker image.
 Uploading to the car is done via a docker image stored on the docker hub.  Which is remotly downlaoded and executed on the desired platform.
 
-The deploy.sh deployment shorthand is used to push the images to your docker hub. These are located at pontusla/carpet_compile and pontusla/carpet_deploy respectively.
-To use a different docker hub account, this needs to be specified at the start of the chain.sh script to be customized if prefered.
 ```
-sh chain.sh
-sh deploy.sh
+sh chain.sh -b
+sh chain.sh --push <dockerID>
 ```
+The build command is used to push the images to your docker hub. Which in our case would be located at pontusla/carpet_compile
+To use a different docker hub account, this needs to be specified as an argument to chain.sh script.
 
 On the desired platform you would have to run the remote docker image. In this example we use our own uploaded hub.
 ```
-docker run --rm -d pontusla/carpet_deploy
+docker run --rm -ti pontusla/carpet_deploy
 ```
+> -ti is optional and can be omitted.
+
 
 **How to run the test cases:**
 
@@ -81,5 +90,15 @@ sudo apt-get install socat
 ```
 socat UDP4-RECVFROM:1236,ip-add-membership=225.0.0.111:0.0.0.0,fork – 
 ```
-
+3. Compile the software using Cmake.
+```
+mkdir build
+cd build/
+cmake ..
+make test
+```
+4. Alternative command which is just a shorthand. And includes compiling test and the software.
+```
+sh chain.sh -l
+```
 
