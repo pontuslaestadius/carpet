@@ -31,27 +31,29 @@ int main(int argc, char** argv) {
 	opendlv::proxy::GroundSteeringReading msgSteering;
 	opendlv::proxy::PedalPositionReading msgPedal;
 
+	double angle = 0.0;
+	double speed = 0.0;
     while (*++argv) {
+	if (speed >= 0.0)
+		speed -= 0.1;
+
         switch ((*argv)[1]) {
             case 'w':
-                msgPedal.percent(0.1);
-                od4.send(msgPedal);
+                speed += 0.1;
                 break;
             case 't':
-                msgSteering.steeringAngle(-15.0);
-                od4.send(msgSteering);
+		angle -= 10.0;
                 break;
             case 'y':
-                msgSteering.steeringAngle(15.0);
-                od4.send(msgSteering);
-                break;
+                angle += 10.0;
+	        break;
             default:
             std::cout << "Invalid: " << *argv << std::endl;
                 return 0;
         }
         for (int i = 0; i < INT32_MAX; i++);
-        msgPedal.percent(0.0);
-        msgSteering.steeringAngle(0.0);
+        msgPedal.percent(speed);
+        msgSteering.steeringAngle(angle);
         od4.send(msgPedal);
         od4.send(msgSteering);
     }
