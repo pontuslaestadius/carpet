@@ -11,7 +11,7 @@
 
 double angle = 0.0;
 double speed = 0.0;
-const int delay = 1000;
+const int delay = 1500;
 
 int main(int /*argc*/, char** /*argv*/) {
 
@@ -35,25 +35,24 @@ int main(int /*argc*/, char** /*argv*/) {
     opendlv::proxy::GroundSteeringReading msgSteering;
     opendlv::proxy::PedalPositionReading msgPedal;
 
-    const int delay = 1500;
-
 	char foo [5] = { 'w', 's', 'w', 's', 'w'};
 
 	for (int i = 0; i < 5; i++) {
+		od4.send(msgPedal);
+		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		switch (foo[i]) {
 		case 'w':
-			   msgPedal.percent(0.1);
+			   msgPedal.percent(0.25);
 		break;
 		case 's':
-			   msgPedal.percent(-0.1);
+			   msgPedal.percent(-0.25);
 		break;
 		default:
 		continue;
 		}
 	
 		//od4.send(msgSteering);
-		od4.send(msgPedal);
-		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
 	}
 
     return 0;
