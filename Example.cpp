@@ -3,25 +3,15 @@
 #include <iostream>
 #include <sstream>
 #include <thread>
-#include <unistd.h>
 
 #include "cluon/OD4Session.hpp"
 #include "cluon/Envelope.hpp"
 
 #include "messages.hpp"
 
-
-	opendlv::proxy::GroundSteeringReading msgSteering;
-	opendlv::proxy::PedalPositionReading msgPedal;
-
-	double angle = 0.0;
-	double speed = 0.0;
-
-void action(char &p);
-
-void safety_check();
-void print_debug();
-void set_msg();
+double angle = 0.0;
+double speed = 0.0;
+const int delay = 1000;
 
 int main(int /*argc*/, char** /*argv*/) {
 
@@ -42,31 +32,30 @@ int main(int /*argc*/, char** /*argv*/) {
         return -1;
     }
 
-	msgPedal.percent(0.0);
-    	msgSteering.steeringAngle(0.0);
-    	od4.send(msgPedal);
-    	od4.send(msgSteering);
-	usleep(999999999);
-    
-	msgPedal.percent(0.25);
-    	msgSteering.steeringAngle(-15.0);
-    	od4.send(msgPedal);
-    	od4.send(msgSteering); 
-	usleep(999999999);
-	
-	msgPedal.percent(-0.25);
-    	msgSteering.steeringAngle(15.0);
-    	od4.send(msgPedal);
-    	od4.send(msgSteering); 
-	usleep(999999999);
+    opendlv::proxy::GroundSteeringReading msgSteering;
+    opendlv::proxy::PedalPositionReading msgPedal;
 
-	msgPedal.percent(0.0);
-    	msgSteering.steeringAngle(0.0);
-    	od4.send(msgPedal);
-    	od4.send(msgSteering);
+    const int delay = 1500;
+
+	char foo [5] = { 'w', 's', 'w', 's', 'w'};
+
+	for (int i = 0; i < 5; i++) {
+		switch (foo[i]) {
+		case 'w':
+			   msgPedal.percent(0.1);
+		break;
+		case 's':
+			   msgPedal.percent(-0.1);
+		break;
+		default:
+		continue;
+		}
+	
+		//od4.send(msgSteering);
+		od4.send(msgPedal);
+		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+	}
 
     return 0;
 }
-
-
 
