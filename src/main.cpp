@@ -33,72 +33,43 @@ int main(int argc, char** argv) {
 
 	double angle = 0.0;
 	double speed = 0.0;
-    while (*++argv) {
-	if (speed >= 0.0)
-		speed -= 0.1;
 
-        switch ((*argv)[1]) {
-            case 'w':
-                speed += 0.1;
-                break;
-            case 't':
-		angle -= 10.0;
-                break;
-            case 'y':
-                angle += 10.0;
-	        break;
-            default:
-            std::cout << "Invalid: " << *argv << std::endl;
-                return 0;
-        }
-        for (int i = 0; i < INT32_MAX; i++);
-        msgPedal.percent(speed);
-        msgSteering.steeringAngle(angle);
-        od4.send(msgPedal);
-        od4.send(msgSteering);
-    }
+	for (char **a = argv ; a != argv+argc ; a++) {
+    	for(char *p = *a ; *p != '\0' ; p++) {
 
+		    if (speed >= 0.0)
+				speed -= 0.1;
 
-/*
-    std::cout << "Hello World again!" << std::endl;
+		    switch (*p) {
+		        case 'w':
+		            speed += 0.1;
+					continue;
+		            break;
+		        case 't':
+					angle -= 10.0;
+		            break;
+		        case 'y':
+		            angle += 10.0;
+			    break;
+		        default:
+		        std::cout << "Invalid: " << *argv << std::endl;
+		            return 0;
+		    }
+		    for (int i = 0; i < INT32_MAX; i++);
 
-    opendlv::proxy::GroundSteeringReading msgSteering;
-    opendlv::proxy::PedalPositionReading msgPedal;
+			if (angle > 30) angle = 30;
+			if (angle < -30) angle = -30;
+			if (speed > 0.25) speed = 0.25;
 
-    const int delay = 1000;
+			std::cout << "(speed, angle) -> (" << speed << "," << angle << ")" << std::endl;
 
-    std::cout << "Now move forward ..." << std::endl;
-    msgSteering.steeringAngle(0.0);
-    od4.send(msgSteering);
-    msgPedal.percent(0.4);
-    od4.send(msgPedal);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2 * delay));
+		    msgPedal.percent(speed);
+		    msgSteering.steeringAngle(angle);
+		    od4.send(msgPedal);
+		    od4.send(msgSteering);
+    	}
+	}
 
-    std::cout << "Now turn left a little bit ..." << std::endl;
-    msgPedal.percent(0.2);
-    od4.send(msgPedal);
-    msgSteering.steeringAngle(-15.0);
-    od4.send(msgSteering);
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-
-    std::cout << "Now turn right a little bit ..." << std::endl;
-    msgSteering.steeringAngle(15.0);
-    od4.send(msgSteering);
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-
-    std::cout << "Now move forward again..." << std::endl;
-    msgSteering.steeringAngle(0.0);
-    od4.send(msgSteering);
-    msgPedal.percent(0.4);
-    od4.send(msgPedal);
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-
-    std::cout << "Now Stop ..." << std::endl;
-    msgPedal.percent(0.0);
-    od4.send(msgPedal);
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-
-	*/
     return 0;
 }
 
