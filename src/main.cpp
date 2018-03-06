@@ -41,20 +41,27 @@ int main(int /*argc*/, char** /*argv*/) {
         std::cout << "ERROR: No od4 running!!!" << std::endl;
         return -1;
     }
-	
-	char input;
 
-	while ((input = getchar()) != 'q') {
-		action(input);
+	msgPedal.percent(0.0);
+    	msgSteering.steeringAngle(0.0);
+    	od4.send(msgPedal);
+    	od4.send(msgSteering);
+	
+	char str[] = "wtwyw";
+
+	for (int i = 0; i < 5; i++) {
+		action(str[i]);
 		od4.send(msgPedal);
 		od4.send(msgSteering);
 		usleep(1000000000);
 	}
 
+
     msgPedal.percent(0.0);
     msgSteering.steeringAngle(0.0);
     od4.send(msgPedal);
     od4.send(msgSteering);
+
 
     return 0;
 }
