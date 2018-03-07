@@ -35,7 +35,7 @@ int main(int /*argc*/, char** /*argv*/) {
     opendlv::proxy::GroundSteeringReading msgSteering;
     opendlv::proxy::PedalPositionReading msgPedal;
 
-	char foo [5] = { 'w', 's', 'w', 's', 'w'};
+	char foo [5] = { 'w', 'a', 's', 'd', 'r'};
 
 	for (int i = 0; i < 5; i++) {
 		od4.send(msgPedal);
@@ -43,16 +43,30 @@ int main(int /*argc*/, char** /*argv*/) {
 		switch (foo[i]) {
 		case 'w':
 			   msgPedal.percent(0.25);
-		break;
+			   od4.send(msgPedal);
+		break;	
 		case 's':
 			   msgPedal.percent(-0.25);
+			   od4.send(msgPedal);
+		break;
+		case 'a':
+			   msgSteering.steeringAngle(-15.0);
+    		   od4.send(msgSteering);
+		break;
+		case 'd':
+			   msgSteering.steeringAngle(15.0);
+    		   od4.send(msgSteering);
+		break;
+		case 'r':
+			   msgSteering.steeringAngle(0.0);
+    		   od4.send(msgSteering);
+			   msgPedal.percent(0.0);
+			   od4.send(msgPedal);
 		break;
 		default:
+		        std::cout << "Invalid command character: " << foo[i] << std::endl;
 		continue;
 		}
-	
-		//od4.send(msgSteering);
-
 	}
 
     return 0;
