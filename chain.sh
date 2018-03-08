@@ -25,10 +25,10 @@ case $i in
 
 	-t|--transfer)
 	
-			docker save carpet_compile.tar carpet_compile:armhf
+			docker save -o carpet_compile.tar carpet_compile:armhf
 			scp carpet_compile.tar debian@192.168.8.1:~/
 			rm carpet_compile.tar
-			ssh debian@192.168.8.1 -t 'sudo sh run.sh'
+			ssh debian@192.168.8.1 -t 'sh run.sh'
 	
     ;;
 	--run)

@@ -22,7 +22,7 @@ services:
 
     # Your microservice.
     carpet:
-        image: carpet_compile
+        image: carpet_compile:armhf
         depends_on:
         - proxy-miniature-pwm-motor
         network_mode: "host"
