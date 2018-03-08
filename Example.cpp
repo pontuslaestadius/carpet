@@ -35,18 +35,19 @@ int main(int /*argc*/, char** /*argv*/) {
     opendlv::proxy::GroundSteeringReading msgSteering;
     opendlv::proxy::PedalPositionReading msgPedal;
 
-	char foo [5] = { 'w', 'a', 's', 'd', 'r'};
+	int len = 6;
+	char foo [len] = { 'w', 'a', 's', 'd', 'w', 'r'};
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < len; i++) {
 		od4.send(msgPedal);
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		switch (foo[i]) {
 		case 'w':
-			   msgPedal.percent(0.25);
+			   msgPedal.percent(0.15);
 			   od4.send(msgPedal);
 		break;	
 		case 's':
-			   msgPedal.percent(-0.25);
+			   msgPedal.percent(-0.15);
 			   od4.send(msgPedal);
 		break;
 		case 'a':

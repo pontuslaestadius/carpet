@@ -1,6 +1,5 @@
-FROM pipill/armhf-alpine:edge as builder
+FROM pipill/alpine:latest as builder
 MAINTAINER Yue Kang yuek@chalmers.se
-RUN [ "cross-build-start" ]
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/community >> /etc/apk/repositories
@@ -18,12 +17,10 @@ RUN cd /opt/sources && \
     cd build && \
     cmake -D CMAKE_BUILD_TYPE=Release .. && \
     make example && cp example /tmp
-RUN [ "cross-build-end" ]
 
 # Deploy.
-FROM pipill/armhf-alpine:edge
+FROM pipill/alpine:latest
 MAINTAINER Yue Kang yuek@chalmers.se
-RUN [ "cross-build-start" ]
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/community >> /etc/apk/repositories
@@ -32,5 +29,4 @@ RUN apk update && \
     mkdir /opt
 WORKDIR /opt
 COPY --from=builder /tmp/example .
-RUN [ "cross-build-end" ]
 CMD ["/opt/example"]
