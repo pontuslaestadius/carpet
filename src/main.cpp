@@ -36,13 +36,13 @@ int main(int /*argc*/, char** /*argv*/) {
     opendlv::proxy::PedalPositionReading msgPedal;
 
 	int len = 9;
-	char foo [len] = { 'r', 'w', 'a', 'a', 'a', 'd', 'd', 'd', 'r'};
+	char foo [len] = { 'r', 'w', 'a', 'd', 'w', 'd', 'a', 'd', 'r'};
 
 	for (int i = 0; i < len; i++) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		switch (foo[i]) {
 		case 'w':
-			   msgPedal.percent(0.18);
+			   msgPedal.percent(0.25);
 			   od4.send(msgPedal);
 		break;	
 		case 's':
