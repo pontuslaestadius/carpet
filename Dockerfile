@@ -16,7 +16,7 @@ RUN cd /opt/sources && \
     mkdir build && \
     cd build && \
     cmake -D CMAKE_BUILD_TYPE=Release .. && \
-    make example && cp example /tmp
+    make carpet && cp carpet /tmp
 
 # Deploy.
 FROM pipill/alpine:latest
@@ -28,5 +28,5 @@ RUN apk update && \
     apk add libcluon --no-cache --repository https://chrberger.github.io/libcluon/alpine/v3.7 --allow-untrusted && \
     mkdir /opt
 WORKDIR /opt
-COPY --from=builder /tmp/example .
-CMD ["/opt/example"]
+COPY --from=builder /tmp/carpet .
+CMD ["/opt/carpet"]
