@@ -25,12 +25,12 @@ case $i in
 
 	-t|--transfer)
 	
-			docker save -o carpet_compile.tar carpet_compile:armhf
-			scp carpet_compile.tar debian@192.168.8.1:~/
-			rm carpet_compile.tar
+			docker save -o $DOCKER_NAME.tar $DOCKER_NAME:armhf
+			scp $DOCKER_NAME.tar debian@192.168.8.1:~/
+			rm $DOCKER_NAME.tar
 			ssh debian@192.168.8.1 -t 'sh run.sh'
 	
-    ;;
+        ;;
 	--run)
 
 			# If a container already exists and is running.
@@ -66,19 +66,18 @@ case $i in
 
 			docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
 
-    ;;
+        ;;
 	--pull)
 	
 			docker pull $DOCKER_IMAGE
 
-    ;;
+        ;;
 	--push)
 	
-			DOCKER_ID_USER=$2
 			# Bind the local with the remote.
-			docker tag $DOCKER_NAME $DOCKER_ID_USER/$DOCKER_NAME
+			docker tag $DOCKER_NAME $DOCKER_IMAGE
 			# Push them to the hub.
-			docker push $DOCKER_ID_USER/$DOCKER_NAME
+			docker push $DOCKER_IMAGE
 
 	;;
 	-b|--build)
