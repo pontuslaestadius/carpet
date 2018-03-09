@@ -11,7 +11,7 @@
 
 double angle = 0.0;
 double speed = 0.0;
-const int delay = 1500;
+const int delay = 900;
 
 int main(int /*argc*/, char** /*argv*/) {
 
@@ -36,7 +36,7 @@ int main(int /*argc*/, char** /*argv*/) {
     opendlv::proxy::PedalPositionReading msgPedal;
 
 	int len = 9;
-	char foo [len] = { 'r', 'w', 'a', 'd', 'w', 'd', 'a', 'd', 'r'};
+	char foo [len] = { 'r', 'w', 'a', 'd', 'r', 'a', 'w', 'd', 'r'};
 
 	for (int i = 0; i < len; i++) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));

@@ -40,10 +40,26 @@ git clone https://github.com/pontuslaestadius/carpet
 2. Make sure that Docker is installed on your machine (link above).
 3. The next step is to install OpenDaVINCI & Cluon (links above).
 
-> Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
+
+The carpet repository has a help script. With predefined functions. It's documentation can be viewed using the following command.
 ```
-cd carpet/
+sh chain.sh -h
+```
+
+> Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
+There are three different commands which can generate an executable output. 
+
+Runs it on your local machine and generates an output inside the build directory.
+```
 sh chain.sh -l
+```
+Generates it as a docker image
+```
+sh chain.sh -b
+```
+Generates it as an arm docker imaged tagged as :armhf
+```
+sh chain.sh -ba
 ```
 
 4. Finally, when building is done, run the executable binary to run it on your local machine.
@@ -51,7 +67,6 @@ sh chain.sh -l
 cd build/
 ./carpet
 ```
-
 
 > If the image is not copied correctly, try pulling it direcly from our hub:
 ```
@@ -63,17 +78,24 @@ Deployment of the software is handled using an alpine docker image which compile
 Uploading to the car is done via a docker image stored on the docker hub.  Which is remotly downlaoded and executed on the desired platform.
 
 ```
-sh chain.sh -b
-sh chain.sh --push <dockerID>
+sh chain.sh --push
 ```
 The build command is used to push the images to your docker hub. Which in our case would be located at pontusla/carpet_compile
-To use a different docker hub account, this needs to be specified as an argument to chain.sh script.
+To use a different docker hub account, this needs to be specified in the chain.sh bash script.
 
-On the desired platform you would have to run the remote docker image. In this example we use our own uploaded hub.
+If you prefer not to use the docker hub to distrubute your images. There is a ssh transfer command for your docker images.
+You will be asked to enter your device's password twice as it uses scp and ssh.
+
 ```
-docker run --rm -ti pontusla/carpet_deploy
+sh chain.sh --pull
+sh chain.sh -t
 ```
-> -ti is optional and can be omitted.
+
+These commands can also be chained together, as the name says. So the following is valid.
+```
+sh chain.sh -ba --push -t
+```
+It will build an arm:hf tagged image, push it to the remote docker hub and run the image on the car over ssh.
 
 
 **How to run the test cases:**
