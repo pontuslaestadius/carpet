@@ -1,5 +1,5 @@
 FROM alpine:3.7 as builder
-MAINTAINER Yue Kang yuek@chalmers.se
+MAINTAINER Carpet_team
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/community >> /etc/apk/repositories
@@ -22,7 +22,7 @@ RUN cd /opt/sources && \
 
 # Deploy.
 FROM alpine:3.7
-MAINTAINER Yue Kang yuek@chalmers.se
+MAINTAINER Carpet_team
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/community >> /etc/apk/repositories

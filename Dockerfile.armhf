@@ -1,5 +1,5 @@
 FROM pipill/armhf-alpine:edge as builder
-MAINTAINER Yue Kang yuek@chalmers.se
+MAINTAINER Carpet_team
 RUN [ "cross-build-start" ]
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
@@ -24,7 +24,7 @@ RUN [ "cross-build-end" ]
 
 # Deploy.
 FROM pipill/armhf-alpine:edge
-MAINTAINER Yue Kang yuek@chalmers.se
+MAINTAINER Carpet_team
 RUN [ "cross-build-start" ]
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
