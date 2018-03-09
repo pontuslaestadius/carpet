@@ -1,17 +1,24 @@
-language: cpp
-compiler: clang
-dist: trusty # Ubuntu distibution.
-sudo: false # Runs each build in a container on a  shared host via docker.
+## Build and run the Docker image ##
 
-# Retrieve and install cmake, Flint++, libcluon and maybe socat
+sudo: required
+
+language: cpp
+
+services:
+  - docker
 
 before_install:
-    - apt-get install cmake
-    - apt-get-repository ppa:chrberger/libcluon
-    - apt-get update
-    - apt-get install libcluon
-    - wget https://github.com/L2Program/FlintPlusPlus.git
- #   - apt-get install socat
+# Update docker version from download.docker.com
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+
+# Running and testing the build provided by the docker image
+  #- docker build -t carlad/sinatra . # Will build using the Dockerfile in the github repo.
+  - docker pull pontusla/compile_carpet
+  #- sudo apt-get install valgrind -y
+  - docker run --rm -ti --net=host pontusla/carpet_compile
 
 # Only build the master and development branch.
 branches:
