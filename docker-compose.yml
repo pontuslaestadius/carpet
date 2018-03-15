@@ -20,7 +20,7 @@ services:
         - /dev/:/dev/
         command: "/opt/opendlv.miniature/bin/opendlv-proxy-miniature-pwm-motor --cid=111 --freq=50 --id=1"
 
-    # Your microservice.
+    # Carpet component
     carpet:
         image: carpet_compile:armhf
         depends_on:
