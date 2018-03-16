@@ -5,7 +5,9 @@ It is prefered to delete your build directory before running.
           --push	  pushes the to the docker hub of the next argument user id.
 	  --debug	  runs in debug mode using valgrind.
 -h        --help          displays usages.
--b        --build         set build status, yes | no (default).
+-b        --build         builds using the default Dockerfile in current directory.
 -f        --force         deletes ignores warnings and removes previous container.
 -l        --local         runs without docker container and without ARM compilation
 -d        --delete        deletes the toolchain container.
+-t	  --transfer	  saves the docker image and sends it to the car over ssh and runs it.
+-ba	  --build-arm	  builds using the .armhf Dockerfile in current directory.
