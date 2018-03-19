@@ -13,10 +13,10 @@ before_install:
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y install docker-ce
-
-# Running and testing the build provided by the docker image
-  #- docker build -t carlad/sinatra . # Will build using the Dockerfile in the github repo.
-  - sh chain -ba --run
+  
+  - docker events&
+  - docker build -t carpet_compile:armhf -f Dockerfile.armhf .
+  - docker run -d --net=host --name carpet_compile:armhf -v $PWD:/opt/sources carpet_compile:armhf /bin/sh
 
 # Only build the master and development branch.
 branches:
