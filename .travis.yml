@@ -16,15 +16,13 @@ before_install:
 
 # Running and testing the build provided by the docker image
   #- docker build -t carlad/sinatra . # Will build using the Dockerfile in the github repo.
-  - docker pull pontusla/compile_carpet
-  #- sudo apt-get install valgrind -y
-  - docker run --rm -ti --net=host pontusla/carpet_compile
+  - sh chain -ba --run
 
 # Only build the master and development branch.
 branches:
   only:
   - master
-  - development
+  - develop
 
 # Notified via email if a build is broken or fixed.
 notifications:
