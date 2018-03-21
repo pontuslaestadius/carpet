@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/pontuslaestadius/carpet.svg?branch=master)](https://travis-ci.org/pontuslaestadius/carpet)
-[![Build Status](https://travis-ci.org/pontuslaestadius/carpet.svg?branch=develop)](https://travis-ci.org/pontuslaestadius/carpet)
+master: [![Build Status](https://travis-ci.org/pontuslaestadius/carpet.svg?branch=master)](https://travis-ci.org/pontuslaestadius/carpet)
+develop: [![Build Status](https://travis-ci.org/pontuslaestadius/carpet.svg?branch=develop)](https://travis-ci.org/pontuslaestadius/carpet)
 # carpet
 
 https://github.com/pontuslaestadius/carpet
