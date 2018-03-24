@@ -2,15 +2,11 @@
 
 #################################
 ### Author: Pontus Laestadius ###
-### Last modified: 2018-02-08 ###
+### Last modified: 2018-02-23 ###
 #################################
 
-## Run the carpet toolchain inside a docker container.
-## View the dockerfile for details on what is run, this file
-## only handles docker management.
-
-# This is a modified version of what can be found here.
-# https://stackoverflow.com/questions/38576337/execute-bash-command-if-docker-container-does-not-exist
+## Provides a list of helpful shortcode commands which 
+## assist with development of the carpet project.
 
 # Default to enable building.
 HELP=".CHAIN_HELP"
@@ -30,7 +26,7 @@ case $i in
 			rm $DOCKER_NAME.tar
 			ssh debian@192.168.8.1 -t 'sh run.sh'
 	
-        ;;
+    ;;
 	--run)
 
 			# If a container already exists and is running.
@@ -66,12 +62,12 @@ case $i in
 
 			docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
 
-        ;;
+    ;;
 	--pull)
 	
 			docker pull $DOCKER_IMAGE
 
-        ;;
+    ;;
 	--push)
 	
 			# Bind the local with the remote.
@@ -82,14 +78,14 @@ case $i in
 	;;
 	-b|--build)
     	
-    			docker build -t carpet_compile .
+    		docker build -t carpet_compile .
 
 	;;
 	-ba|--build-arm)
     	
-    			docker build -t carpet_compile:armhf -f Dockerfile.armhf .
+    		docker build -t carpet_compile:armhf -f Dockerfile.armhf .
 
-        ;;
+    ;;
 	--debug)
 
 			valgrind --tool=memcheck --log-file=".valgrind_output" --leak-check=yes ./build/carpet
@@ -111,12 +107,12 @@ case $i in
     ;;
     -f|--force)
     
-    			FORCE="yes"
+    		FORCE="yes"
     
     ;;
     -d|--delete)
     
-    			docker rm $DOCKER_NAME
+    		docker rm $DOCKER_NAME
     
     ;;
     -h|--help)
@@ -129,10 +125,8 @@ case $i in
     
 			echo "Unknown argument: '$i'"
 			cat $HELP
-			
-	exit 1
+			exit 1
+
     ;;
 esac
 done
-
-
