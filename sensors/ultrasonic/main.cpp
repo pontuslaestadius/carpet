@@ -1,48 +1,71 @@
-// Sourced from: https://stackoverflow.com/questions/22611675/i-am-trying-to-use-i2c-on-the-beagle-bone-black-with-c-but-i-keep-getting-0x00
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <linux/i2c-dev.h>
-#include <linux/i2c.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <string>
-
-#include <cstdint>
-#include <chrono>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
 #include <iostream>
-#include <sstream>
+#include <fstream>
+#include <cstdint>
+#include <assert.h>
+#include <chrono>
 #include <thread>
 
-using namespace std;
+// This is derived from the original source:
+// https://github.com/chalmers-revere/opendlv.scaledcars/blob/master/scripts/devantech_change_addr.cpp
+// Resources used:
+// http://www.robot-electronics.co.uk/i2c-tutorial
 
-int main(int /*argc*/, char** /*argv*/){
-    int X_orientation=0;
-    char buffer1[256];
-    string i2cDeviceDriver="/dev/i2c-1";
-    int fileHandler;
 
-    if((fileHandler=open(i2cDeviceDriver.c_str(),O_RDWR))<0){
-        perror("Failed To Open i2c-1 Bus");
-        exit(1);
-    }
-    if(ioctl(fileHandler,I2C_SLAVE,0x71)<0){ // This should reflect the front ultra sonic sensor.
-        perror("Failed to acquire i2c bus access and talk to slave");
-        exit(1);
-    }
+int read_ultrasonic(unsigned long device_addr) {
+    char *end;
+    uint8_t buffer[2];
+    // Command register.
+    buffer[0] = 0x00;
+    // Command, read the SRF08 datasheet for specifications.
+    buffer[1] = 0x51;
+    //i2c bus.
+    char filename[11] = "/dev/i2c-1";
 
-    char buffer[1]={0x0D};
-    if(write(fileHandler,buffer,1)!=1){                 
-        perror("Failed to write byte to sensor");
-        exit(1);
+    // Verify access to i2c bus.
+    int file = open(filename, O_RDWR);
+    if (file < 0) {
+        std::cout << "Failed to open the i2c bus: " << filename << "." << std::endl;
+        return -1;
     }
 
-    if(read(fileHandler,buffer1,1)!=1){                 
-        perror("Failed to read byte from sensor");
-        exit(1);
+    // Verify communication over i2c bus.
+    if (ioctl(file, I2C_SLAVE, device_addr) < 0) {
+        std::cout << "Failed to acquire bus access or talk to device. Addr: " << device_addr << std::endl;
+        return -1;
     }
-    printf("Contents of sensor is 0x%02X\n",buffer1[0]);
+
+    // Write to the command register specify the command.
+    if (write(file, buffer, 2) != 2) {
+        std::cout << "Failed to send " << buffer[1] << " to device." << std::endl;
+        return -1;
+    }
+
+    // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
+    std::this_thread::sleep_for(std::chrono::milliseconds(80));
+    uint8_t readbuffer[36];
+    uint8_t length = 36;
+
+    if (read(file, readbuffer, length) != length) {
+        printf("Failed to read from the i2c bus.\n");
+        //return -1; // add back in once this works.
+    }
+    // Example print.
+    for (int i = 0; i < length; ++i){
+        std::cout << buffer[i];
+        if (length % 6 == 0) {
+            std::cout << std::endl;
+        }
+        std::cout << ", ";
+    }
+    return 0;
+}
+
+int main () {
+    read_ultrasonic(0x71); // Front sensor.
+    read_ultrasonic(0x70); // Back sensor. (hypothetically.)
+    return 0; // Front sensor.
 }
