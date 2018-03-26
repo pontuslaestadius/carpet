@@ -22,15 +22,25 @@
 // Resources used:
 // http://www.robot-electronics.co.uk/i2c-tutorial
 
+
+// Compiled using:
+// g++ -std=c++11 -I /usr/include -c ultrasonic.cpp 
+
+#define MAXSPEED 0.40
+#define DELAY 80;
+
 uint8_t read_ultrasonic(unsigned long device_addr) {
-    char *end;
-    uint8_t buffer[2];
-    // Command register.
-    buffer[0] = 0x00;
-    // Command, read the SRF08 datasheet for specifications.
-    buffer[1] = 0x51;
-    //i2c bus.
-    char filename[11] = "/dev/i2c-1";
+
+    // Input validation, to make sure the addr is within the scope of the i2c.
+    if (device_addr < 0x00 || device_addr > 0x77) {
+        std::cout << "Invalid device address: " << device_addr << std::endl;
+        return -1;
+    }
+
+    uint8_t buffer[2];                          // What to write to i2c.
+    buffer[0] = 0x00;                           // Command register.
+    buffer[1] = 0x51;                           // Command, read the SRF08 datasheet for specifications.
+    char filename[11] = "/dev/i2c-1";           //i2c bus.
 
     // Verify access to i2c bus.
     int file = open(filename, O_RDWR);
@@ -52,7 +62,7 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
     }
 
     // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
-    std::this_thread::sleep_for(std::chrono::milliseconds(80));
+    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
     uint8_t readbuffer[10];
     uint8_t length = 10;
 
@@ -62,7 +72,7 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
         //return -1; // add back in once this works.
     }
 
-    // Example print.
+    // Example print, should be removed post-testing.
     for (int i = 0; i < length; ++i){
         std::cout << buffer[i];
         if (length % 6 == 0) {
@@ -71,12 +81,30 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
         std::cout << ", ";
     }
 
-
     return readbuffer[0];
 }
 
+bool obstacle_check(uint8_t distance, float current_speed) {
+    current_speed = current_speed < 0 ? -current_speed:current_speed;
+
+    if (current_speed > MAXSPEED) {
+        throw std::invalid_argument("Current speed is out of bounds.");
+    }
+
+    return distance < (100 * current_speed);
+}
+
+
+/*
+    This is an example of how the methods should be called.
+*/
 int main () {
-    read_ultrasonic(0x71); // Front sensor.
-    read_ultrasonic(0x70); // Back sensor. (hypothetically.)
+    uint8_t front = read_ultrasonic(0x71); // Front sensor.
+    uint8_t back = read_ultrasonic(0x70); // Back sensor. (hypothetically.)
+    float current_speed = 0.25;
+
+    std::cout << "Obstacle ahead: " << obstacle_check(front, current_speed) << std::endl;
+    std::cout << "Obstacle behind: " << obstacle_check(back, current_speed) << std::endl;
+    
     return 0; // Front sensor.
 }
