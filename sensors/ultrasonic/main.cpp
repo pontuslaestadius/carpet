@@ -1,3 +1,11 @@
+/*
+	Author: Pontus Laestadius
+	Since: 2018-03-23
+
+	Synopsis:
+	Reads and writes to the i2c bus to communicate with the connected sensors.
+*/
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -14,8 +22,7 @@
 // Resources used:
 // http://www.robot-electronics.co.uk/i2c-tutorial
 
-
-int read_ultrasonic(unsigned long device_addr) {
+uint8_t read_ultrasonic(unsigned long device_addr) {
     char *end;
     uint8_t buffer[2];
     // Command register.
@@ -46,13 +53,15 @@ int read_ultrasonic(unsigned long device_addr) {
 
     // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
     std::this_thread::sleep_for(std::chrono::milliseconds(80));
-    uint8_t readbuffer[36];
-    uint8_t length = 36;
+    uint8_t readbuffer[10];
+    uint8_t length = 10;
 
+    // If we are able to read amount of bytes we requested.
     if (read(file, readbuffer, length) != length) {
-        printf("Failed to read from the i2c bus.\n");
+        printf("Failed to read the requested amount of bytes from the i2c bus.\n");
         //return -1; // add back in once this works.
     }
+
     // Example print.
     for (int i = 0; i < length; ++i){
         std::cout << buffer[i];
@@ -61,7 +70,9 @@ int read_ultrasonic(unsigned long device_addr) {
         }
         std::cout << ", ";
     }
-    return 0;
+
+
+    return readbuffer[0];
 }
 
 int main () {
