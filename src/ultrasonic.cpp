@@ -4,6 +4,14 @@
 
 	Synopsis:
 	Reads and writes to the i2c bus to communicate with the connected sensors.
+
+    This is derived from the original source:
+    https://github.com/chalmers-revere/opendlv.scaledcars/blob/master/scripts/devantech_change_addr.cpp
+    Resources used:
+    http://www.robot-electronics.co.uk/i2c-tutorial
+
+    Compiled using:
+    g++ -std=c++11 -I /usr/include -c ultrasonic.cpp 
 */
 
 #include <unistd.h>
@@ -17,17 +25,8 @@
 #include <chrono>
 #include <thread>
 
-// This is derived from the original source:
-// https://github.com/chalmers-revere/opendlv.scaledcars/blob/master/scripts/devantech_change_addr.cpp
-// Resources used:
-// http://www.robot-electronics.co.uk/i2c-tutorial
-
-
-// Compiled using:
-// g++ -std=c++11 -I /usr/include -c ultrasonic.cpp 
-
 #define MAXSPEED 0.40
-#define DELAY 80;
+#define DELAY 100
 
 uint8_t read_ultrasonic(unsigned long device_addr) {
 
@@ -63,8 +62,8 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
 
     // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
-    uint8_t readbuffer[10];
-    uint8_t length = 10;
+    uint8_t length = 3;
+    uint8_t readbuffer[length];
 
     // If we are able to read amount of bytes we requested.
     if (read(file, readbuffer, length) != length) {
@@ -72,16 +71,7 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
         //return -1; // add back in once this works.
     }
 
-    // Example print, should be removed post-testing.
-    for (int i = 0; i < length; ++i){
-        std::cout << buffer[i];
-        if (length % 6 == 0) {
-            std::cout << std::endl;
-        }
-        std::cout << ", ";
-    }
-
-    return readbuffer[0];
+    return readbuffer[length -1];
 }
 
 bool obstacle_check(uint8_t distance, float current_speed) {
@@ -99,12 +89,18 @@ bool obstacle_check(uint8_t distance, float current_speed) {
     This is an example of how the methods should be called.
 */
 int main () {
-    uint8_t front = read_ultrasonic(0x71); // Front sensor.
-    uint8_t back = read_ultrasonic(0x70); // Back sensor. (hypothetically.)
-    float current_speed = 0.25;
 
-    std::cout << "Obstacle ahead: " << obstacle_check(front, current_speed) << std::endl;
-    std::cout << "Obstacle behind: " << obstacle_check(back, current_speed) << std::endl;
+    while (1) {
+        uint8_t front = read_ultrasonic(0x71); // Front sensor.
+        printf("%d > %d \n", front, obstacle_check(front, 0.25));
+        std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
+    }
+
     
-    return 0; // Front sensor.
+    //float current_speed = 0.25; // Example speed the vehicle is moving. between -1 and 1.
+
+    //std::cout << "Obstacle ahead: " << obstacle_check(front, current_speed) << std::endl;
+    //std::cout << "Obstacle behind: " << obstacle_check(back, current_speed) << std::endl;
+
+    return 0;
 }
