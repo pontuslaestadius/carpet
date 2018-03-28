@@ -1,20 +1,27 @@
+## Build and run the Docker image ##
+
+sudo: required
+
 language: cpp
-compiler: clang
 
-# Retrieve and install cmake
-addons:
-  apt:
-    packages:
-    - cmake
-    sources:
-    - sourceline: 'https://github.com/L2Program/FlintPlusPlus.git'
+services:
+  - docker
 
+before_install:
+# Update docker version from download.docker.com
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+
+script:
+  - docker build -t carpet_compile:armhf -f Dockerfile.armhf .
 
 # Only build the master and development branch.
 branches:
   only:
   - master
-  - development
+  - develop
 
 # Notified via email if a build is broken or fixed.
 notifications:
