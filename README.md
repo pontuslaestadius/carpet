@@ -29,6 +29,7 @@ Following these [guidelines](http://nvie.com/posts/a-successful-git-branching-mo
 * [OpenDaVinci](https://github.com/se-research/OpenDaVINCI)
 * [Cluon](https://github.com/chrberger/libcluon)
 * [Docker](https://www.docker.com/)
+* [Valgrind](http://valgrind.org/)
 
 ## Installing and Running
 
@@ -39,33 +40,63 @@ git clone https://github.com/pontuslaestadius/carpet
 2. Make sure that Docker is installed on your machine (link above).
 3. The next step is to install OpenDaVINCI & Cluon (links above).
 
-> Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
+
+The carpet repository has a help script. With predefined functions. It's documentation can be viewed using the following command.
 ```
-cd carpet/
-sh local.sh 
-#alternatively: sh chain.sh -l
+sh chain.sh -h
+```
+
+> Building the repository can be done using cmake in a seperate directory, before using make in the source code directory.
+There are three different commands which can generate an executable output. 
+
+Runs it on your local machine and generates an output inside the build directory.
+```
+sh chain.sh -l
+```
+Generates it as a docker image
+```
+sh chain.sh -b
+```
+Generates it as an arm docker imaged tagged as :armhf
+```
+sh chain.sh -ba
 ```
 
 4. Finally, when building is done, run the executable binary to run it on your local machine.
 ```
+cd build/
 ./carpet
 ```
 
+> If the image is not copied correctly, try pulling it direcly from our hub:
+```
+sh chain.sh --pull
+```
+
 ## Deploying
-Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car.
+Deployment of the software is handled using an alpine docker image which compiles and extracts the binaries which can be uploaded to the car using a docker image.
 Uploading to the car is done via a docker image stored on the docker hub.  Which is remotly downlaoded and executed on the desired platform.
 
-The deploy.sh deployment shorthand is used to push the images to your docker hub. These are located at pontusla/carpet_compile and pontusla/carpet_deploy respectively.
-To use a different docker hub account, this needs to be specified at the start of the chain.sh script to be customized if prefered.
 ```
-sh chain.sh
-sh deploy.sh
+sh chain.sh --push
+```
+The build command is used to push the images to your docker hub. Which in our case would be located at pontusla/carpet_compile
+To use a different docker hub account, this needs to be specified in the chain.sh bash script.
+
+If you prefer not to use the docker hub to distrubute your images. There is a ssh transfer command for your docker images.
+You will be asked to enter your device's password twice as it uses scp and ssh.
+
+```
+sh chain.sh --pull
+sh chain.sh -t
 ```
 
-On the desired platform you would have to run the remote docker image. In this example we use our own uploaded hub.
+These commands can also be chained together, as the name says. So the following is valid.
 ```
-docker run --rm -d pontusla/carpet_deploy
+sh chain.sh -ba --push -t
 ```
+It will build an arm:hf tagged image, push it to the remote docker hub and run the image on the car over ssh.
+
 
 **How to run the test cases:**
 
@@ -81,5 +112,15 @@ sudo apt-get install socat
 ```
 socat UDP4-RECVFROM:1236,ip-add-membership=225.0.0.111:0.0.0.0,fork – 
 ```
-
+3. Compile the software using Cmake.
+```
+mkdir build
+cd build/
+cmake ..
+make test
+```
+4. Alternative command which is just a shorthand. And includes compiling test and the software.
+```
+sh chain.sh -l
+```
 
