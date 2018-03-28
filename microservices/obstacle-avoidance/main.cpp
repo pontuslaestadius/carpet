@@ -26,20 +26,22 @@
 #include <chrono>
 #include <thread>
 
-#define MAXSPEED 0.40
+#include "../../../headers/cluon-compelte.hpp"
+
+#define MAXSPEED 0.30
 #define DELAY 70
+#define FRONTSENSOR 0x71
 
 uint8_t read_ultrasonic(unsigned long device_addr) {
+    char filename[11] = "/dev/i2c-1";           //i2c bus.
+    uint8_t buffer[2];                          // What to write to i2c.
+    buffer[0] = 0x00;                           // Command register.
+    buffer[1] = 0x51;                           // Command, read the SRF08 datasheet for specifications.
 
     // Input validation, to make sure the addr is within the scope of the i2c.
     if (device_addr < 0x03 || device_addr > 0x77) {
         throw std::invalid_argument("Device address out of bounds.");
     }
-
-    uint8_t buffer[2];                          // What to write to i2c.
-    buffer[0] = 0x00;                           // Command register.
-    buffer[1] = 0x51;                           // Command, read the SRF08 datasheet for specifications.
-    char filename[11] = "/dev/i2c-1";           //i2c bus.
 
     // Verify access to i2c bus.
     int file = open(filename, O_RDWR);
@@ -67,7 +69,9 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
         throw std::ios_base::failure("Failed to read from the i2c bus.");
     }
 
-    return readbuffer[length -1];
+    uint8_t reading = readbuffer[length -1];
+    delete[] readbuffer; // Clear the memory pointer, otherwise memory leak.
+    return reading;
 }
 
 bool obstacle_check(uint8_t distance, uint8_t multiplier, float current_speed) {
@@ -87,22 +91,42 @@ bool obstacle_check(uint8_t distance, uint8_t multiplier, float current_speed) {
 */
 int main () {
     float current_speed = 0.25; // Example speed the vehicle is moving. between -1 and 1.
-    uint8_t multiplier = 60;
+    uint8_t multiplier = 80;
     uint8_t front = 0;
+    uint8_t previous = 0;
 
-    while (1) {
-        front = read_ultrasonic(0x71); // Front sensor.
-        printf("%d > %d \n", front, obstacle_check(front, multiplier, 0.25));
+    try {
+        while (1) {
+            front = read_ultrasonic(FRONTSENSOR);
+            // TODO Sent it to the od4 session. 
+            if (obstacle_check(front, multiplier/2, current_speed)) {
 
-        // TODO Sent it to the od4 session. 
-        if (obstacle_check(front, multiplier/2, current_speed)) {
-            printf("obstacle very close!\n");
-        } else if (obstacle_check(front, multiplier, current_speed)) {
-            printf("obstacle detected.\n");
+                if (previous != 1) {
+                    printf("obstacle very close!\n");
+                }
+
+                previous = 1;
+            } else if (obstacle_check(front, multiplier, current_speed)) {
+
+                if (previous != 2) {
+                        printf("obstacle detected.\n"); 
+                }
+
+                previous = 2;
+            } else {
+                
+                if (previous != 3) {
+                    printf("no obstacle.\n"); 
+                }
+
+                previous = 3;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(DELAY/2));
         }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(DELAY/2));
+    } catch (const std::exception&) {
+        std::cout << e.what() << std::endl;
+        return -1;
     }
-
     return 0;
 }
