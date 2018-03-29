@@ -10,6 +10,7 @@
     https://github.com/chalmers-revere/opendlv.scaledcars/blob/master/scripts/devantech_change_addr.cpp
     Resources used:
     http://www.robot-electronics.co.uk/i2c-tutorial
+    https://www.robot-electronics.co.uk/htm/srf08tech.html
 
     Compiled using:
     g++ -pedantic -Wextra -std=c++11 -I /usr/include -c ultrasonic.cpp 
@@ -26,7 +27,7 @@
 #include <chrono>
 #include <thread>
 
-#include "../../../headers/cluon-compelte.hpp"
+// #include "cluon-complete.hpp"
 
 #define MAXSPEED 0.30
 #define DELAY 70
@@ -103,28 +104,25 @@ int main () {
 
                 if (previous != 1) {
                     printf("obstacle very close!\n");
+                    previous = 1;
                 }
-
-                previous = 1;
             } else if (obstacle_check(front, multiplier, current_speed)) {
 
                 if (previous != 2) {
                         printf("obstacle detected.\n"); 
+                        previous = 2;
                 }
-
-                previous = 2;
             } else {
                 
                 if (previous != 3) {
                     printf("no obstacle.\n"); 
+                    previous = 3;
                 }
-
-                previous = 3;
             }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(DELAY/2));
         }
-    } catch (const std::exception&) {
+    } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
         return -1;
     }

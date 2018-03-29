@@ -7,23 +7,26 @@ RUN apt update && \
         ca-certificates \
         cmake \
         g++ \
-        make
-RUN apt-get install i2c-tools && apt update 
-ADD . /opt/sources
+        make \
+        i2c-tools && \
+        apt update 
+COPY . /opt/sources
 WORKDIR /opt/sources
 RUN cd /opt/sources && \
-    cmake -D CMAKE_BUILD_TYPE=Release . && \
-    make obstacle-avoidance && cp obstacle-avoidance /tmp
+    mkdir build && \
+    cd build && \
+    cmake -D CMAKE_BUILD_TYPE=Release .. && \
+    make && cp obstacle-avoidance /tmp
 RUN [ "cross-build-end" ]
 
 # Deploy.
 FROM resin/armv7hf-debian:jessie
 MAINTAINER Pontus Laestadius
 RUN [ "cross-build-start" ]
-RUN apt-get install && \
-    software-properties-common \
-    mkdir /opt
-RUN apt-get install i2c-tools && apt update 
+RUN apt update && \
+    apt-get install \
+    i2c-tools && \
+    cd /opt
 WORKDIR /opt
 COPY --from=builder /tmp/obstacle-avoidance .
 RUN [ "cross-build-end" ]
