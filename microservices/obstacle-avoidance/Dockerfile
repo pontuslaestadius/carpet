@@ -7,6 +7,7 @@ RUN apt update && \
         ca-certificates \
         cmake \
         g++ \
+        gcc \
         make \
         i2c-tools && \
         apt update 

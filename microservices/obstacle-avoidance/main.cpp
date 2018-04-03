@@ -27,8 +27,7 @@
 #include <chrono>
 #include <thread>
 
-// This breaks in the dockerfile atm.
-// #include "cluon-complete.hpp"
+//#include "cluon-complete.hpp"
 
 #define MAXSPEED 0.30
 #define DELAY 70
@@ -99,23 +98,24 @@ int main () {
     try {
         while (1) {
             front = read_ultrasonic(FRONTSENSOR);
+
             // TODO Sent it to the od4 session. 
             if (obstacle_check(front, multiplier/2, current_speed)) {
 
                 if (previous != 1) {
-                    printf("obstacle very close!\n");
+                    std::cout << "obstacle very close" << std::endl;
                     previous = 1;
                 }
             } else if (obstacle_check(front, multiplier, current_speed)) {
 
                 if (previous != 2) {
-                        printf("obstacle detected.\n"); 
-                        previous = 2;
+                    std::cout << "obstacle detected" << std::endl;
+                    previous = 2;
                 }
             } else {
                 
                 if (previous != 3) {
-                    printf("no obstacle.\n"); 
+                    std::cout << "no obstacle detected" << std::endl;
                     previous = 3;
                 }
             }
