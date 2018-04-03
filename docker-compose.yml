@@ -27,3 +27,8 @@ services:
         - proxy-miniature-pwm-motor
         network_mode: "host"
         command: "/opt/carpet --cid=111 --freq=10"
+
+    # Obstacle avoidance microservice.
+    obstacle-avoidance:
+        image: obstacle-avoidance:armhf
+        command: "/opt/obstacle-avoidance"
