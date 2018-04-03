@@ -21,16 +21,16 @@ services:
         command: "/opt/opendlv.miniature/bin/opendlv-proxy-miniature-pwm-motor --cid=111 --freq=50 --id=1"
 
     # Signal viewer
-    signal-viewer:
-        image: chalmersrevere/opendlv-signal-viewer-armhf:v0.0.4
-        network_mode: "host"
-        restart: always
-        privileged: true
-        expose:
-        - "8080"
-        depends_on:
-        - odsupercomponent
-        command: "/opt/signal-viewer --cid=111"
+    #signal-viewer:
+    #    image: chalmersrevere/opendlv-signal-viewer-armhf:v0.0.4
+    #    network_mode: "host"
+    #    restart: always
+    #    privileged: true
+    #    expose:
+    #    - "8080"
+    #    depends_on:
+    #    - odsupercomponent
+    #    command: "/opt/signal-viewer --cid=111"
 
     # Carpet component
     carpet:
