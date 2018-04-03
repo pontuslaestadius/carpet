@@ -27,23 +27,23 @@
 #include <chrono>
 #include <thread>
 
+// This breaks in the dockerfile atm.
 // #include "cluon-complete.hpp"
 
 #define MAXSPEED 0.30
 #define DELAY 70
 #define FRONTSENSOR 0x71
 
-uint8_t read_ultrasonic(unsigned long device_addr) {
-    char filename[11] = "/dev/i2c-1";           //i2c bus.
-    uint8_t buffer[2];                          // What to write to i2c.
-    buffer[0] = 0x00;                           // Command register.
-    buffer[1] = 0x51;                           // Command, read the SRF08 datasheet for specifications.
+const char filename[11] = "/dev/i2c-1";     //i2c bus.
+// read the SRF08 datasheet for specifications.
+const uint8_t buffer[2] = {0x00, 0x51};     // What to write to i2c, Command register, command.
 
+uint8_t read_ultrasonic(unsigned long device_addr) {
     // Input validation, to make sure the addr is within the scope of the i2c.
     if (device_addr < 0x03 || device_addr > 0x77) {
         throw std::invalid_argument("Device address out of bounds.");
     }
-
+    
     // Verify access to i2c bus.
     int file = open(filename, O_RDWR);
     if (file < 0) {
@@ -62,7 +62,7 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
 
     // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
     std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
-    uint8_t length = 3;
+    uint8_t length = 3; // First usable echo reading is found at position 3.
     uint8_t *readbuffer = new uint8_t[length];
 
     // If we are able to read amount of bytes we requested.
@@ -91,8 +91,8 @@ bool obstacle_check(uint8_t distance, uint8_t multiplier, float current_speed) {
     This is an example of how the methods should be called.
 */
 int main () {
+    const uint8_t multiplier = 80;
     float current_speed = 0.25; // Example speed the vehicle is moving. between -1 and 1.
-    uint8_t multiplier = 80;
     uint8_t front = 0;
     uint8_t previous = 0;
 
