@@ -1,8 +1,8 @@
-FROM resin/armv7hf-debian:jessie as builder
+FROM pipill/armhf-debian:jessie as builder
 MAINTAINER Pontus Laestadius
 RUN [ "cross-build-start" ]
 RUN apt update && \
-    apt-get install \
+    apt-get -y install \
         software-properties-common \
         ca-certificates \
         cmake \
@@ -21,7 +21,7 @@ RUN cd /opt/sources && \
 RUN [ "cross-build-end" ]
 
 # Deploy.
-FROM resin/armv7hf-debian:jessie
+FROM pipill/armhf-debian:jessie
 MAINTAINER Pontus Laestadius
 RUN [ "cross-build-start" ]
 RUN apt update && \
