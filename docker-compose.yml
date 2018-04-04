@@ -20,10 +20,33 @@ services:
         - /dev/:/dev/
         command: "/opt/opendlv.miniature/bin/opendlv-proxy-miniature-pwm-motor --cid=111 --freq=50 --id=1"
 
-    # Carpet component
+       # Signal viewer
+    signal-viewer:
+        image: signal-viewer:armhf
+        depends_on:
+        - proxy-miniature-pwm-motor
+        expose:
+        - "8080"
+        network_mode: "host"
+        privileged: true
+        command: "/opt/signal-viewer --cid=111"
+
+   # Carpet component
     carpet:
         image: carpet_compile:armhf
+        restart: always
         depends_on:
         - proxy-miniature-pwm-motor
         network_mode: "host"
         command: "/opt/carpet --cid=111 --freq=10"
+
+    # Obstacle avoidance microservice.
+    obstacle-avoidance:
+        image: obstacle-avoidance:armhf
+        restart: always
+        privileged: true
+        depends_on:
+        - odsupercomponent
+        command: "/opt/obstacle-avoidance"
+
+
