@@ -1,15 +1,19 @@
-
 #include "commander.hpp"
 
 int carController(char foo[]); // Should handle the commands received from Controller UI.
 int openComm(); // Should open the com od4? should this be in main or seperated?
 
 
-
 //Main starts here
-int main(/*int argc*/, /*char** argv*/) {
+int main() {
+
 	std::shared_ptr<commander> commanderService = std::make_shared<commander>();
 
+	while(){
+
+
+
+	}
 	//Enter the chosen set of movements. TODO: Should loop through these values.
 	//openComm();
 	
@@ -40,7 +44,7 @@ int openComm(){
 }
 
 
-//Control car through an array of commands for moving and turning etc.
+//Control car through OD4 messages received etc.
 //Inspired by V2VProtocol - V2VService.cpp
 commander::carController() {	
 
@@ -53,7 +57,7 @@ commander::carController() {
                       std::cout << "received 'TURN' "<< turn << " from controller'"; 
 		      msgSteering.steeringAngle(turn);//Turn appropriately...
 		      std::cout << "'TURN' message sent to vehicle";
-		      
+		       
                       break;
 
 		   case MOVE: {
