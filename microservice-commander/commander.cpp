@@ -10,12 +10,12 @@ int main(){
 
 	std::shared_ptr<commander> commanderService = std::make_shared<commander>();
 
-
+	std::cout << "Starting service.." << std::endl;
 	//Enter the chosen set of movements. TODO: Should loop through these values.
-	//while(){
+	while(1){
 
 
-	//}
+	}
 	
 }
 
