@@ -18,6 +18,8 @@ static const int TURN_DIRECTION = 1021;
 class commander{
 public:
 	commander();
+	
+	void testMove();
 
 private:
 	
