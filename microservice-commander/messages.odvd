@@ -1,8 +1,8 @@
-message Move [id = 1020] {
+message Turn [id = 1020] {
   float steeringAngle [id = 1];
 }
 
-message Turn [id = 1021] {
+message Move [id = 1021] {
   float percent [id = 1];
 }
 
