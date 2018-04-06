@@ -27,3 +27,11 @@ services:
         - proxy-miniature-pwm-motor
         network_mode: "host"
         command: "/opt/carpet --cid=111 --freq=10"
+
+
+    microservice-commander:
+	image: microservice-commander
+	depends_on:
+	- proxy-miniature-pwn-motor
+	network_mode: "host"
+	command: "/opt/carpet --cid=111 --freq=10"

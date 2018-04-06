@@ -20,7 +20,6 @@ int main(){
          std::cout << "(2) testTurnLeft" << std::endl;
          std::cout << "(3) testTurnRight" << std::endl;
 	 std::cout << "(4) testStop" << std::endl;
-	 std::cout << "(any other) Exit normally" << std::endl;
 	 std::cin >> choice;
 	 switch(choice){
 	   case 1:{ commanderService->testMove(); break;
@@ -31,7 +30,7 @@ int main(){
 	   }
 	   case 4:{ commanderService->testStop(); break;
 	   }
-	   default: exit(0);
+	   default: ;
 	}
 
     }
