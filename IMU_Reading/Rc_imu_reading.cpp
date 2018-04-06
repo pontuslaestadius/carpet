@@ -7,7 +7,7 @@
 *
 */
 
-
+#include "Rc_imu_reading.hpp"
 #include <iostream>
 
 int main() {
@@ -31,6 +31,8 @@ int main() {
     printf("\n");
 
     while(rc_get_state() != EXITING){
+
+
         printf("\r");
 
         // print accel data
@@ -56,4 +58,73 @@ int main() {
     rc_cleanup();
 
     return 0;
+}
+
+Rc_imu_reading::Rc_imu_reading(){
+
+    carpet = std:: make_shared<cluon::OD4Session>(CARPET_CHANNEL,
+    [this](cluon::data::Envelope &&envelope) noexcept{
+        switch (envelope.dataType()){
+            case TRAVELED_DISTANCE:
+                // To be implemented
+                break;
+            case ACCELERATION_READING:
+                // To be implemented
+                break;
+            case GYRO_READING:
+                // To be implemented
+                break;
+            default:
+                // To be implemented
+                break;
+        }
+    });
+}
+
+/**
+ * Sends the acceleration to the OD4Session used for internal communication.
+ * Acceleration is in m/s².
+ *
+ * @param accelX
+ * @param accelY
+ * @param accelZ
+ */
+
+void Rc_imu_reading::sendAccelReading(float accelX, float accelY, float accelZ){
+    AccelerationReading msg;
+    msg.accelerationX(accelX);
+    msg.accelerationY(accelY);
+    msg.accelerationZ(accelZ);
+    carpet->send(msg);
+}
+
+/**
+ * Sends the gyro readings to the OD4Session used for internal communication.
+ * Gyro readings are in deg/s.
+ * @param gyroX
+ * @param gyroY
+ * @param gyroZ
+ */
+void Rc_imu_reading::sendGyroReading(float gyroX, float gyroY, float gyroZ){
+    GyroReading msg;
+    msg.gyroX(gyroX);
+    msg.gyroY(gyroY);
+    msg.gyroZ(gyroZ);
+    carpet->send(msg);
+
+}
+
+float Rc_imu_reading::calculateTraveledDistance(float accelX, float accelY, float accelZ){
+    float traveledDistance = 0;
+    return traveledDistance;
+}
+/**
+ * Sends the traveled distance to the OD4Session used for internal communication.
+ * Unit is yet to be decided.
+ * @param traveledDistance
+ */
+void Rc_imu_reading::sendTraveledDistance(float traveledDistance){
+    TraveledDistance msg;
+    msg.distanceTraveled(traveledDistance);
+    carpet->send(msg);
 }
