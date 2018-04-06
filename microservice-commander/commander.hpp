@@ -11,8 +11,8 @@
 
 
 static const int CID = 211;
-static const int TURN_DIRECTION = 1020;
-static const int MOVE_FORWARD = 1021;
+static const int TURN_DIRECTION = 1045;
+static const int MOVE_FORWARD = 1041;
 
 
 class commander{
@@ -25,8 +25,8 @@ public:
 private:
 	
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
-	Turn msgSteering;
-	Move msgPedal;
+	opendlv::proxy::GroundSteeringReading msgSteering;
+	opendlv::proxy::PedalPositionReading msgPedal;
 	static uint32_t getTime();
 
 };

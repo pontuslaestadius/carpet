@@ -39,7 +39,7 @@ commander::commander(){
 		std::cout << "OD4 Session " << std::endl;
               switch (envelope.dataType()) {
                   case TURN_DIRECTION: { //Remember to check at what angle it wants to turn.
-                      Turn trn = cluon::extractMessage<Turn>(std::move(envelope));
+                      opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
                       std::cout << "received 'TURN' " << trn.steeringAngle() << " from controller'" << std::endl; 
 		      msgSteering.steeringAngle(trn.steeringAngle()); //Turn appropriately...
 		      std::cout << "'TURN' message sent to vehicle" << std::endl;
@@ -48,7 +48,7 @@ commander::commander(){
 		}
 
 		   case MOVE_FORWARD: {
-			Move mo = cluon::extractMessage<Move>(std::move(envelope));
+			opendlv::proxy::PedalPositionReading mo = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
 			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
 			msgPedal.percent(mo.percent()); //Move forward
 		      break;
@@ -56,19 +56,19 @@ commander::commander(){
 
                   default: std::cout << "No matching case, wrong message type!" << std::endl;
               }
-  });
+    });
 
 }
 
 //Testing methods.
 void commander::testMove(){
-	Move testMove;
+	opendlv::proxy::PedalPositionReading testMove;
 	testMove.percent(0.25);
 	receivedMessage->send(testMove);
 }
 
 void commander::testTurn(){
-	Turn testTurn;
+	opendlv::proxy::GroundSteeringReading testTurn;
 	testTurn.steeringAngle(15.0);
 	receivedMessage->send(testTurn);
 }
