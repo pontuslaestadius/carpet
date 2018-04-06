@@ -1,16 +1,16 @@
-FROM pipill/armhf-debian:jessie as builder
+FROM pipill/armhf-alpine:edge as builder
 MAINTAINER Pontus Laestadius
 RUN [ "cross-build-start" ]
-RUN apt update && \
-    apt-get -y install \
-        software-properties-common \
-        ca-certificates \
-        cmake \
-        g++ \
-        gcc \
-        make \
-        i2c-tools && \
-        apt update 
+RUN cat /etc/apk/repositories && \
+    echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
+    echo http://dl-4.alpinelinux.org/alpine/v3.7/community >> /etc/apk/repositories
+
+RUN apk update && \
+  apk --no-cache add \
+    cmake \
+    g++ \
+    make \
+	linux-headers
 COPY . /opt/sources
 WORKDIR /opt/sources
 RUN cd /opt/sources && \
@@ -21,13 +21,9 @@ RUN cd /opt/sources && \
 RUN [ "cross-build-end" ]
 
 # Deploy.
-FROM pipill/armhf-debian:jessie
+FROM pipill/armhf-alpine:edge
 MAINTAINER Pontus Laestadius
 RUN [ "cross-build-start" ]
-RUN apt update && \
-    apt-get install \
-    i2c-tools && \
-    cd /opt
 WORKDIR /opt
 COPY --from=builder /tmp/obstacle-avoidance .
 RUN [ "cross-build-end" ]

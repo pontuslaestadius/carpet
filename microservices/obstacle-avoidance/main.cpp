@@ -37,7 +37,7 @@ const char filename[11] = "/dev/i2c-1";     //i2c bus.
 // read the SRF08 datasheet for specifications.
 const uint8_t buffer[2] = {0x00, 0x51};     // What to write to i2c, Command register, command.
 
-uint8_t read_ultrasonic(unsigned long device_addr) {
+void read_ultrasonic(unsigned long device_addr) {
     // Input validation, to make sure the addr is within the scope of the i2c.
     if (device_addr < 0x03 || device_addr > 0x77) {
         throw std::invalid_argument("Device address out of bounds.");
@@ -54,24 +54,29 @@ uint8_t read_ultrasonic(unsigned long device_addr) {
         throw std::domain_error("Failed to acquire bus access.");
     }
 
-    // Write to the command register specify the command.
-    if (write(file, buffer, 2) != 2) {
-        throw std::domain_error("Failed to send bytes to the the ultrasonic.");
+    while(1) {
+
+        // Write to the command register specify the command.
+        if (write(file, buffer, 2) != 2) {
+            throw std::domain_error("Failed to send bytes to the the ultrasonic.");
+        }
+
+        // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
+        std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
+        uint8_t length = 3; // First usable echo reading is found at position 3.
+        uint8_t *readbuffer = new uint8_t[length];
+
+        // If we are able to read amount of bytes we requested.
+        if (read(file, readbuffer, length) != length) {
+            throw std::ios_base::failure("Failed to read from the i2c bus.");
+        }
+
+        uint8_t reading = readbuffer[length -1];
+        delete[] readbuffer; // Clear the memory pointer, otherwise memory leak.
+        std::cout << reading << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(DELAY*3));
     }
 
-    // Sleep while the driver reads from the ultrasonic. Takes about 65mS with default gain.
-    std::this_thread::sleep_for(std::chrono::milliseconds(DELAY));
-    uint8_t length = 3; // First usable echo reading is found at position 3.
-    uint8_t *readbuffer = new uint8_t[length];
-
-    // If we are able to read amount of bytes we requested.
-    if (read(file, readbuffer, length) != length) {
-        throw std::ios_base::failure("Failed to read from the i2c bus.");
-    }
-
-    uint8_t reading = readbuffer[length -1];
-    delete[] readbuffer; // Clear the memory pointer, otherwise memory leak.
-    return reading;
 }
 
 bool obstacle_check(uint8_t distance, uint8_t multiplier, float current_speed) {
@@ -96,32 +101,7 @@ int main () {
     uint8_t previous = 0;
 
     try {
-        while (1) {
-            front = read_ultrasonic(FRONTSENSOR);
-
-            // TODO Sent it to the od4 session. 
-            if (obstacle_check(front, multiplier/2, current_speed)) {
-
-                if (previous != 1) {
-                    std::cout << "obstacle very close" << std::endl;
-                    previous = 1;
-                }
-            } else if (obstacle_check(front, multiplier, current_speed)) {
-
-                if (previous != 2) {
-                    std::cout << "obstacle detected" << std::endl;
-                    previous = 2;
-                }
-            } else {
-                
-                if (previous != 3) {
-                    std::cout << "no obstacle detected" << std::endl;
-                    previous = 3;
-                }
-            }
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(DELAY/2));
-        }
+        read_ultrasonic(FRONTSENSOR);
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
         return -1;
