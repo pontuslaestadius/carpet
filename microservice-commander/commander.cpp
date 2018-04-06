@@ -16,12 +16,20 @@ int main(){
 	while(1){
 	 int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-	 std::cout << "Enter 1 or 2 for test message" << std::endl;
+       	 std::cout << "(1) testMove" << std::endl;
+         std::cout << "(2) testTurnLeft" << std::endl;
+         std::cout << "(3) testTurnRight" << std::endl;
+	 std::cout << "(4) testStop" << std::endl;
+	 std::cout << "(any other) Exit normally" << std::endl;
 	 std::cin >> choice;
 	 switch(choice){
 	   case 1:{ commanderService->testMove(); break;
 	   }
-	   case 2:{ commanderService->testTurn(); break;
+	   case 2:{ commanderService->testTurnLeft(); break;
+	   }
+	   case 3:{ commanderService->testTurnRight(); break;
+	   }
+	   case 4:{ commanderService->testStop(); break;
 	   }
 	   default: exit(0);
 	}
@@ -40,7 +48,7 @@ commander::commander(){
               switch (envelope.dataType()) {
                   case TURN_DIRECTION: { //Remember to check at what angle it wants to turn.
                       opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
-                      std::cout << "received 'TURN' " << trn.steeringAngle() << " from controller'" << std::endl; 
+                      std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 		      msgSteering.steeringAngle(trn.steeringAngle()); //Turn appropriately...
 		      std::cout << "'TURN' message sent to vehicle" << std::endl;
 		       
@@ -67,9 +75,21 @@ void commander::testMove(){
 	receivedMessage->send(testMove);
 }
 
-void commander::testTurn(){
-	opendlv::proxy::GroundSteeringReading testTurn;
-	testTurn.steeringAngle(15.0);
-	receivedMessage->send(testTurn);
+void commander::testTurnLeft(){
+	opendlv::proxy::GroundSteeringReading testTurnLeft;
+	testTurnLeft.steeringAngle(15.0);
+	receivedMessage->send(testTurnLeft);
+}
+
+void commander::testTurnRight(){
+	opendlv::proxy::GroundSteeringReading testTurnRight;
+	testTurnRight.steeringAngle(-15.0);
+	receivedMessage->send(testTurnRight);
+}
+
+void commander::testStop(){
+	opendlv::proxy::PedalPositionReading testStop;
+	testStop.percent(0.0);
+	receivedMessage->send(testStop);
 }
 

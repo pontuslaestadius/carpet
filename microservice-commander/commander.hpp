@@ -20,14 +20,15 @@ public:
 	commander();
 	
 	void testMove();
-	void testTurn();
+	void testTurnLeft();
+	void testTurnRight();
+	void testStop();
 
 private:
 	
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
 	opendlv::proxy::GroundSteeringReading msgSteering;
 	opendlv::proxy::PedalPositionReading msgPedal;
-	static uint32_t getTime();
 
 };
 
