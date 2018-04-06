@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 5/4 - 2018
+  Last Updated: 6/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -16,7 +16,7 @@ int main(){
 	while(1){
 	 int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-	 std::cout << "Enter 1 for test message" << std::endl;
+	 std::cout << "Enter 1 or 2 for test message" << std::endl;
 	 std::cin >> choice;
 	 switch(choice){
 	   case 1:{ commanderService->testMove(); break;
