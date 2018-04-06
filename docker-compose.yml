@@ -47,6 +47,4 @@ services:
         privileged: true
         depends_on:
         - odsupercomponent
-        command: "/opt/obstacle-avoidance"
-
-
+        command: "/opt/obstacle-avoidance --cid=111 --freq=200"
