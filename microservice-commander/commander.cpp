@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 6/4 - 2018
+  Last Updated: 9/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -10,11 +10,16 @@
 int main(){
 
 	std::shared_ptr<commander> commanderService = std::make_shared<commander>();
-	const int delay = 900;
+	const int delay = 2000;
 	std::cout << "Starting service.." << std::endl;
-	//Enter the chosen set of movements. OBS: This is for testing.
+	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+	std::cout << "Service running!" << std::endl;
+	
 	while(1){
-	 int choice;
+	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+	
+	//Enter the chosen set of movements. OBS: This is for testing.
+	 /*int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
@@ -31,7 +36,8 @@ int main(){
 	   case 4:{ commanderService->testStop(); break;
 	   }
 	   default: ;
-	}
+	}*/
+	
 
     }
 	
@@ -46,7 +52,7 @@ commander::commander(){
 		std::cout << "OD4 Session " << std::endl;
               switch (envelope.dataType()) {
                   case TURN_DIRECTION: { //Remember to check at what angle it wants to turn.
-                      opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
+                      opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope)); //Should be enough??
                       std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 		      msgSteering.steeringAngle(trn.steeringAngle()); //Turn appropriately...
 		      std::cout << "'TURN' message sent to vehicle" << std::endl;
