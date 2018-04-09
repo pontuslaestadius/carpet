@@ -7,7 +7,9 @@
 *
 */
 
-#include "Rc_imu_reading.hpp"
+#include "../../opt/source/Robotics_Cape_Installer/libraries/rc_usefulincludes.h"
+#include "../../opt/source/Robotics_Cape_Installer/libraries/roboticscape.h"
+#include "Rc_imu.hpp"
 #include <iostream>
 
 int main() {
@@ -41,6 +43,7 @@ int main() {
 
         }
         printf("%6.2f %6.2f %6.2f |", data.accel[0], data.accel[1], data.accel[2]);
+        
 
         // print gyro data
         if(rc_read_gyro_data(&data) < 0){
@@ -60,10 +63,11 @@ int main() {
     return 0;
 }
 
-Rc_imu_reading::Rc_imu_reading(){
+Rc_imu::Rc_imu(){
 
     carpet = std:: make_shared<cluon::OD4Session>(CARPET_CHANNEL,
     [this](cluon::data::Envelope &&envelope) noexcept{
+        //Switch-case for debugging purposes, so far.
         switch (envelope.dataType()){
             case TRAVELED_DISTANCE:
                 // To be implemented
@@ -75,10 +79,16 @@ Rc_imu_reading::Rc_imu_reading(){
                 // To be implemented
                 break;
             default:
-                // To be implemented
-                break;
+                exit(0);
         }
     });
+
+    // Derived from slides
+    if(od4.isRunning() == 0)
+    {
+        std::cout << "ERROR: No od4 running!!!" << std::endl;
+        return -1;
+    }
 }
 
 /**
@@ -90,7 +100,7 @@ Rc_imu_reading::Rc_imu_reading(){
  * @param accelZ
  */
 
-void Rc_imu_reading::sendAccelReading(float accelX, float accelY, float accelZ){
+void Rc_imu::sendAccelReading(float accelX, float accelY, float accelZ){
     AccelerationReading msg;
     msg.accelerationX(accelX);
     msg.accelerationY(accelY);
@@ -105,7 +115,7 @@ void Rc_imu_reading::sendAccelReading(float accelX, float accelY, float accelZ){
  * @param gyroY
  * @param gyroZ
  */
-void Rc_imu_reading::sendGyroReading(float gyroX, float gyroY, float gyroZ){
+void Rc_imu::sendGyroReading(float gyroX, float gyroY, float gyroZ){
     GyroReading msg;
     msg.gyroX(gyroX);
     msg.gyroY(gyroY);
@@ -114,16 +124,24 @@ void Rc_imu_reading::sendGyroReading(float gyroX, float gyroY, float gyroZ){
 
 }
 
-float Rc_imu_reading::calculateTraveledDistance(float accelX, float accelY, float accelZ){
+/**
+ *
+ * @param accelX
+ * @param accelY
+ * @param accelZ
+ * @return The unit is yet to be decided.
+ */
+float Rc_imu::calculateTraveledDistance(float accelX, float accelY, float accelZ){
     float traveledDistance = 0;
     return traveledDistance;
 }
+
 /**
  * Sends the traveled distance to the OD4Session used for internal communication.
  * Unit is yet to be decided.
  * @param traveledDistance
  */
-void Rc_imu_reading::sendTraveledDistance(float traveledDistance){
+void Rc_imu::sendTraveledDistance(float traveledDistance){
     TraveledDistance msg;
     msg.distanceTraveled(traveledDistance);
     carpet->send(msg);

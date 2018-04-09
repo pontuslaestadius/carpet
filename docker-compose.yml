@@ -27,3 +27,11 @@ services:
         - proxy-miniature-pwm-motor
         network_mode: "host"
         command: "/opt/carpet --cid=111 --freq=10"
+
+    # carpet imu component    
+    carpet-imu:
+        image: carpet_imu:armhf
+	network_mode: "host"
+	restart: always
+	privileged: true
+	command: "/opt/IMU_Reading --cid =206 --freq=10"
