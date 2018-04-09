@@ -64,6 +64,7 @@ int main(){
 	
 }
 
+
 //Control car through OD4 messages received etc.
 commander::commander(){	
     //Connects to od4 session with CID:111 (Can be changed in the header file).
@@ -80,7 +81,6 @@ commander::commander(){
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 		        msgSteering.steeringAngle(trn.steeringAngle()); //Turn appropriately...
 		        std::cout << "'TURN' message sent to vehicle" << std::endl;
-		       
                         break;
 		  }
 
@@ -133,7 +133,6 @@ commander::commander(){
                   default: std::cout << "No matching case, wrong message type!" << std::endl;
               }
     });
-
 }
 
 //Testing methods. Used to test od4 sending and receiving.
@@ -160,4 +159,3 @@ void commander::testStop(){
 	testStop.percent(0.0);
 	receivedMessage->send(testStop);
 }
-

@@ -39,6 +39,14 @@ private:
 	opendlv::proxy::GroundSteeringReading msgSteering;
 	opendlv::proxy::PedalPositionReading msgPedal;
 
+	//Test variables for V2V ----
+	AnnouncePrecense apTest;
+	FollowRequest frqTest
+	FollowResponse flrTest;
+	StopFollow stpTest;
+	FollowerStatus flstatTest;
+	LeaderStatus ldrstatTest;
+
 };
 
 #endif //COMMANDER_SERVICE_H
