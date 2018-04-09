@@ -19,12 +19,18 @@ int main(){
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	
 	//Enter the chosen set of movements. OBS: This is for testing.
-	 /*int choice;
+	 int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
          std::cout << "(3) testTurnRight" << std::endl;
 	 std::cout << "(4) testStop" << std::endl;
+       	 std::cout << "(5) testAnnounce" << std::endl;
+         std::cout << "(6) testF-Req" << std::endl;
+         std::cout << "(7) testF-Res" << std::endl;
+	 std::cout << "(8) testF-Stop" << std::endl;
+         std::cout << "(9) testF-Stat" << std::endl;
+	 std::cout << "(10) testL-Stat" << std::endl;
 	 std::cin >> choice;
 	 switch(choice){
 	   case 1:{ commanderService->testMove(); break;
@@ -35,8 +41,23 @@ int main(){
 	   }
 	   case 4:{ commanderService->testStop(); break;
 	   }
+	   
+
+           //Cases for testing the V2V responses...
+	   case 5:{ break;
+	   }
+	   case 6:{  break;
+	   }
+	   case 7:{  break;
+	   }
+	   case 8:{  break;
+	   }
+	   case 9:{  break;
+	   }
+	   case 10:{  break;
+	   }
 	   default: ;
-	}*/
+	}
 	
 
     }
