@@ -1,0 +1,58 @@
+<!--
+Copyrighted probably, 2018 @ Pontus laestadius
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+  <style type="text/css">
+    .box {
+      margin:200px auto; 
+      width: 300px; 
+      background-color: none;
+      border-radius: 15px;
+      padding: 15px;
+    }
+    .vis {
+      text-align: center;
+      color: white;
+      background-color: grey;
+      box-shadow: 2px 1px black;
+      font-size:30px;
+      transition: 0.12s ease-in-out;
+    }
+    .hidden {
+      opacity: 0.0;
+      box-shadow: none;
+    }
+    body {
+      background-color: tomato;
+    }
+  </style>
+  </head>
+  <body id="body">
+
+  <div class="box">
+     <table style="width:100%">
+      <tr>
+        <th class="hidden"><!-- Blank --></th>
+        <th class="vis" id="38"> &uarr; </th>
+        <th class="hidden"><!-- Blank --></th>
+      </tr>
+      <tr>
+        <td class="vis" id="37"> &larr; </td>
+        <td class="vis" id="40"> &darr; </td>
+        <td class="vis" id="39"> &rarr; </td>
+      </tr>
+    </table> 
+
+  </div>
+    <script type="text/javascript" src="jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="libcluon-0.0.51.js"></script>
+    <script type="text/javascript" src="interface.js"></script>
+    <script type="text/javascript" src="libcluon-sender.js"></script>
+  </body>
+</html>
+
+
+
