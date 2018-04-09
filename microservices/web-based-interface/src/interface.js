@@ -22,7 +22,7 @@ window.onkeyup = function(e) {
 }
 
 function validateKey(k, s) {
-   if (table[Math.abs(k)] == null && k[math.abs(k)]) {
+   if (table[Math.abs(k)] == null) {
       return;
    }
    var e = document.getElementById(Math.abs(k));
