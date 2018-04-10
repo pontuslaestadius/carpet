@@ -3,10 +3,10 @@ Copyrighted probably, 2018 Pontus Laestadius
 
 */
 
-
 var g_data = new Map();
 var ws;
 var lc = libcluon();
+var box = document.getElementById("box");
 
 $(document).ready(function(){
   setupViewer();
@@ -20,11 +20,14 @@ function setupViewer() {
     ws.binaryType = 'arraybuffer';
 
     ws.onopen = function() {
+      body("LightGreen");
+      box.style.opacity = "1.0";
       onStreamOpen(lc);
     }
 
     ws.onclose = function() {
-      onStreamClosed();
+      body("Tomato");
+      box.style.opacity = "0.0";
     };
 
   } else {
@@ -33,24 +36,13 @@ function setupViewer() {
 }
 
 function onStreamOpen(lc) {
-  body("LightGreen");
   function getResourceFrom(url) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("GET", url, false);
     xmlHttp.send(null);
     return xmlHttp.responseText;
   }
-
   var odvd = getResourceFrom("messages.odvd");
-
-  console.log("Connected to stream.");
-  console.log("Loaded " + lc.setMessageSpecification(odvd) + " messages from specification.");
-  
-  setInterval(onInterval, 250);
-}
-
-function onStreamClosed() {
-  body("Tomato");
 }
 
 function body(c) {

@@ -1,39 +1,40 @@
 /*
 Copyrighted probably, 2018 @ Pontus laestadius
 */
-
-var x = document.getElementById("indicator");
 var mid = 9999;
 var size = 128;
 var table = new Array(size);
-table[37] = "LeftArrow";
-table[38] = "DownArrow";
-table[39] = "RightArrow";
-table[40] = "UpArrow";
+for (var i = 0; i < size; i++) {
+  table[i] = new Array(2);
+}
+
+// These are the valid keys, along with the command and the message id.
+table[37] = ["command", 2101];
+table[38] = ["command", 2101];
+table[39] = ["command", 2101];
+table[40] = ["command", 2101];
 
 window.onkeydown = function(e) {
-   var key = e.keyCode ? e.keyCode : e.which;
-   validateKey(key, "black");
+   validateKey(e.keyCode ? e.keyCode : e.which, "black");
 }
 
 window.onkeyup = function(e) {
-   var key = e.keyCode ? e.keyCode : e.which;
-   validateKey(-key, "grey");
+   validateKey(-(e.keyCode ? e.keyCode : e.which), "grey");
 }
 
 function validateKey(k, s) {
-   if (table[Math.abs(k)] == null) {
+   if (table[Math.abs(k)][0] == null || 
+    document.getElementById(Math.abs(k)).style.backgroundColor == s) {
       return;
    }
-   var e = document.getElementById(Math.abs(k));
-   e.style.backgroundColor = s;
+   document.getElementById(Math.abs(k)).style.backgroundColor = s;
    send(k);
 }
 
 function send(k) {
-   var jsonMessageToBeSent = "{\"" + table[Math.abs(k)] + "\":" + k + "}";
+   var jsonMessageToBeSent = "{\"" + table[Math.abs(k)][0] + "\":" + k + "}";
    console.log(jsonMessageToBeSent);
-   var protoEncodedPayload = lc.encodeEnvelopeFromJSONWithoutTimeStamps(jsonMessageToBeSent, mid, 0);
+   var protoEncodedPayload = lc.encodeEnvelopeFromJSONWithoutTimeStamps(jsonMessageToBeSent, table[Math.abs(k)][1], 0);
     strToAB = str =>
       new Uint8Array(str.split('')
         .map(c => c.charCodeAt(0))).buffer;

@@ -6,12 +6,13 @@ Copyrighted probably, 2018 @ Pontus laestadius
 <html>
   <head>
   <style type="text/css">
-    .box {
+    #box {
       margin:200px auto; 
       width: 300px; 
       background-color: none;
       border-radius: 15px;
       padding: 15px;
+      transition: 1s linear;
     }
     .vis {
       text-align: center;
@@ -32,7 +33,7 @@ Copyrighted probably, 2018 @ Pontus laestadius
   </head>
   <body id="body">
 
-  <div class="box">
+  <div id="box" style="opacity: 0.0">
      <table style="width:100%">
       <tr>
         <th class="hidden"><!-- Blank --></th>
@@ -45,10 +46,10 @@ Copyrighted probably, 2018 @ Pontus laestadius
         <td class="vis" id="39"> &rarr; </td>
       </tr>
     </table> 
-
   </div>
+
     <script type="text/javascript" src="jquery-3.2.1.slim.min.js"></script>
-    <script type="text/javascript" src="libcluon-0.0.51.js"></script>
+    <script type="text/javascript" src="libcluon.js"></script>
     <script type="text/javascript" src="interface.js"></script>
     <script type="text/javascript" src="libcluon-sender.js"></script>
   </body>
