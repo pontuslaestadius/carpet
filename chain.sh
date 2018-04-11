@@ -2,7 +2,7 @@
 
 #################################
 ### Author: Pontus Laestadius ###
-### Last modified: 2018-02-23 ###
+### Last modified: 2018-02-27 ###
 #################################
 
 ## Provides a list of helpful shortcode commands which 
@@ -27,6 +27,17 @@ case $i in
 			ssh debian@192.168.8.1 -t 'sh run.sh'
 	
     ;;
+    -new-microservice)
+			
+			MS="microservices"
+			mkdir "$MS/$2"
+			mkdir "$MS/$2/src"
+			echo "Copying existing files to $MS/$2"
+			cp CMakeLists.txt "$MS/$2"
+			cp Dockerfile* "$MS/$2"
+			exit 0
+
+	;;
 	--run)
 
 			# If a container already exists and is running.

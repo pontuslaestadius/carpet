@@ -1,0 +1,36 @@
+
+span.dots {
+  color: darkblue;
+}
+
+table#dataView {
+  width: 80%;
+}
+
+table.dataFields {
+  padding-left: 5em;
+}
+
+tr.hidden {
+  visibility: collapse;
+}
+
+tr.warning {
+  background-color: tomato;
+}
+
+th.signal-type, th.signal-sender, th.signal-frequency, th.signal-name {
+  min-width: 50px;
+}
+
+th.signal-timestamp {
+  min-width: 100px;
+}
+
+td.field-name {
+  min-width: 200px;
+}
+
+td.field-plot {
+  min-width: 300px;
+}
