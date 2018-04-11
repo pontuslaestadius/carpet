@@ -8,7 +8,7 @@
 #include "commander.hpp"
 
 int main(){
-
+	
 	std::shared_ptr<commander> commanderService = std::make_shared<commander>();
 	const int delay = 2000;
 	std::cout << "Starting service.." << std::endl;
@@ -20,7 +20,7 @@ int main(){
 	
 	//Enter the chosen set of movements. OBS: This is for testing.
 	 int choice;
-	 std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+	 std::this_thread::sleep_for(std::chrono::milliseconds(delay)); //Delay to give the program a chance to print the OD4 outcome.
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
          std::cout << "(3) testTurnRight" << std::endl;
@@ -33,6 +33,7 @@ int main(){
 	 std::cout << "(10) testL-Stat" << std::endl;
 	 std::cin >> choice;
 	 switch(choice){
+	   //Cases regarding speed and turning angle.
 	   case 1:{ commanderService->testMove(); break;
 	   }
 	   case 2:{ commanderService->testTurnLeft(); break;
@@ -42,7 +43,6 @@ int main(){
 	   case 4:{ commanderService->testStop(); break;
 	   }
 	   
-
            //Cases for testing the V2V responses...
 	   case 5:{ break;
 	   }
@@ -56,7 +56,7 @@ int main(){
 	   }
 	   case 10:{  break;
 	   }
-	   default: ;
+	   default: ; //Empty since ghost inputs apparently happen from time to time.
 	}
 	
 

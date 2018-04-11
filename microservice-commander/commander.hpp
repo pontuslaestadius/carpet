@@ -9,7 +9,7 @@
 #include "messages.hpp"
 #include <iostream>
 
-
+//ID's for messages and session.
 static const int CID = 111;
 static const int TURN_DIRECTION = 1045;
 static const int MOVE_FORWARD = 1041;
@@ -25,6 +25,7 @@ static const int LEADER_STATUS = 2001;
 
 
 class commander{
+//Declare the public methods and variables.
 public:
 	commander();
 	
@@ -33,8 +34,9 @@ public:
 	void testTurnRight();
 	void testStop();
 
+//Declare private methods and variables.
 private:
-	
+	//Declares the od4 session as well as steering and pedal variables for testing and output.
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
 	opendlv::proxy::GroundSteeringReading msgSteering;
 	opendlv::proxy::PedalPositionReading msgPedal;

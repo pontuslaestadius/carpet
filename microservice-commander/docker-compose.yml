@@ -1,4 +1,5 @@
-version: '2'
+#Maintainer: Sebastian Fransson , gusfransse@student.gu.se
+version: '2' #Could be 3.
 services:
     odsupercomponent:
         image: seresearch/2018-dit-168:v0.3.5-armhf
@@ -24,8 +25,8 @@ services:
     commander:
         image: microservice-commander:armhf
         depends_on:
-        - proxy-miniature-pwm-motor
+        - proxy-miniature-pwm-motor #Requires the proxy container to be started before we can start.
         network_mode: "host"
-        stdin_open: true
+        stdin_open: true # Makes it possible to receive inputs when attaching to the container.
         tty: true
         command: "/opt/microservice-commander.Service"
