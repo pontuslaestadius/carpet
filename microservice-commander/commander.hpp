@@ -14,7 +14,7 @@ static const int CID = 111;
 static const int TURN_DIRECTION = 1045;
 static const int MOVE_FORWARD = 1041;
 //V2V id's --------
-static const int ANNOUNCE_PRECENSE = 1001;
+static const int ANNOUNCE_PRESENCE = 1001;
 //Follower
 static const int FOLLOW_REQUEST = 1002;
 static const int FOLLOW_RESPONSE = 1003;
@@ -40,8 +40,8 @@ private:
 	opendlv::proxy::PedalPositionReading msgPedal;
 
 	//Test variables for V2V ----
-	AnnouncePrecense apTest;
-	FollowRequest frqTest
+	AnnouncePresence apTest;
+	FollowRequest frqTest;
 	FollowResponse flrTest;
 	StopFollow stpTest;
 	FollowerStatus flstatTest;

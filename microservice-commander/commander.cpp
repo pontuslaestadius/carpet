@@ -94,8 +94,8 @@ commander::commander(){
 
 		   //OBS: Below this point until the test methods is experimental for commander V2V structure....
 		   //TODO: Check what needs to be handled here aswell as how requests are sent from V2V microservice..
-		   case ANNOUNCE_PRECENCE: {
-			AnnouncePrecence ap = cluon::extractMessage<AnnouncePrecence>(std::move(envelope));
+		   case ANNOUNCE_PRESENCE: {
+			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
 			std::cout << "Announce Precence request received in commander." << std::endl;
 			break;
 		  }
@@ -107,7 +107,7 @@ commander::commander(){
 		  }
 
 		  case FOLLOW_RESPONSE: {
-			FollowResponse frp = cluon::extractMessage<FollowRequest>(std::move(envelope));
+			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
 			std::cout << "Follow-Response received in commander." << std::endl;
 			break;
  		  }
