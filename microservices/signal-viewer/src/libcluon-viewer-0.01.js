@@ -73,8 +73,7 @@ function onStreamOpen(lc) {
   }
 
   var odvd = getResourceFrom("messages.odvd");
-
-  console.log("Connected to stream.");
+  console.log(odvd);
   console.log("Loaded " + lc.setMessageSpecification(odvd) + " messages from specification.");
   
   setInterval(onInterval, Math.round(1000 / g_renderFreq));
@@ -90,7 +89,11 @@ function onMessageReceived(lc, msg) {
     return;
   }
 
+
   var data_str = lc.decodeEnvelopeToJSON(msg);
+
+    console.log(data_str);
+
 
   if (data_str.length == 2) {
     return;

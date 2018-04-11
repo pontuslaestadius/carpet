@@ -9,7 +9,3 @@ message opendlv.proxy.PedalPositionReading [id = 1041] {
 message opendlv.proxy.DistanceReading [id = 1039] {
   float distance [id = 1];
 }
-
-message web-based-interface [id = 2101] {
-  int command [id = 1];
-}

@@ -28,7 +28,6 @@ RUN cat /etc/apk/repositories && \
 RUN mkdir -p /opt/bin && wget -O /opt/bin/websocketd https://github.com/se-research/websocketd-alpine/raw/master/armhf/websocketd && chmod 755 /opt/bin/websocketd && apk del wget
 
 RUN mkdir /opt/signal-viewer
-
 RUN [ "cross-build-end" ]
 
 ADD src/ /opt/signal-viewer

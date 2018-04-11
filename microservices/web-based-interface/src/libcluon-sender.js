@@ -3,7 +3,6 @@ Copyrighted probably, 2018 Pontus Laestadius
 
 */
 
-var g_data = new Map();
 var ws;
 var lc = libcluon();
 var box = document.getElementById("box");
@@ -15,7 +14,7 @@ $(document).ready(function(){
 function setupViewer() {
 
   if ("WebSocket" in window) {
-
+    body("grey");
     ws = new WebSocket("ws://" + window.location.host + "/");
     ws.binaryType = 'arraybuffer';
 
@@ -43,9 +42,10 @@ function onStreamOpen(lc) {
     return xmlHttp.responseText;
   }
   var odvd = getResourceFrom("messages.odvd");
+  console.log("Loaded " + lc.setMessageSpecification(odvd) + " messages from specification.");
 }
 
 function body(c) {
-  var z = document.getElementById("body");
+  var z = document.getElementById("status");
   z.style.backgroundColor = c;
 }
