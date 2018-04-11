@@ -50,7 +50,7 @@ services:
         command: "/opt/obstacle-avoidance --cid=111 --freq=200"
         
    # V2V microservice
-    remote:
+    v2v:
         image: v2v:new
         restart: always
         depends_on:
