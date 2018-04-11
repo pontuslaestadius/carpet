@@ -19,7 +19,7 @@ RUN cd /opt/sources && \
     cd build && \
     cmake -D CMAKE_BUILD_TYPE=Release .. && \
     make && \ 
-    cp microservice-v2v* /tmp
+    cp v2v* /tmp
 RUN [ "cross-build-end" ]
 
 
@@ -34,6 +34,6 @@ RUN apk update && \
     apk add libcluon --no-cache --repository https://chrberger.github.io/libcluon/alpine/v3.7 --allow-untrusted && \
     mkdir /opt
 WORKDIR /opt
-COPY --from=builder /tmp/microservice-v2v* .
+COPY --from=builder /tmp/v2v* .
 RUN [ "cross-build-end" ]
-CMD ["/opt/microservice-v2v.Service"]
+CMD ["/opt/v2v.Service"]
