@@ -48,3 +48,14 @@ services:
         depends_on:
         - odsupercomponent
         command: "/opt/obstacle-avoidance --cid=111 --freq=200"
+        
+   # V2V microservice
+    remote:
+        image: v2v:new
+        restart: always
+        depends_on:
+        - proxy-miniature-pwm-motor
+        network_mode: "host"
+        stdin_open: true
+        tty: true
+        command: "/opt/v2v.Service"
