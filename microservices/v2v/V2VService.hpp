@@ -4,12 +4,16 @@
 #include <iomanip>
 #include <unistd.h>
 #include <sys/time.h>
+#include <chrono>
+#include <iostream>
+#include <cstdint>
+
 #include "cluon/OD4Session.hpp"
 #include "cluon/UDPSender.hpp"
 #include "cluon/UDPReceiver.hpp"
 #include "cluon/Envelope.hpp"
+
 #include "Messages.hpp"
-#include <iostream>
 
 /** ADD YOUR CAR_IP AND GROUP_ID HERE:  *****************/
 
@@ -35,6 +39,8 @@ public:
     std::map <std::string, std::string> presentCars;
 
     V2VService();
+    
+    int single_car;
 
     void announcePresence();
     void followRequest(std::string vehicleIp);
@@ -46,7 +52,7 @@ public:
 private:
     std::string leaderIp;
     std::string followerIp;
-
+  
     std::shared_ptr<cluon::OD4Session>  broadcast;
     std::shared_ptr<cluon::UDPReceiver> incoming;
     std::shared_ptr<cluon::UDPSender>   toLeader;
