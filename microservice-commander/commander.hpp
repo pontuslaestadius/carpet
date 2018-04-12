@@ -10,9 +10,11 @@
 #include <iostream>
 
 //ID's for messages and session.
-static const int CID = 111;
+static const int CID = 170;
+static const int forwardCID = 171;
 static const int TURN_DIRECTION = 1045;
 static const int MOVE_FORWARD = 1041;
+static const int FORWARDED_MOVE = 1041;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
 //Follower
@@ -38,6 +40,7 @@ public:
 private:
 	//Declares the od4 session as well as steering and pedal variables for testing and output.
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
+	std::shared_ptr<cluon::OD4Session> forwardedMessage;
 	opendlv::proxy::GroundSteeringReading msgSteering;
 	opendlv::proxy::PedalPositionReading msgPedal;
 

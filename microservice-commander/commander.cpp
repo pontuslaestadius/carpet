@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 9/4 - 2018
+  Last Updated: 11/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -10,17 +10,19 @@
 int main(){
 	
 	std::shared_ptr<commander> commanderService = std::make_shared<commander>();
-	const int delay = 2000;
+	const int delay = 2000; // 2 second delay.
 	std::cout << "Starting service.." << std::endl;
+	// Wait so that we know that the service started properly and that the OD4 has been initialized.
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	std::cout << "Service running!" << std::endl;
 	
+	// Service should run until forced to shut down.
 	while(1){
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	
-	//Enter the chosen set of movements. OBS: This is for testing.
+	// Enter the chosen set of movements. OBS: This is for testing.
 	 int choice;
-	 std::this_thread::sleep_for(std::chrono::milliseconds(delay)); //Delay to give the program a chance to print the OD4 outcome.
+	 std::this_thread::sleep_for(std::chrono::milliseconds(delay)); // Delay to give the program a chance to print the OD4 outcome.
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
          std::cout << "(3) testTurnRight" << std::endl;
@@ -33,7 +35,7 @@ int main(){
 	 std::cout << "(10) testL-Stat" << std::endl;
 	 std::cin >> choice;
 	 switch(choice){
-	   //Cases regarding speed and turning angle.
+	   // Cases regarding speed and turning angle.
 	   case 1:{ commanderService->testMove(); break;
 	   }
 	   case 2:{ commanderService->testTurnLeft(); break;
@@ -43,7 +45,7 @@ int main(){
 	   case 4:{ commanderService->testStop(); break;
 	   }
 	   
-           //Cases for testing the V2V responses...
+           // Cases for testing the V2V responses...
 	   case 5:{ break;
 	   }
 	   case 6:{  break;
@@ -56,7 +58,7 @@ int main(){
 	   }
 	   case 10:{  break;
 	   }
-	   default: ; //Empty since ghost inputs apparently happen from time to time.
+	   default: ; // Empty since ghost inputs apparently happen from time to time.
 	}
 	
 
@@ -65,35 +67,38 @@ int main(){
 }
 
 
-//Control car through OD4 messages received etc.
+// Control car through OD4 messages received etc.
 commander::commander(){	
-    //Connects to od4 session with CID:111 (Can be changed in the header file).
+    // Connects to od4 session with CID:111 (Can be changed in the header file).
     receivedMessage =
         std::make_shared<cluon::OD4Session>(CID,
           [this](cluon::data::Envelope &&envelope) noexcept {
 		std::cout << "OD4 Session " << std::endl;
 
-	      //Set up response depending on the message type received through the od4 session.
+	      // Set up response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
-                   case TURN_DIRECTION: { //Remember to check at what angle it wants to turn.
-			//Unpacks the envelope and extracts the contained message. (Should potentially identify steering and move commands automatically).
-                        opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope)); //Should be enough??
+                   case TURN_DIRECTION: { // Remember to check at what angle it wants to turn.
+			// Unpacks the envelope and extracts the contained message. (Should potentially identify steering and move commands automatically).
+                        opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope)); // Should be enough??
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
-		        msgSteering.steeringAngle(trn.steeringAngle()); //Turn appropriately...
-		        std::cout << "'TURN' message sent to vehicle" << std::endl;
+		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately, For forwarding to follower;
+			forwardedMessage->send(msgSteering);
+		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
 		  }
 
 		   case MOVE_FORWARD: {
 			opendlv::proxy::PedalPositionReading mo = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
 			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
-			msgPedal.percent(mo.percent()); //Move forward. (Might be unnecessary, check when controller is tested).
+			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
+			forwardedMessage->send(msgPedal);
+			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
 		      	break;
                   }
 
 
-		   //OBS: Below this point until the test methods is experimental for commander V2V structure....
-		   //TODO: Check what needs to be handled here aswell as how requests are sent from V2V microservice..
+		   // OBS: Below this point until the test methods is experimental for commander V2V structure....
+		   // TODO: Check what needs to be handled here aswell as how requests are sent from V2V microservice..
 		   case ANNOUNCE_PRESENCE: {
 			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
 			std::cout << "Announce Precence request received in commander." << std::endl;
@@ -130,12 +135,34 @@ commander::commander(){
 			break;
 		  }
 
-                  default: std::cout << "No matching case, wrong message type!" << std::endl;
+                  default: std::cout << "No matching case for " << envelope.dataType() << " wrong message type!" << std::endl;
               }
     });
+
+
+/* 
+	Opens a link to the OD4 link which is connected to the V2V protocol.
+	Test receives in place to see that stuff works.				    
+*/
+    forwardedMessage =
+        std::make_shared<cluon::OD4Session>(forwardCID,
+          [this](cluon::data::Envelope &&envelope) noexcept {
+
+	switch(envelope.dataType()){
+	   case FORWARDED_MOVE: {
+		opendlv::proxy::PedalPositionReading muuuuve = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
+	   	std::cout << "received a leader 'MOVE' instruction with speed " << muuuuve.percent() << std::endl;
+	   }
+	}
+	  
+    });
+
 }
 
-//Testing methods. Used to test od4 sending and receiving.
+/*
+	Testing methods. 
+	Used to test od4 sending and receiving.
+*/
 void commander::testMove(){
 	opendlv::proxy::PedalPositionReading testMove;
 	testMove.percent(0.25);
