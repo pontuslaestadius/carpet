@@ -6,6 +6,10 @@ message opendlv.proxy.PedalPositionReading [id = 1041] {
   float percent [id = 1];
 }
 
+message opendlv.proxy.DistanceReading [id = 1039] {
+  float distance [id = 1];
+}
+
 message AnnouncePresence [id = 1001] {
   string vehicleIp [id = 1];
   string groupId [id = 3];

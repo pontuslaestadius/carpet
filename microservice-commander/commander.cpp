@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 11/4 - 2018
+  Last Updated: 12/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -69,7 +69,7 @@ int main(){
 
 // Control car through OD4 messages received etc.
 commander::commander(){	
-    // Connects to od4 session with CID:111 (Can be changed in the header file).
+    // Connects to od4 session with CID:170 (Can be changed in the header file, OBS: group6 range 170-179).
     receivedMessage =
         std::make_shared<cluon::OD4Session>(CID,
           [this](cluon::data::Envelope &&envelope) noexcept {
@@ -96,6 +96,11 @@ commander::commander(){
 		      	break;
                   }
 
+		   case DISTANCE_READ: {
+			opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
+			std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
+		      	break;
+                  }
 
 		   // OBS: Below this point until the test methods is experimental for commander V2V structure....
 		   // TODO: Check what needs to be handled here aswell as how requests are sent from V2V microservice..
@@ -134,15 +139,16 @@ commander::commander(){
 			std::cout << "Leader-Status received in commander." << std::endl;
 			break;
 		  }
-
-                  default: std::cout << "No matching case for " << envelope.dataType() << " wrong message type!" << std::endl;
+		  // In the case we recieve rogue messages.
+                  default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
               }
     });
 
 
 /* 
 	Opens a link to the OD4 link which is connected to the V2V protocol.
-	Test receives in place to see that stuff works.				    
+	Test receives in place to see that stuff works.
+	Connects to od4 session with CID:171 (Can be changed in the header file, OBS: group6 range 170-179).				    
 */
     forwardedMessage =
         std::make_shared<cluon::OD4Session>(forwardCID,
@@ -150,8 +156,13 @@ commander::commander(){
 
 	switch(envelope.dataType()){
 	   case FORWARDED_MOVE: {
-		opendlv::proxy::PedalPositionReading muuuuve = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
-	   	std::cout << "received a leader 'MOVE' instruction with speed " << muuuuve.percent() << std::endl;
+		opendlv::proxy::PedalPositionReading forwardedMove = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
+	   	std::cout << "received a leader 'MOVE' instruction with speed " << forwardedMove.percent() << std::endl;
+	   }
+
+	   case FORWARDED_TURN: {
+		opendlv::proxy::GroundSteeringReading forwardedTurn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
+	   	std::cout << "received a leader 'TURN' instruction with angle " << forwardedTurn.steeringAngle() << std::endl;
 	   }
 	}
 	  

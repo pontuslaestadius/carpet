@@ -14,7 +14,7 @@ static const int CID = 170;
 static const int forwardCID = 171;
 static const int TURN_DIRECTION = 1045;
 static const int MOVE_FORWARD = 1041;
-static const int FORWARDED_MOVE = 1041;
+static const int DISTANCE_READ = 1039;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
 //Follower
@@ -24,6 +24,10 @@ static const int STOP_FOLLOW = 1004;
 static const int FOLLOWER_STATUS = 3001;
 //Leader
 static const int LEADER_STATUS = 2001;
+
+// OD4 171 test variables
+static const int FORWARDED_MOVE = 1041;
+static const int FORWARDED_TURN = 1045;
 
 
 class commander{
