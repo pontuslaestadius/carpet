@@ -25,6 +25,7 @@ static const std::string YOUR_GROUP_ID  = "6";
 /********************************************************/
 
 static const int BROADCAST_CHANNEL = 250;
+static const int COMMANDER_LINK = 171;
 static const int DEFAULT_PORT = 50001;
 
 static const int ANNOUNCE_PRESENCE = 1001;
@@ -54,6 +55,7 @@ private:
     std::string followerIp;
   
     std::shared_ptr<cluon::OD4Session>  broadcast;
+    std::shared_ptr<cluon::OD4Session>  fromCommander;
     std::shared_ptr<cluon::UDPReceiver> incoming;
     std::shared_ptr<cluon::UDPSender>   toLeader;
     std::shared_ptr<cluon::UDPSender>   toFollower;

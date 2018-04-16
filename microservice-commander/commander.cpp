@@ -116,30 +116,6 @@ commander::commander(){
 			break;
 		  }
 
-		   case FOLLOW_REQUEST: {
-			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			std::cout << "Follow-Request received in commander." << std::endl;
-			break;
-		  }
-
-		  case FOLLOW_RESPONSE: {
-			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
-			std::cout << "Follow-Response received in commander." << std::endl;
-			break;
- 		  }
-
-		  case STOP_FOLLOW: {
-			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
-			std::cout << "Stop-Follow received in commander." << std::endl;
-			break;
-		  }
-
-		  case FOLLOWER_STATUS: {
-			FollowerStatus fls = cluon::extractMessage<FollowerStatus>(std::move(envelope));
-			std::cout << "Follower-Status request received in commander." << std::endl;
-			break;
-		  }
-
 		  case LEADER_STATUS: {
 			LeaderStatus lds = cluon::extractMessage<LeaderStatus>(std::move(envelope));
 			std::cout << "Leader-Status received in commander." << std::endl;
@@ -172,14 +148,38 @@ commander::commander(){
 
 	switch(envelope.dataType()){
 	   case FORWARDED_MOVE: {
-		Turn forwardedMove = cluon::extractMessage<Turn>(std::move(envelope));
+		Move forwardedMove = cluon::extractMessage<Move>(std::move(envelope));
 	   	std::cout << "received a leader 'MOVE' instruction with speed " << forwardedMove.percent() << std::endl;
 		break;
 	   }
 
 	   case FORWARDED_TURN: {
-		Move forwardedTurn = cluon::extractMessage<Move>(std::move(envelope));
+		Turn forwardedTurn = cluon::extractMessage<Turn>(std::move(envelope));
 	   	std::cout << "received a leader 'TURN' instruction with angle " << forwardedTurn.steeringAngle() << std::endl;
+		break;
+	   }
+
+ 	   case FOLLOW_REQUEST: {
+		FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
+		std::cout << "Follow-Request received in commander." << std::endl;
+		break;
+		  }
+
+	   case FOLLOW_RESPONSE: {
+		FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
+		std::cout << "Follow-Response received in commander." << std::endl;
+		break;
+ 		  }
+
+	   case STOP_FOLLOW: {
+		StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
+		std::cout << "Stop-Follow received in commander." << std::endl;
+		break;
+		  }
+
+	   case FOLLOWER_STATUS: {
+		FollowerStatus fls = cluon::extractMessage<FollowerStatus>(std::move(envelope));
+		std::cout << "Follower-Status request received in commander." << std::endl;
 		break;
 	   }
 	}
