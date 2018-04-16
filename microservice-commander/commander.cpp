@@ -79,19 +79,25 @@ commander::commander(){
               switch (envelope.dataType()) {
                    case TURN_DIRECTION: { // Remember to check at what angle it wants to turn.
 			// Unpacks the envelope and extracts the contained message. (Should potentially identify steering and move commands automatically).
-                        opendlv::proxy::GroundSteeringReading trn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope)); // Should be enough??
+                        Turn trn = cluon::extractMessage<Turn>(std::move(envelope)); // Should be enough??
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
+			opendlv::proxy::GroundSteeringReading msgSteering;
 		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately, For forwarding to follower;
-			forwardedMessage->send(msgSteering);
+			receivedMessage->send(msgSteering);
+			std::cout << "'TURN' message sent to car with angle " << trn.steeringAngle() << std::endl;
+			forwardedMessage->send(trn);
 		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
 		  }
 
 		   case MOVE_FORWARD: {
-			opendlv::proxy::PedalPositionReading mo = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
+			Move mo = cluon::extractMessage<Move>(std::move(envelope));
 			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
+			opendlv::proxy::PedalPositionReading msgPedal;
 			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
-			forwardedMessage->send(msgPedal);
+			receivedMessage->send(msgPedal);
+			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
+			forwardedMessage->send(mo);
 			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
 		      	break;
                   }
@@ -139,6 +145,16 @@ commander::commander(){
 			std::cout << "Leader-Status received in commander." << std::endl;
 			break;
 		  }
+
+		  //TODO:Test should be removed or changed later on...
+		  case 1041: {
+			std::cout << "MOVE IT" << std::endl;
+			break;
+		  }
+		  case 1045: {
+			std::cout << "TURN IT" << std::endl;
+			break;
+		  }
 		  // In the case we recieve rogue messages.
                   default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
               }
@@ -156,13 +172,15 @@ commander::commander(){
 
 	switch(envelope.dataType()){
 	   case FORWARDED_MOVE: {
-		opendlv::proxy::PedalPositionReading forwardedMove = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
+		Turn forwardedMove = cluon::extractMessage<Turn>(std::move(envelope));
 	   	std::cout << "received a leader 'MOVE' instruction with speed " << forwardedMove.percent() << std::endl;
+		break;
 	   }
 
 	   case FORWARDED_TURN: {
-		opendlv::proxy::GroundSteeringReading forwardedTurn = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
+		Move forwardedTurn = cluon::extractMessage<Move>(std::move(envelope));
 	   	std::cout << "received a leader 'TURN' instruction with angle " << forwardedTurn.steeringAngle() << std::endl;
+		break;
 	   }
 	}
 	  
@@ -175,25 +193,25 @@ commander::commander(){
 	Used to test od4 sending and receiving.
 */
 void commander::testMove(){
-	opendlv::proxy::PedalPositionReading testMove;
+	Move testMove;
 	testMove.percent(0.25);
 	receivedMessage->send(testMove);
 }
 
 void commander::testTurnLeft(){
-	opendlv::proxy::GroundSteeringReading testTurnLeft;
+	Turn testTurnLeft;
 	testTurnLeft.steeringAngle(15.0);
 	receivedMessage->send(testTurnLeft);
 }
 
 void commander::testTurnRight(){
-	opendlv::proxy::GroundSteeringReading testTurnRight;
+	Turn testTurnRight;
 	testTurnRight.steeringAngle(-15.0);
 	receivedMessage->send(testTurnRight);
 }
 
 void commander::testStop(){
-	opendlv::proxy::PedalPositionReading testStop;
+	Move testStop;
 	testStop.percent(0.0);
 	receivedMessage->send(testStop);
 }

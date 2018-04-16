@@ -1,3 +1,12 @@
+message Turn [id = 1545] {
+  float steeringAngle [id = 1];
+}
+
+message Move [id = 1541] {
+  float percent [id = 1];
+}
+
+
 message opendlv.proxy.GroundSteeringReading [id = 1045] {
   float steeringAngle [id = 1];
 }

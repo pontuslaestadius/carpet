@@ -12,8 +12,8 @@
 //ID's for messages and session.
 static const int CID = 170;
 static const int forwardCID = 171;
-static const int TURN_DIRECTION = 1045;
-static const int MOVE_FORWARD = 1041;
+static const int TURN_DIRECTION = 1545;
+static const int MOVE_FORWARD = 1541;
 static const int DISTANCE_READ = 1039;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
@@ -26,8 +26,8 @@ static const int FOLLOWER_STATUS = 3001;
 static const int LEADER_STATUS = 2001;
 
 // OD4 171 test variables
-static const int FORWARDED_MOVE = 1041;
-static const int FORWARDED_TURN = 1045;
+static const int FORWARDED_MOVE = 1541;
+static const int FORWARDED_TURN = 1545;
 
 
 class commander{
@@ -45,8 +45,7 @@ private:
 	//Declares the od4 session as well as steering and pedal variables for testing and output.
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
 	std::shared_ptr<cluon::OD4Session> forwardedMessage;
-	opendlv::proxy::GroundSteeringReading msgSteering;
-	opendlv::proxy::PedalPositionReading msgPedal;
+
 
 	//Test variables for V2V ----
 	AnnouncePresence apTest;
