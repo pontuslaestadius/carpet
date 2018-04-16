@@ -12,3 +12,4 @@ It is prefered to delete your build directory before running.
 -t	  --transfer	  saves the docker image and sends it to the device over ssh followed by execution.
 -ba	  --build-arm	  builds a docker image using the .armhf Dockerfile in current directory.
 -b        --build         builds a docker image using the default Dockerfile in current directory.
+-new-microservice	  needs 1 argument, can not be combined with other arguments. Creates a new microservice in the provided directory, using files in current directory.

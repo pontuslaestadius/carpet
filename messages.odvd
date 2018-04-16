@@ -6,3 +6,6 @@ message Turn [id = 1021] {
   float percent [id = 1];
 }
 
+message opendlv.proxy.DistanceReading [id = 1039] {
+  float distance [id = 1];
+}
