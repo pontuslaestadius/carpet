@@ -56,6 +56,7 @@ private:
   
     std::shared_ptr<cluon::OD4Session>  broadcast;
     std::shared_ptr<cluon::OD4Session>  fromCommander;
+    std::shared_ptr<cluon::OD4Session>  toCommander;
     std::shared_ptr<cluon::UDPReceiver> incoming;
     std::shared_ptr<cluon::UDPSender>   toLeader;
     std::shared_ptr<cluon::UDPSender>   toFollower;

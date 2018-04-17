@@ -74,6 +74,8 @@ V2VService::V2VService() {
 
                       presentCars[ap.groupId()] = ap.vehicleIp();
 
+		      toCommander->send(ap);
+
                       break;
                   }
                   default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
@@ -152,6 +154,18 @@ V2VService::V2VService() {
 
                        break;
                    }
+
+		   case 1541: { //Move message
+			Move moveMsg = decode<Move>(msg.second);
+			std::cout << "received 'Move' instruction from leader with speed" << moveMsg.percent() << std::endl;
+			break;
+		   }
+
+		   case 1545: { //Turn message
+			Turn turnMsg = decode<Turn>(msg.second);
+			std::cout << "received 'Turn' instruction from leader with angle" << turnMsg.steeringAngle() << std::endl;
+			break;
+		   }
                    default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
                }
            });
@@ -162,19 +176,26 @@ V2VService::V2VService() {
           [this](cluon::data::Envelope &&envelope) noexcept {
 		switch(envelope.dataType()){
 		    case 1541: { //Move message
-			Move moveMsg = cluon::extractMessage<Move>(std::move(envelope));
-			std::cout << "Received 'Move' request from commander with speed " << moveMsg.percent() << std::endl;
+			Move forwardMsg = cluon::extractMessage<Move>(std::move(envelope));
+			std::cout << "Received 'Move' request from commander with speed " << forwardMsg.percent() << std::endl;
+			toFollower->send(encode(forwardMsg));
 			break;
 		    }
 		    
 		    case 1545: { //Turn message
-			Turn turnMsg = cluon::extractMessage<Turn>(std::move(envelope));
-			std::cout << "Received 'Turn' request from commander with angle " << turnMsg.steeringAngle() << std::endl;
+			Turn steerMsg = cluon::extractMessage<Turn>(std::move(envelope));
+			std::cout << "Received 'Turn' request from commander with angle " << steerMsg.steeringAngle() << std::endl;
+			toFollower->send(encode(steerMsg));
 			break;
 		    }
 
 		}
 
+	});
+
+
+    toCommander = 
+	std::make_shared<cluon::OD4Session>(170, [this](cluon::data::Envelope &&envelope) noexcept {
 	});
 	  
 }

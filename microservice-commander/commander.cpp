@@ -95,7 +95,7 @@ commander::commander(){
 			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
 			opendlv::proxy::PedalPositionReading msgPedal;
 			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
-			receivedMessage->send(msgPedal);
+			receivedMessage->send(msgPedal); //Sends a command to the motor telling it to move.
 			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
 			forwardedMessage->send(mo);
 			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
@@ -112,13 +112,22 @@ commander::commander(){
 		   // TODO: Check what needs to be handled here aswell as how requests are sent from V2V microservice..
 		   case ANNOUNCE_PRESENCE: {
 			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
-			std::cout << "Announce Precence request received in commander." << std::endl;
+			std::cout << "Announce Precence request received in commander.   ";
+                        std::cout << "received 'AnnouncePresence' from '"
+                                << ap.vehicleIp() << "', GroupID '"
+                                << ap.groupId() << "'!" << std::endl;
 			break;
 		  }
 
 		  case LEADER_STATUS: {
 			LeaderStatus lds = cluon::extractMessage<LeaderStatus>(std::move(envelope));
 			std::cout << "Leader-Status received in commander." << std::endl;
+			break;
+		  }
+
+ 	  	 case FOLLOW_REQUEST: {
+			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
+			std::cout << "Follow-Request received in commander." << std::endl;
 			break;
 		  }
 
@@ -147,6 +156,8 @@ commander::commander(){
           [this](cluon::data::Envelope &&envelope) noexcept {
 
 	switch(envelope.dataType()){
+
+	   //TODO: Finish follower reactions....
 	   case FORWARDED_MOVE: {
 		Move forwardedMove = cluon::extractMessage<Move>(std::move(envelope));
 	   	std::cout << "received a leader 'MOVE' instruction with speed " << forwardedMove.percent() << std::endl;
@@ -158,12 +169,6 @@ commander::commander(){
 	   	std::cout << "received a leader 'TURN' instruction with angle " << forwardedTurn.steeringAngle() << std::endl;
 		break;
 	   }
-
- 	   case FOLLOW_REQUEST: {
-		FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-		std::cout << "Follow-Request received in commander." << std::endl;
-		break;
-		  }
 
 	   case FOLLOW_RESPONSE: {
 		FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
