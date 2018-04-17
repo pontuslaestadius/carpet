@@ -108,17 +108,6 @@ commander::commander(){
 		      	break;
                   }
 
-		   // OBS: Below this point until the test methods is experimental for commander V2V structure....
-		   // TODO: Check what needs to be handled here aswell as how requests are sent from V2V microservice..
-		   case ANNOUNCE_PRESENCE: {
-			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
-			std::cout << "Announce Precence request received in commander.   ";
-                        std::cout << "received 'AnnouncePresence' from '"
-                                << ap.vehicleIp() << "', GroupID '"
-                                << ap.groupId() << "'!" << std::endl;
-			break;
-		  }
-
 		  case LEADER_STATUS: {
 			LeaderStatus lds = cluon::extractMessage<LeaderStatus>(std::move(envelope));
 			std::cout << "Leader-Status received in commander." << std::endl;
