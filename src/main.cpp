@@ -31,7 +31,7 @@ int main(int /*argc*/, char** /*argv*/) {
         std::cout << "ERROR: No od4 running!!!" << std::endl;
         return -1;
     }
-
+/*
     opendlv::proxy::GroundSteeringReading msgSteering;
     opendlv::proxy::PedalPositionReading msgPedal;
 
@@ -68,7 +68,8 @@ int main(int /*argc*/, char** /*argv*/) {
 		continue;
 		}
 	}
-
+*/
+	while (1);
     return 0;
 }
 
