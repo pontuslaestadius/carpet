@@ -11,15 +11,21 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*
+  Modifications performed by Pontus Laestadius.
+*/
+
 
 const g_renderFreq = 4.0;
-const g_maxDataAge = 10.0;
-const g_maxFieldChartValues = 10;
+const g_maxDataAge = 15.0;
+const g_maxFieldChartValues = 20;
 
 var g_charts = new Map();
 var g_chartConfigs = new Map();
 var g_data = new Map();
-var g_pause = false;
+var ws; // Websocket
+var box = document.getElementById("box");
+var lc;
 
 $(document).ready(function(){
   
@@ -27,27 +33,21 @@ $(document).ready(function(){
     const idFieldsRow = $(this).attr('id') + '_fields';
     $('#' + idFieldsRow).toggleClass('hidden');
   });
-  
-  $('body').on('click', 'button#pause', function() {
-    g_pause = !g_pause;
-    if (g_pause) {
-      $('button#pause').html('Continue');
-    } else {
-      $('button#pause').html('Pause');
-    }
-  });
-  
+
   setupViewer();
 });
 
 function setupViewer() {
-  var lc = libcluon();
+  lc = libcluon();
 
   if ("WebSocket" in window) {
-    var ws = new WebSocket("ws://" + window.location.host + "/");
+    body("grey");
+    ws = new WebSocket("ws://" + window.location.host + "/");    
     ws.binaryType = 'arraybuffer';
 
     ws.onopen = function() {
+      body("LightGreen");
+      box.style.opacity = "1.0";
       onStreamOpen(lc);
     }
 
@@ -56,12 +56,18 @@ function setupViewer() {
     };
 
     ws.onclose = function() {
-      onStreamClosed();
+      body("Tomato");
+      box.style.opacity = "0.0";
     };
 
   } else {
-    console.log("Error: websockets not supported by your browser.");
+    body("Yellow");
   }
+}
+
+function body(c) {
+  var z = document.getElementById("status");
+  z.style.backgroundColor = c;
 }
 
 function onStreamOpen(lc) {
@@ -73,8 +79,7 @@ function onStreamOpen(lc) {
   }
 
   var odvd = getResourceFrom("messages.odvd");
-  console.log(odvd);
-  console.log("Loaded " + lc.setMessageSpecification(odvd) + " messages from specification.");
+  document.getElementById("messages-count").innerText = lc.setMessageSpecification(odvd);
   
   setInterval(onInterval, Math.round(1000 / g_renderFreq));
 }
@@ -85,22 +90,13 @@ function onStreamClosed() {
 
 function onMessageReceived(lc, msg) {
 
-  if (g_pause) {
-    return;
-  }
-
-
   var data_str = lc.decodeEnvelopeToJSON(msg);
-
-    console.log(data_str);
-
 
   if (data_str.length == 2) {
     return;
   }
 
   d = JSON.parse(data_str);
-
 
   // Translate to nice JSON ..
   var payloadFields = new Array();
@@ -141,6 +137,8 @@ function onMessageReceived(lc, msg) {
   }
   
   storeData(sourceKey, data);
+
+  increment('messages-received');
 }
 
 function toTime(t) {
@@ -289,22 +287,35 @@ function storeData(sourceKey, data) {
     g_data.get(sourceKey).shift();
   }
   g_data.get(sourceKey).push(data);
+
+
+
+
 }
 
 function onInterval() {
-  if (g_pause) {
-    return;
-  }
-
   g_data.forEach(function(dataList, sourceKey, map) {
     const newestData = dataList[dataList.length - 1];
     updateTableData(sourceKey, newestData);
     updateFieldCharts(sourceKey, dataList);
   });
+
+  simulate("1039", front);
+  simulate("1045", angle);
+  simulate("2003", accel);
+}
+
+function simulate(id, fun) {
+  var dom = document.getElementById(id + "_" + id + "_field0_value");
+  if (dom == null) {
+    return;
+  }
+
+  var text = dom.innerText;
+  fun(parseInt(text));
 }
 
 function updateTableData(sourceKey, data) {
-
   const dataList = g_data.get(sourceKey);
   if (dataList.length > 10) {
     const firstTimestamp = dataList[0].sent;
@@ -326,6 +337,7 @@ function updateTableData(sourceKey, data) {
     const fieldValue = cutLongField(field.type, field.value);
     $('td#' + sourceKey + '_field' + i + '_value').html(fieldValue);
   }
+  
 }
 
 function updateFieldCharts(sourceKey, dataList) {
@@ -395,3 +407,16 @@ function updateFieldCharts(sourceKey, dataList) {
     }
   }
 }
+
+  $('body').on('click', 'button#send', function(err) {
+    var jsonMessageToBeSent = "{\"percent\":0.16}";
+    console.log("SENDING: " + jsonMessageToBeSent);
+   var protoEncodedPayload = lc.encodeEnvelopeFromJSONWithoutTimeStamps(jsonMessageToBeSent, 1041, 0); 
+   strToAB = str =>
+     new Uint8Array(str.split('')
+       .map(c => c.charCodeAt(0))).buffer;
+
+   let logMsg = strToAB(protoEncodedPayload);
+    ws.send(logMsg, { binary: true });
+
+});
