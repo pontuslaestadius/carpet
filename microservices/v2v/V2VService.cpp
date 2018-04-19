@@ -173,14 +173,19 @@ V2VService::V2VService() {
 		    case 1541: { //Move message
 			Move forwardMsg = cluon::extractMessage<Move>(std::move(envelope));
 			std::cout << "Received 'Move' request from commander with speed " << forwardMsg.percent() << std::endl;
-			toFollower->send(encode(forwardMsg));
+			//LeaderStatus ldst;
+			LDS_MOVE = forwardMsg.percent();
+			std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
+			leaderStatus(forwardMsg.percent(), LDS_TURN, LDS_DIST);
 			break;
 		    }
 		    
 		    case 1545: { //Turn message
 			Turn steerMsg = cluon::extractMessage<Turn>(std::move(envelope));
 			std::cout << "Received 'Turn' request from commander with angle " << steerMsg.steeringAngle() << std::endl;
-			toFollower->send(encode(steerMsg));
+			LDS_TURN = steerMsg.steeringAngle();
+			std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
+			leaderStatus(LDS_MOVE, steerMsg.steeringAngle(), LDS_DIST);
 			break;
 		    }
 

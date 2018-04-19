@@ -34,13 +34,15 @@ static const int FOLLOW_RESPONSE = 1003;
 static const int STOP_FOLLOW = 1004;
 static const int LEADER_STATUS = 2001;
 static const int FOLLOWER_STATUS = 3001;
+   
+ //Well....
+    static float LDS_MOVE = 0;
+    static float LDS_TURN = 0;
+    static float LDS_DIST = 0;
 
 class V2VService {
 public:
     std::map <std::string, std::string> presentCars;
-    static int LDS_MOVE = 0;
-    static int LDS_TURN = 0;
-    static int LDS_DIST = 0;
 
     V2VService();
     

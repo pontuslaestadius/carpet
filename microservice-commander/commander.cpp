@@ -46,8 +46,7 @@ int main(){
 	   }
 	   
            // Cases for testing the V2V responses...
-	   case 5:{ 
-		commanderService->testAP(); break;
+	   case 5:{  break;
 	   }
 	   case 6:{  break;
 	   }
