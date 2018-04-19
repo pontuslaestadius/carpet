@@ -14,7 +14,7 @@ int main() {
     std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 
 	while (1) {
-        /*int choice;
+        int choice;
         std::string groupId;
         std::cout << "Which message would you like to send?" << std::endl;
         std::cout << "(1) AnnouncePresence" << std::endl;
@@ -49,7 +49,7 @@ int main() {
             case 5: v2vService->leaderStatus(50, 0, 100); break;
             case 6: v2vService->followerStatus(); break;
             default: exit(0);
-        }*/
+        }
     }
 }
 
@@ -143,24 +143,14 @@ V2VService::V2VService() {
                        LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
                        std::cout << "received '" << leaderStatus.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
+		       std::cout << "Leaderstatus contained Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle()
+		        << " Distance: " << leaderStatus.distanceTraveled() << std::endl;
 
                        /* TODO: implement follow logic */
 
                        break;
                    }
 			
-		   //Should receive Move / Turn messages from leader.... Should be adapted to what messages we are expecting from other groups.
-		   case 1541: { //Move message
-			Move moveMsg = decode<Move>(msg.second);
-			std::cout << "received 'Move' instruction from leader with speed" << moveMsg.percent() << std::endl;
-			break;
-		   }
-
-		   case 1545: { //Turn message
-			Turn turnMsg = decode<Turn>(msg.second);
-			std::cout << "received 'Turn' instruction from leader with angle" << turnMsg.steeringAngle() << std::endl;
-			break;
-		   }
                    default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
                }
            });
