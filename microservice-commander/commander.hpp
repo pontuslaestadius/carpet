@@ -29,12 +29,15 @@ static const int LEADER_STATUS = 2001;
 static const int FORWARDED_MOVE = 1541;
 static const int FORWARDED_TURN = 1545;
 
+//If needed variables --------------
+static const int FORWARD_MOVE = 1041;
+static const int TURN_ANGLE = 1045;
 
 class commander{
 //Declare the public methods and variables.
 public:
 	commander();
-	
+
 	void testMove();
 	void testTurnLeft();
 	void testTurnRight();

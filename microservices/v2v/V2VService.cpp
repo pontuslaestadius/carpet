@@ -14,7 +14,7 @@ int main() {
     std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 
 	while (1) {
-        int choice;
+        /*int choice;
         std::string groupId;
         std::cout << "Which message would you like to send?" << std::endl;
         std::cout << "(1) AnnouncePresence" << std::endl;
@@ -49,7 +49,7 @@ int main() {
             case 5: v2vService->leaderStatus(50, 0, 100); break;
             case 6: v2vService->followerStatus(); break;
             default: exit(0);
-        }
+        }*/
     }
 }
 
@@ -74,8 +74,6 @@ V2VService::V2VService() {
 
                       presentCars[ap.groupId()] = ap.vehicleIp();
 
-		      toCommander->send(ap);
-
                       break;
                   }
                   default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
@@ -97,6 +95,7 @@ V2VService::V2VService() {
                        FollowRequest followRequest = decode<FollowRequest>(msg.second);
                        std::cout << "received '" << followRequest.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
+			//toCommander->send(followRequest);
 
                        // After receiving a FollowRequest, check first if there is currently no car already following.
                        if (followerIp.empty()) {
@@ -104,11 +103,6 @@ V2VService::V2VService() {
                            followerIp = sender.substr(0, len);      // and establish a sending channel.
                            toFollower = std::make_shared<cluon::UDPSender>(followerIp, DEFAULT_PORT);
                            followResponse();
-                           single_car = 0;
-                           while(single_car == 0) {
-                               leaderStatus(50, 0, 100);
-                               sleep(1);
-                           }
                        }
                        break;
                    }
@@ -122,7 +116,7 @@ V2VService::V2VService() {
                        StopFollow stopFollow = decode<StopFollow>(msg.second);
                        std::cout << "received '" << stopFollow.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
-                       single_car = 1;
+               
 
                        // Clear either follower or leader slot, depending on current role.
                        unsigned long len = sender.find(':');
@@ -154,7 +148,8 @@ V2VService::V2VService() {
 
                        break;
                    }
-
+			
+		   //Should receive Move / Turn messages from leader.... Should be adapted to what messages we are expecting from other groups.
 		   case 1541: { //Move message
 			Move moveMsg = decode<Move>(msg.second);
 			std::cout << "received 'Move' instruction from leader with speed" << moveMsg.percent() << std::endl;
@@ -171,7 +166,7 @@ V2VService::V2VService() {
            });
 
 
-    fromCommander = 
+  fromCommander = 
 	 std::make_shared<cluon::OD4Session>(COMMANDER_LINK,
           [this](cluon::data::Envelope &&envelope) noexcept {
 		switch(envelope.dataType()){

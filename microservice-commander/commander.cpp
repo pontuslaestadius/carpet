@@ -46,7 +46,8 @@ int main(){
 	   }
 	   
            // Cases for testing the V2V responses...
-	   case 5:{ break;
+	   case 5:{ 
+		commanderService->testAP(); break;
 	   }
 	   case 6:{  break;
 	   }
@@ -88,7 +89,7 @@ commander::commander(){
 			forwardedMessage->send(trn);
 		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
-		  }
+		   }
 
 		   case MOVE_FORWARD: {
 			Move mo = cluon::extractMessage<Move>(std::move(envelope));
@@ -100,35 +101,29 @@ commander::commander(){
 			forwardedMessage->send(mo);
 			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
 		      	break;
-                  }
+                   }
 
-		   case DISTANCE_READ: {
+		   case DISTANCE_READ: { //TODO: Incorporate this for follower mode.
 			opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
 			std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
 		      	break;
-                  }
+                   }
 
-		  case LEADER_STATUS: {
-			LeaderStatus lds = cluon::extractMessage<LeaderStatus>(std::move(envelope));
-			std::cout << "Leader-Status received in commander." << std::endl;
-			break;
-		  }
-
- 	  	 case FOLLOW_REQUEST: {
+ 	  	   case FOLLOW_REQUEST: {
 			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
 			std::cout << "Follow-Request received in commander." << std::endl;
 			break;
-		  }
+		   }
 
-		  //TODO:Test should be removed or changed later on...
-		  case 1041: {
-			std::cout << "MOVE IT" << std::endl;
+		   case 1041: {
+			opendlv::proxy::PedalPositionReading steer = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
 			break;
-		  }
-		  case 1045: {
-			std::cout << "TURN IT" << std::endl;
+		   }
+		   case 1045: {
+			opendlv::proxy::GroundSteeringReading moverPer = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
 			break;
-		  }
+		   }
+
 		  // In the case we recieve rogue messages.
                   default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
               }
@@ -144,9 +139,9 @@ commander::commander(){
         std::make_shared<cluon::OD4Session>(forwardCID,
           [this](cluon::data::Envelope &&envelope) noexcept {
 
-	switch(envelope.dataType()){
+	/*switch(envelope.dataType()){
 
-	   //TODO: Finish follower reactions....
+	   //TODO: Create follower reactions.... Used for testing sending as of now.
 	   case FORWARDED_MOVE: {
 		Move forwardedMove = cluon::extractMessage<Move>(std::move(envelope));
 	   	std::cout << "received a leader 'MOVE' instruction with speed " << forwardedMove.percent() << std::endl;
@@ -163,20 +158,20 @@ commander::commander(){
 		FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
 		std::cout << "Follow-Response received in commander." << std::endl;
 		break;
- 		  }
+ 	   }
 
 	   case STOP_FOLLOW: {
 		StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
 		std::cout << "Stop-Follow received in commander." << std::endl;
 		break;
-		  }
+	   }
 
 	   case FOLLOWER_STATUS: {
 		FollowerStatus fls = cluon::extractMessage<FollowerStatus>(std::move(envelope));
 		std::cout << "Follower-Status request received in commander." << std::endl;
 		break;
 	   }
-	}
+	}*/
 	  
     });
 
@@ -186,6 +181,8 @@ commander::commander(){
 	Testing methods. 
 	Used to test od4 sending and receiving.
 */
+
+
 void commander::testMove(){
 	Move testMove;
 	testMove.percent(0.25);
