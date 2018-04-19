@@ -48,16 +48,23 @@ function addIndicator(code, label) {
   }
   document.getElementById("box").appendChild(node);
 
-  if (table[code] != null && table[code][2] == "range") {
-    var range = document.createElement("input");
+  if (isRangeSlider(code)) {
+    node.appendChild(newRangeSlider());
+  }
+}
+
+function isRangeSlider(code) {
+  return table[code] != null && table[code][2] == "range";
+}
+
+function newRangeSlider() {
+  var range = document.createElement("input");
     range.type = "range";
     range.min = "0";
     range.max = "0.5";
     range.value = "0.2";
     range.step = "0.01";
-
-    node.appendChild(range);
-  }
+    return range;
 }
 
 function validateKey(k, s) {
