@@ -36,6 +36,7 @@ function registerkey(character, field, messageid, values, label) {
 
 function addIndicator(code, label) {
   var node = document.createElement("LI");
+
   if (code == null) {
     node.style.opacity = "0.0";
   } else {
@@ -46,6 +47,17 @@ function addIndicator(code, label) {
     node.innerText = label;
   }
   document.getElementById("box").appendChild(node);
+
+  if (table[code] != null && table[code][2] == "range") {
+    var range = document.createElement("input");
+    range.type = "range";
+    range.min = "0";
+    range.max = "0.5";
+    range.value = "0.2";
+    range.step = "0.01";
+
+    node.appendChild(range);
+  }
 }
 
 function validateKey(k, s) {
@@ -67,15 +79,19 @@ function send(k) {
     k = -k;
     add = 1;
   }
-  var jsonMessageToBeSent = "{\"" + table[k][0] + "\":" + table[k][2+add] + "}";
+
+  var val = table[k][2+add];
+  if (val == "range") {
+    var qs = document.querySelector("#\\3" + parseInt(k/10) + " " + k%10 + " input");
+    val = qs.value;
+  }
+
+  var jsonMessageToBeSent = "{\"" + table[k][0] + "\":" + val + "}";
+  if (table[k][0] == null || table[k][2+add] == null) {
+    jsonMessageToBeSent = "{}";
+  } 
+
   __send(ws, jsonMessageToBeSent, table[k][1]);
-
-  //on_canvas(table[k][2+add]);
-}
-
-function on_canvas(deg) {
-  clear();
-  turn(deg, drawAction);
 }
 
 function __send(socket, msg, id) {

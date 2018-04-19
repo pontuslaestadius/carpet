@@ -303,6 +303,7 @@ function onInterval() {
   simulate("1039", front);
   simulate("1045", angle);
   simulate("2003", accel);
+  updateCanvas();
 }
 
 function simulate(id, fun) {

@@ -87,3 +87,14 @@ td.field-plot {
     	height: 49.5vh;
       overflow-y: scroll;
     }
+
+  li:hover > input {
+    height: auto;
+    width: 100%;
+  }
+
+  li input {
+    height: 5px;
+    width: 5px;
+    transition: 0.26s ease-in-out;
+  }

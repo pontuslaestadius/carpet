@@ -20,7 +20,7 @@ function front_inner() {
 
 function front(distance) {
 	front_reading = distance;
-	turn(last_deg, drawAction);
+	//turn(last_deg, drawAction);
 }
 
 function accel(val) {
@@ -31,20 +31,21 @@ function angle(val) {
 	last_deg = val;
 }
 
-function turn(deg, lamb) {
+function updateCanvas() {
+
 	clear();
 	var ctx = getCtx();
 	front_inner();
+
 	ctx.translate( getWidth()/2 +car_width/2, getHeight()/2  +car_height/2);
-	ctx.rotate(deg*Math.PI/180);
+	ctx.rotate(last_deg*Math.PI/180);
+
 	lamb();
 	front_inner();
-	ctx.rotate(-deg*Math.PI/180);
+
+	ctx.rotate(-last_deg*Math.PI/180);
 	ctx.translate( -(getWidth()/2 +car_width/2), -(getHeight()/2  +car_height/2));
-
-	last_deg = deg;
 }
-
 
 function getImage() {
 	return document.getElementById("image");
