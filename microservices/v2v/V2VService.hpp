@@ -17,7 +17,7 @@
 
 /** ADD YOUR CAR_IP AND GROUP_ID HERE:  *****************/
 
-static const std::string YOUR_CAR_IP    = "172.20.10.10";
+static const std::string YOUR_CAR_IP    = "10.132.91.239";
 static const std::string YOUR_GROUP_ID  = "6";
 
 /********************************************************/
@@ -25,6 +25,7 @@ static const std::string YOUR_GROUP_ID  = "6";
 /********************************************************/
 
 static const int BROADCAST_CHANNEL = 250;
+static const int COMMANDER_LINK = 171;
 static const int DEFAULT_PORT = 50001;
 
 static const int ANNOUNCE_PRESENCE = 1001;
@@ -33,6 +34,11 @@ static const int FOLLOW_RESPONSE = 1003;
 static const int STOP_FOLLOW = 1004;
 static const int LEADER_STATUS = 2001;
 static const int FOLLOWER_STATUS = 3001;
+   
+ //Well....
+    static float LDS_MOVE = 0;
+    static float LDS_TURN = 0;
+    static float LDS_DIST = 0;
 
 class V2VService {
 public:
@@ -54,6 +60,8 @@ private:
     std::string followerIp;
   
     std::shared_ptr<cluon::OD4Session>  broadcast;
+    std::shared_ptr<cluon::OD4Session>  fromCommander;
+    std::shared_ptr<cluon::OD4Session>  toCommander;
     std::shared_ptr<cluon::UDPReceiver> incoming;
     std::shared_ptr<cluon::UDPSender>   toLeader;
     std::shared_ptr<cluon::UDPSender>   toFollower;

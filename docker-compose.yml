@@ -31,6 +31,17 @@ services:
         privileged: true
         command: "/opt/signal-viewer --cid=111"
 
+
+    #Commander microservice.
+    commander:
+        image: microservice-commander:armhf
+        depends_on:
+        - proxy-miniature-pwm-motor
+        network_mode: "host"
+        stdin_open: true
+        tty: true
+        command: "/opt/microservice-commander.Service"
+
    # Carpet component
    carpet:
         image: carpet_compile:armhf

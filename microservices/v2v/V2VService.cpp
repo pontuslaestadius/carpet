@@ -1,6 +1,7 @@
 /* 
  * Created by: V2V group
  * Maintainer: Kosara Golemshinska
+ * Contributor: Sebastian Fransson
  * Last modified: 12.04.2018
  */
 
@@ -12,11 +13,44 @@ int main() {
 
     std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 
-    v2vService->single_car = 1;
-	while (v2vService->single_car == 1) {
-		v2vService->announcePresence();
-		sleep(1);
-	}
+	while (1) {
+        int choice;
+        std::string groupId;
+        std::cout << "Which message would you like to send?" << std::endl;
+        std::cout << "(1) AnnouncePresence" << std::endl;
+        std::cout << "(2) FollowRequest" << std::endl;
+        std::cout << "(3) FollowResponse" << std::endl;
+        std::cout << "(4) StopFollow" << std::endl;
+        std::cout << "(5) LeaderStatus" << std::endl;
+        std::cout << "(6) FollowerStatus" << std::endl;
+        std::cout << "(#) Nothing, just quit." << std::endl;
+        std::cout << ">> ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1: v2vService->announcePresence(); break;
+            case 2: {
+                std::cout << "Which group do you want to follow?" << std::endl;
+                std::cin >> groupId;
+                if (v2vService->presentCars.find(groupId) != v2vService->presentCars.end())
+                    v2vService->followRequest(v2vService->presentCars[groupId]);
+                else std::cout << "Sorry, unable to locate that groups vehicle!" << std::endl;
+                break;
+            }
+            case 3: v2vService->followResponse(); break;
+            case 4: {
+                std::cout << "Which group do you want to stop follow?" << std::endl;
+                std::cin >> groupId;
+                if (v2vService->presentCars.find(groupId) != v2vService->presentCars.end())
+                    v2vService->stopFollow(v2vService->presentCars[groupId]);
+                else std::cout << "Sorry, unable to locate that groups vehicle!" << std::endl;
+                break;
+            }
+            case 5: v2vService->leaderStatus(50, 0, 100); break;
+            case 6: v2vService->followerStatus(); break;
+            default: exit(0);
+        }
+    }
 }
 
 /**
@@ -61,6 +95,7 @@ V2VService::V2VService() {
                        FollowRequest followRequest = decode<FollowRequest>(msg.second);
                        std::cout << "received '" << followRequest.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
+			//toCommander->send(followRequest);
 
                        // After receiving a FollowRequest, check first if there is currently no car already following.
                        if (followerIp.empty()) {
@@ -68,11 +103,6 @@ V2VService::V2VService() {
                            followerIp = sender.substr(0, len);      // and establish a sending channel.
                            toFollower = std::make_shared<cluon::UDPSender>(followerIp, DEFAULT_PORT);
                            followResponse();
-                           single_car = 0;
-                           while(single_car == 0) {
-                               leaderStatus(50, 0, 100);
-                               sleep(1);
-                           }
                        }
                        break;
                    }
@@ -86,7 +116,7 @@ V2VService::V2VService() {
                        StopFollow stopFollow = decode<StopFollow>(msg.second);
                        std::cout << "received '" << stopFollow.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
-                       single_car = 1;
+               
 
                        // Clear either follower or leader slot, depending on current role.
                        unsigned long len = sender.find(':');
@@ -113,14 +143,51 @@ V2VService::V2VService() {
                        LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
                        std::cout << "received '" << leaderStatus.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
+		       std::cout << "Leaderstatus contained Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle()
+		        << " Distance: " << leaderStatus.distanceTraveled() << std::endl;
 
                        /* TODO: implement follow logic */
 
                        break;
                    }
+			
                    default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
                }
            });
+
+
+  fromCommander = 
+	 std::make_shared<cluon::OD4Session>(COMMANDER_LINK,
+          [this](cluon::data::Envelope &&envelope) noexcept {
+		switch(envelope.dataType()){
+		    case 1541: { //Move message
+			Move forwardMsg = cluon::extractMessage<Move>(std::move(envelope));
+			std::cout << "Received 'Move' request from commander with speed " << forwardMsg.percent() << std::endl;
+			//LeaderStatus ldst;
+			LDS_MOVE = forwardMsg.percent();
+			std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
+			leaderStatus(forwardMsg.percent(), LDS_TURN, LDS_DIST);
+			break;
+		    }
+		    
+		    case 1545: { //Turn message
+			Turn steerMsg = cluon::extractMessage<Turn>(std::move(envelope));
+			std::cout << "Received 'Turn' request from commander with angle " << steerMsg.steeringAngle() << std::endl;
+			LDS_TURN = steerMsg.steeringAngle();
+			std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
+			leaderStatus(LDS_MOVE, steerMsg.steeringAngle(), LDS_DIST);
+			break;
+		    }
+
+		}
+
+	});
+
+
+    toCommander = 
+	std::make_shared<cluon::OD4Session>(170, [this](cluon::data::Envelope &&envelope) noexcept {
+	});
+	  
 }
 
 /**

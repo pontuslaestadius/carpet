@@ -1,8 +1,8 @@
-message opendlv.proxy.GroundSteeringReading [id = 1045] {
+message Move [id = 1020] {
   float steeringAngle [id = 1];
 }
 
-message opendlv.proxy.PedalPositionReading [id = 1041] {
+message Turn [id = 1021] {
   float percent [id = 1];
 }
 
