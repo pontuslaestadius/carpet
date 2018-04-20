@@ -26,8 +26,7 @@ var g_data = new Map();
 var ws; // Websocket
 var box = document.getElementById("box");
 var lc;
-var mock_random = new Array(3);
-mock_randomVals();
+
 
 $(document).ready(function(){
   
@@ -44,11 +43,14 @@ function setupViewer() {
 
   if ("WebSocket" in window) {
     body("grey");
+
+    // This is to enable mock mode in your local machine.
     if (window.location.host == "") {
       console.log("No WebSocket address provided. Connection ignored.");
         setInterval(mock_onInterval, Math.round(100 / g_renderFreq));
         setInterval(mock_randomVals, Math.round(2000 / g_renderFreq));
         return;
+
     } else {
           ws = new WebSocket("ws://" + window.location.host + "/");    
           ws.binaryType = 'arraybuffer';
@@ -151,15 +153,7 @@ function onMessageReceived(lc, msg) {
   
   storeData(sourceKey, data);
 
-  var tp = parseInt(data.dataType);
-  var ds = val;
-  if (tp == 1039) {
-    mock_simulate(ds, front);
-  } else if (tp == 1045) {
-    mock_simulate(ds, angle);
-  } else if (tp == 1041) {
-    mock_simulate(ds, accel);
-  }
+  convertMessageReadingsToSimulation(val, data.dataType);
 
   increment('messages-received');
 }
@@ -323,38 +317,6 @@ function onInterval() {
 
 }
 
-function mock_randomVals() {
-  for (var i = 0; i < mock_random.length; i++) {
-    mock_random[i] = parseInt(Math.random() * 30);
-  }
-}
-
-function render() {
-  updateCanvas();
-}
-
-function mock_onInterval() {
-
-  mock_simulate(mock_random[0] *1.1, front);
-  mock_simulate((mock_random[1] / 19.32) -1, accel);
-  mock_simulate(mock_random[2] -15, angle);
-  updateCanvas();
-}
-
-function mock_simulate(id, fun) {
-    fun(id);
-}
-
-function simulate(id, fun) {
-  var dom = document.getElementById(id + "_field0_value");
-
-  if (dom == null) {
-    return;
-  }
-
-  var text = dom.innerText;
-  fun(parseInt(text));
-}
 
 function updateTableData(sourceKey, data) {
   const dataList = g_data.get(sourceKey);

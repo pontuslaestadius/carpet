@@ -103,11 +103,14 @@ td.field-plot {
   }
 
   canvas {
-    width: 400px;
-    margin-left: 2.5%;
-    margin-top: 2.5%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
 .table td, .table th {
     padding: .25rem;
+  }
+
+  img {
+    display: none;
   }

@@ -5,14 +5,17 @@
     <meta name="description" content="Carpet web interface">
     <meta name="author" content="Pontus Laestadius">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="library/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
     <title>Carpet Web Interface</title>
   </head>
 
   <body>
 
-   <!-- <button id="send">send</button>  -->
+
+  <img id="image" src="resource/image.png">
+  <img id="cone" src="resource/cone.png">
+
 
   <div id="content-wrapper">
 
@@ -58,27 +61,25 @@
       </div>
 
       <div class="wrapper" style="overflow: hidden !important;">
-        <canvas id="canvas">Your ancient web browser does not support canvas.</canvas>
+        <canvas id="canvas" width="500px" height="600px">Your ancient web browser does not support canvas.</canvas>
       </div>
 
     </div>
 
     <!-- Libraries -->
-    <script type="text/javascript" src="jquery-3.2.1.slim.min.js"></script>
-    <script type="text/javascript" src="popper.min.js"></script>
-    <script type="text/javascript" src="moment-with-locales.min.js"></script>
-    <script type="text/javascript" src="Chart.js"></script>
-    <script type="text/javascript" src="bootstrap.min.js"></script>
+    <script type="text/javascript" src="library/jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="library/popper.min.js"></script>
+    <script type="text/javascript" src="library/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="library/Chart.js"></script>
+    <script type="text/javascript" src="library/bootstrap.min.js"></script>
+    <script type="text/javascript" src="library/libcluon.js"></script>
 
     <!-- Source code -->
-    <script type="text/javascript" src="libcluon.js"></script>
     <script type="text/javascript" src="libcluon-viewer.js"></script>
     <script type="text/javascript" src="interface.js"></script>
     <script type="text/javascript" src="layout.js"></script>
     <script type="text/javascript" src="canvas.js"></script>
 
-    <img id="image" src="image.png" style="display: none">
-    <img id="cone" src="cone.png" style="display: none">
   </body>
 </html>
 
