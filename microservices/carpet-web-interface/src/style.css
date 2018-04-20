@@ -85,7 +85,10 @@ td.field-plot {
     .wrapper {
     	width: 49.5vw;
     	height: 49.5vh;
-      overflow-y: scroll;
+    }
+
+    body, .wrapper {
+        background-color: lightblue;
     }
 
   li:hover > input {
@@ -97,4 +100,14 @@ td.field-plot {
     height: 5px;
     width: 5px;
     transition: 0.26s ease-in-out;
+  }
+
+  canvas {
+    width: 400px;
+    margin-left: 2.5%;
+    margin-top: 2.5%;
+  }
+
+.table td, .table th {
+    padding: .25rem;
   }

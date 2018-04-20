@@ -3,8 +3,8 @@ Copyright 2018 @ Pontus Laestadius
 */
 
 var canvas;
-var car_width = 70;
-var car_height = 70;
+var car_width = 100;
+var car_height = 140;
 var y_offset = 0;
 var front_reading = 30;
 var deg = 0;
@@ -15,7 +15,7 @@ var head_offset = 0;
 var head_reading = 0;
 
 function drawAction() {
-    getCtx().drawImage(getImage(), -car_width/2,-car_height/2 +y_offset, car_width, car_height);
+    getCtx().drawImage(getImage(), -car_width/2,-car_height +18 +y_offset, car_width, car_height);
 }
 
 function front_inner() {
@@ -24,14 +24,17 @@ function front_inner() {
 }
 
 function front(val) {
+	console.log("F: " + val);
 	head_reading = val;
 }
 
 function accel(val) {
-	head_offset = val;
+	console.log("S: " + val);
+	head_offset = -val*10;
 }
 
 function angle(val) {
+	console.log("A: " + val);
 	head_angle = val;
 }
 
@@ -45,21 +48,31 @@ function updateCanvas() {
 	var ctx = getCtx();
 	front_inner();
 
-	ctx.translate( getWidth()/2 +car_width/2, getHeight()/2  +car_height/2);
+	ctx.translate( getWidth()/2 +car_width/4, getHeight()/2  +car_height/2);
 	ctx.rotate(deg*Math.PI/180);
 
 	__updateCanvas();
 
-	ctx.rotate(deg*Math.PI/180);
-	ctx.translate( -(getWidth()/2 +car_width/2), -(getHeight()/2  +car_height/2));
+	ctx.rotate(-deg*Math.PI/180);
+	ctx.translate( -(getWidth()/2 +car_width/4), -(getHeight()/2  +car_height/2));
 }
 
 function partialEquation(ideal, current) {
-	if (Math.abs(ideal + current) < 3) {
-		current = ideal;
+	var ite = 5;
+	var one_ite = ideal/ite;
+
+	if (ideal < 0 && current > 0) {
+			current += one_ite;
+	} else if (ideal > 0 && current < 0) {
+			current += one_ite;
 	} else {
-		current += ideal/10;
+		if (Math.abs(ideal) -Math.abs(current) < one_ite*2) {
+			current = ideal;
+		} else {
+			current += one_ite;
+		}
 	}
+
 	return current;
 }
 

@@ -26,6 +26,8 @@ var g_data = new Map();
 var ws; // Websocket
 var box = document.getElementById("box");
 var lc;
+var mock_random = new Array(3);
+mock_randomVals();
 
 $(document).ready(function(){
   
@@ -42,8 +44,15 @@ function setupViewer() {
 
   if ("WebSocket" in window) {
     body("grey");
-    ws = new WebSocket("ws://" + window.location.host + "/");    
-    ws.binaryType = 'arraybuffer';
+    if (window.location.host == "") {
+      console.log("No WebSocket address provided. Connection ignored.");
+        setInterval(mock_onInterval, Math.round(100 / g_renderFreq));
+        setInterval(mock_randomVals, Math.round(2000 / g_renderFreq));
+        return;
+    } else {
+          ws = new WebSocket("ws://" + window.location.host + "/");    
+          ws.binaryType = 'arraybuffer';
+    }
 
     ws.onopen = function() {
       body("LightGreen");
@@ -82,6 +91,8 @@ function onStreamOpen(lc) {
   document.getElementById("messages-count").innerText = lc.setMessageSpecification(odvd);
   
   setInterval(onInterval, Math.round(1000 / g_renderFreq));
+  setInterval(render, Math.round(100 / g_renderFreq));
+
 }
 
 function onStreamClosed() {
@@ -103,8 +114,10 @@ function onMessageReceived(lc, msg) {
 
   const payloadName = Object.keys(d)[5];
   
+  let val;
   for (const fieldName in d[payloadName]) {
     const fieldValue = d[payloadName][fieldName];
+    val = fieldValue;
     const field = {
       name : fieldName,
       value : fieldValue,
@@ -137,6 +150,16 @@ function onMessageReceived(lc, msg) {
   }
   
   storeData(sourceKey, data);
+
+  var tp = parseInt(data.dataType);
+  var ds = val;
+  if (tp == 1039) {
+    mock_simulate(ds, front);
+  } else if (tp == 1045) {
+    mock_simulate(ds, angle);
+  } else if (tp == 1041) {
+    mock_simulate(ds, accel);
+  }
 
   increment('messages-received');
 }
@@ -288,9 +311,6 @@ function storeData(sourceKey, data) {
   }
   g_data.get(sourceKey).push(data);
 
-
-
-
 }
 
 function onInterval() {
@@ -300,14 +320,34 @@ function onInterval() {
     updateFieldCharts(sourceKey, dataList);
   });
 
-  simulate("1039", front);
-  simulate("1045", angle);
-  simulate("2003", accel);
+
+}
+
+function mock_randomVals() {
+  for (var i = 0; i < mock_random.length; i++) {
+    mock_random[i] = parseInt(Math.random() * 30);
+  }
+}
+
+function render() {
   updateCanvas();
 }
 
+function mock_onInterval() {
+
+  mock_simulate(mock_random[0] *1.1, front);
+  mock_simulate((mock_random[1] / 19.32) -1, accel);
+  mock_simulate(mock_random[2] -15, angle);
+  updateCanvas();
+}
+
+function mock_simulate(id, fun) {
+    fun(id);
+}
+
 function simulate(id, fun) {
-  var dom = document.getElementById(id + "_" + id + "_field0_value");
+  var dom = document.getElementById(id + "_field0_value");
+
   if (dom == null) {
     return;
   }
@@ -408,16 +448,3 @@ function updateFieldCharts(sourceKey, dataList) {
     }
   }
 }
-
-  $('body').on('click', 'button#send', function(err) {
-    var jsonMessageToBeSent = "{\"percent\":0.16}";
-    console.log("SENDING: " + jsonMessageToBeSent);
-   var protoEncodedPayload = lc.encodeEnvelopeFromJSONWithoutTimeStamps(jsonMessageToBeSent, 1041, 0); 
-   strToAB = str =>
-     new Uint8Array(str.split('')
-       .map(c => c.charCodeAt(0))).buffer;
-
-   let logMsg = strToAB(protoEncodedPayload);
-    ws.send(logMsg, { binary: true });
-
-});

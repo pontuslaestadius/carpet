@@ -16,7 +16,7 @@
 
   <div id="content-wrapper">
 
-    <div class="wrapper">
+    <div class="wrapper" style="overflow-y: scroll;">
       <table id="dataView" class="table">
         <tr>
           <th class="signal-type">Type</th>
@@ -28,7 +28,7 @@
       </table>
       </div>
 
-      <div  class="wrapper">
+      <div class="wrapper">
         <table id="statistics-table" class="table">
           <tr>
             <th class="signal-type">Field</th>
@@ -57,8 +57,8 @@
         <div id="box" style="opacity: 1.0"></div>
       </div>
 
-      <div class="wrapper">
-        <canvas id="canvas" style="width: 100%; height: 100%;">Your ancient web browser does not support canvas.</canvas>
+      <div class="wrapper" style="overflow: hidden !important;">
+        <canvas id="canvas">Your ancient web browser does not support canvas.</canvas>
       </div>
 
     </div>
@@ -78,7 +78,7 @@
     <script type="text/javascript" src="canvas.js"></script>
 
     <img id="image" src="image.png" style="display: none">
-    <img id="cone" src="cone.jpg" style="display: none">
+    <img id="cone" src="cone.png" style="display: none">
   </body>
 </html>
 
