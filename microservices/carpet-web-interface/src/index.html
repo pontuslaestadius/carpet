@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Carpet web interface">
+    <meta name="author" content="Pontus Laestadius">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Carpet Web Interface</title>
+  </head>
+
+  <body>
+
+   <!-- <button id="send">send</button>  -->
+
+  <div id="content-wrapper">
+
+    <div class="wrapper">
+      <table id="dataView" class="table">
+        <tr>
+          <th class="signal-type">Type</th>
+          <th class="signal-sender">Sender</th>
+          <th class="signal-name">Name</th>
+          <th class="signal-frequency">Frequency</th>
+          <th class="signal-timestamp">Timestamp</th>
+        </tr>
+      </table>
+      </div>
+
+      <div  class="wrapper">
+        <table id="statistics-table" class="table">
+          <tr>
+            <th class="signal-type">Field</th>
+            <th class="signal-sender">#</th>
+          </tr>
+
+          <tr>
+            <td><b>messages loaded from specification</b></td>
+            <td id="messages-count">0</td>
+          </tr>
+
+          <tr>
+            <td><b>messages received</b></td>
+            <td id="messages-received">0</td>
+          </tr>
+
+          <tr>
+            <td><b>messages sent</b></td>
+            <td id="messages-sent">0</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="wrapper">
+        <div id="status"></div>
+        <div id="box" style="opacity: 1.0"></div>
+      </div>
+
+      <div class="wrapper">
+        <canvas id="canvas" style="width: 100%; height: 100%;">Your ancient web browser does not support canvas.</canvas>
+      </div>
+
+    </div>
+
+    <!-- Libraries -->
+    <script type="text/javascript" src="jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="popper.min.js"></script>
+    <script type="text/javascript" src="moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="Chart.js"></script>
+    <script type="text/javascript" src="bootstrap.min.js"></script>
+
+    <!-- Source code -->
+    <script type="text/javascript" src="libcluon.js"></script>
+    <script type="text/javascript" src="libcluon-viewer.js"></script>
+    <script type="text/javascript" src="interface.js"></script>
+    <script type="text/javascript" src="layout.js"></script>
+    <script type="text/javascript" src="canvas.js"></script>
+
+    <img id="image" src="image.png" style="display: none">
+    <img id="cone" src="cone.jpg" style="display: none">
+  </body>
+</html>
+
+
+
