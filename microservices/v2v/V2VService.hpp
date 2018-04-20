@@ -25,7 +25,7 @@ static const std::string YOUR_GROUP_ID  = "6";
 /********************************************************/
 
 static const int BROADCAST_CHANNEL = 250;
-static const int COMMANDER_LINK = 171;
+static const int COMMANDER_LINK = 171; //V2V link to commander.
 static const int DEFAULT_PORT = 50001;
 
 static const int ANNOUNCE_PRESENCE = 1001;
@@ -34,11 +34,17 @@ static const int FOLLOW_RESPONSE = 1003;
 static const int STOP_FOLLOW = 1004;
 static const int LEADER_STATUS = 2001;
 static const int FOLLOWER_STATUS = 3001;
+static const int IMU_READ = 0000; // Add real value.....
    
- //Well....
+ //Keeps track of LeaderStatus values so that we can correctly send to follower.
     static float LDS_MOVE = 0;
     static float LDS_TURN = 0;
     static float LDS_DIST = 0;
+
+//Follower Logic ....
+static float LATEST_SPEED = 0;
+static float LATEST_ANGLE = 0;
+static float LATEST_DIST = 0;
 
 class V2VService {
 public:

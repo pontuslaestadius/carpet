@@ -108,17 +108,22 @@ commander::commander(){
 		      	break;
                    }
 
+		   case IMU_READ: {
+			std::cout << " received IMU data " << std::endl;
+		   }
+
  	  	   case FOLLOW_REQUEST: {
 			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
 			std::cout << "Follow-Request received in commander." << std::endl;
 			break;
 		   }
-
-		   case 1041: {
+		   // So we can be sure it goes through...
+		   case FORWARD_MOVE: {
 			opendlv::proxy::PedalPositionReading steer = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
 			break;
 		   }
-		   case 1045: {
+		   // So we can be sure it goes through...
+		   case TURN_ANGLE: {
 			opendlv::proxy::GroundSteeringReading moverPer = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
 			break;
 		   }

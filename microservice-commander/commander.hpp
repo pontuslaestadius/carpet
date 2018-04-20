@@ -15,6 +15,7 @@ static const int forwardCID = 171;
 static const int TURN_DIRECTION = 1545;
 static const int MOVE_FORWARD = 1541;
 static const int DISTANCE_READ = 1039;
+static const int IMU_READ = 1038;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
 //Follower
@@ -37,7 +38,8 @@ class commander{
 //Declare the public methods and variables.
 public:
 	commander();
-
+	
+	// Test methods for OD4 values.
 	void testMove();
 	void testTurnLeft();
 	void testTurnRight();

@@ -14,7 +14,7 @@ int main() {
     std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 
 	while (1) {
-        int choice;
+        /*int choice;
         std::string groupId;
         std::cout << "Which message would you like to send?" << std::endl;
         std::cout << "(1) AnnouncePresence" << std::endl;
@@ -49,7 +49,7 @@ int main() {
             case 5: v2vService->leaderStatus(50, 0, 100); break;
             case 6: v2vService->followerStatus(); break;
             default: exit(0);
-        }
+        }*/
     }
 }
 
@@ -95,7 +95,7 @@ V2VService::V2VService() {
                        FollowRequest followRequest = decode<FollowRequest>(msg.second);
                        std::cout << "received '" << followRequest.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
-			//toCommander->send(followRequest);
+			toCommander->send(followRequest);
 
                        // After receiving a FollowRequest, check first if there is currently no car already following.
                        if (followerIp.empty()) {
@@ -148,6 +148,30 @@ V2VService::V2VService() {
 
                        /* TODO: implement follow logic */
 
+
+			if(leaderStatus.speed() == 0 && leaderStatus.steeringAngle() == 0) break;
+
+			//std::queue<leaderStatus> command_queue; // I have no idea if this is right.
+			 
+			// Check what has changed since the last received command was executed.
+			if(leaderStatus.speed() != LATEST_SPEED) {
+				LATEST_SPEED = leaderStatus.speed();
+				std::cout << " Changed speed to " << leaderStatus.speed() << std::endl;
+				Move move;
+				move.percent(leaderStatus.speed());
+				toCommander->send(move);
+			}
+			else if(leaderStatus.steeringAngle() != LATEST_ANGLE) {
+				LATEST_ANGLE = leaderStatus.steeringAngle();
+				std::cout << " Changed angle to " << leaderStatus.steeringAngle() << std::endl;
+				Turn trn;
+				trn.steeringAngle(leaderStatus.steeringAngle());
+				toCommander->send(trn);
+			}
+			else if(leaderStatus.distanceTraveled() != LATEST_DIST) {
+				LATEST_DIST != leaderStatus.distanceTraveled();
+			}
+
                        break;
                    }
 			
@@ -163,7 +187,6 @@ V2VService::V2VService() {
 		    case 1541: { //Move message
 			Move forwardMsg = cluon::extractMessage<Move>(std::move(envelope));
 			std::cout << "Received 'Move' request from commander with speed " << forwardMsg.percent() << std::endl;
-			//LeaderStatus ldst;
 			LDS_MOVE = forwardMsg.percent();
 			std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
 			leaderStatus(forwardMsg.percent(), LDS_TURN, LDS_DIST);
@@ -176,6 +199,11 @@ V2VService::V2VService() {
 			LDS_TURN = steerMsg.steeringAngle();
 			std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
 			leaderStatus(LDS_MOVE, steerMsg.steeringAngle(), LDS_DIST);
+			break;
+		    }
+
+		    case IMU_READ: { //IMU Data..TODO: Add message spec for it in the odvd file....
+			
 			break;
 		    }
 
