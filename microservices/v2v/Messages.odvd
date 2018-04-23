@@ -6,6 +6,14 @@ message Move [id = 1541] {
   float percent [id = 1];
 }
 
+message DistanceTraveled [id = 1546]{
+  float distanceTraveled [id = 1];
+}
+
+message Time [id = 1548] {
+  uint32 timestamp [id = 1];
+}
+
 message opendlv.proxy.GroundSteeringReading [id = 1045] {
   float steeringAngle [id = 1];
 }

@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iostream>
 #include <cstdint>
+#include <queue>
 
 #include "cluon/OD4Session.hpp"
 #include "cluon/UDPSender.hpp"
@@ -45,6 +46,7 @@ static const int IMU_READ = 0000; // Add real value.....
 static float LATEST_SPEED = 0;
 static float LATEST_ANGLE = 0;
 static float LATEST_DIST = 0;
+static float LATEST_TIME = 0;
 
 class V2VService {
 public:

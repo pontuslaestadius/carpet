@@ -147,12 +147,16 @@ V2VService::V2VService() {
 		        << " Distance: " << leaderStatus.distanceTraveled() << std::endl;
 
                        /* TODO: implement follow logic */
-
-
+			
+			// While queue is not empty...&& keep adding new stuff to the queue... How will this work with new incoming messages?
+			// Put it in separate method?
 			if(leaderStatus.speed() == 0 && leaderStatus.steeringAngle() == 0) break;
 
-			//std::queue<leaderStatus> command_queue; // I have no idea if this is right.
-			 
+			//std::queue<leaderStatus> command_queue; // I have no idea if this is right. custom type is unavailable?
+
+			
+	
+		//while(!command_queue.empty()) {
 			// Check what has changed since the last received command was executed.
 			if(leaderStatus.speed() != LATEST_SPEED) {
 				LATEST_SPEED = leaderStatus.speed();
@@ -161,6 +165,7 @@ V2VService::V2VService() {
 				move.percent(leaderStatus.speed());
 				toCommander->send(move);
 			}
+
 			else if(leaderStatus.steeringAngle() != LATEST_ANGLE) {
 				LATEST_ANGLE = leaderStatus.steeringAngle();
 				std::cout << " Changed angle to " << leaderStatus.steeringAngle() << std::endl;
@@ -168,10 +173,25 @@ V2VService::V2VService() {
 				trn.steeringAngle(leaderStatus.steeringAngle());
 				toCommander->send(trn);
 			}
+
 			else if(leaderStatus.distanceTraveled() != LATEST_DIST) {
-				LATEST_DIST != leaderStatus.distanceTraveled();
+				LATEST_DIST = leaderStatus.distanceTraveled();
+				std::cout << " Changed distanceTraveled to " << leaderStatus.distanceTraveled() << std::endl;
+				DistanceTraveled dist;
+				dist.distanceTraveled(leaderStatus.distanceTraveled());
+				toCommander->send(dist);
 			}
 
+			else if(leaderStatus.timestamp() != LATEST_TIME) {
+				LATEST_TIME = leaderStatus.timestamp();
+				std::cout << " Changed timestamp to " << leaderStatus.timestamp() << std::endl;
+				//Time timeStmp;
+				//timeStmp.timestamp(leaderStatus.timestamp());
+				//toCommander->send(timeStmp);
+			}
+		//}
+
+			// ---------------
                        break;
                    }
 			
