@@ -1,11 +1,43 @@
-message Move [id = 1020] {
+message opendlv.proxy.GroundSteeringReading [id = 1045] {
   float steeringAngle [id = 1];
 }
 
-message Turn [id = 1021] {
+message opendlv.proxy.PedalPositionReading [id = 1041] {
+  float percent [id = 1];
+}
+
+message Turn [id = 1545] {
+  float steeringAngle [id = 1];
+}
+
+message Move [id = 1541] {
   float percent [id = 1];
 }
 
 message opendlv.proxy.DistanceReading [id = 1039] {
   float distance [id = 1];
+}
+
+message AnnouncePresence [id = 1001] {
+  string vehicleIp [id = 1];
+  string groupId [id = 3];
+}
+
+message FollowRequest [id = 1002] {
+}
+
+message FollowResponse [id = 1003] {
+}
+
+message StopFollow [id = 1004] {
+}
+
+message LeaderStatus [id = 2001] {
+  uint32 timestamp [id = 1];
+  float speed [id = 2];
+  float steeringAngle [id = 3];
+  uint8 distanceTraveled [id = 4];
+}
+
+message FollowerStatus [id = 3001] {
 }

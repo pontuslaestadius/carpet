@@ -11,15 +11,22 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*
+  Modifications performed by Pontus Laestadius.
+*/
+
 
 const g_renderFreq = 4.0;
-const g_maxDataAge = 10.0;
-const g_maxFieldChartValues = 10;
+const g_maxDataAge = 15.0;
+const g_maxFieldChartValues = 20;
 
 var g_charts = new Map();
 var g_chartConfigs = new Map();
 var g_data = new Map();
-var g_pause = false;
+var ws; // Websocket
+var box = document.getElementById("box");
+var lc;
+
 
 $(document).ready(function(){
   
@@ -27,27 +34,31 @@ $(document).ready(function(){
     const idFieldsRow = $(this).attr('id') + '_fields';
     $('#' + idFieldsRow).toggleClass('hidden');
   });
-  
-  $('body').on('click', 'button#pause', function() {
-    g_pause = !g_pause;
-    if (g_pause) {
-      $('button#pause').html('Continue');
-    } else {
-      $('button#pause').html('Pause');
-    }
-  });
-  
+
   setupViewer();
 });
 
 function setupViewer() {
-  var lc = libcluon();
+  lc = libcluon();
 
   if ("WebSocket" in window) {
-    var ws = new WebSocket("ws://" + window.location.host + "/");
-    ws.binaryType = 'arraybuffer';
+    body("grey");
+
+    // This is to enable mock mode in your local machine.
+    if (window.location.host == "") {
+      console.log("No WebSocket address provided. Connection ignored.");
+        setInterval(mock_onInterval, Math.round(100 / g_renderFreq));
+        setInterval(mock_randomVals, Math.round(1000 / g_renderFreq));
+        return;
+
+    } else {
+          ws = new WebSocket("ws://" + window.location.host + "/");    
+          ws.binaryType = 'arraybuffer';
+    }
 
     ws.onopen = function() {
+      body("LightGreen");
+      box.style.opacity = "1.0";
       onStreamOpen(lc);
     }
 
@@ -56,12 +67,18 @@ function setupViewer() {
     };
 
     ws.onclose = function() {
-      onStreamClosed();
+      body("Tomato");
+      box.style.opacity = "0.0";
     };
 
   } else {
-    console.log("Error: websockets not supported by your browser.");
+    body("Yellow");
   }
+}
+
+function body(c) {
+  var z = document.getElementById("status");
+  z.style.backgroundColor = c;
 }
 
 function onStreamOpen(lc) {
@@ -73,11 +90,11 @@ function onStreamOpen(lc) {
   }
 
   var odvd = getResourceFrom("messages.odvd");
-
-  console.log("Connected to stream.");
-  console.log("Loaded " + lc.setMessageSpecification(odvd) + " messages from specification.");
+  document.getElementById("messages-count").innerText = lc.setMessageSpecification(odvd);
   
   setInterval(onInterval, Math.round(1000 / g_renderFreq));
+  setInterval(render, Math.round(100 / g_renderFreq));
+
 }
 
 function onStreamClosed() {
@@ -85,10 +102,6 @@ function onStreamClosed() {
 }
 
 function onMessageReceived(lc, msg) {
-
-  if (g_pause) {
-    return;
-  }
 
   var data_str = lc.decodeEnvelopeToJSON(msg);
 
@@ -98,14 +111,15 @@ function onMessageReceived(lc, msg) {
 
   d = JSON.parse(data_str);
 
-
   // Translate to nice JSON ..
   var payloadFields = new Array();
 
   const payloadName = Object.keys(d)[5];
   
+  let val;
   for (const fieldName in d[payloadName]) {
     const fieldValue = d[payloadName][fieldName];
+    val = fieldValue;
     const field = {
       name : fieldName,
       value : fieldValue,
@@ -138,6 +152,10 @@ function onMessageReceived(lc, msg) {
   }
   
   storeData(sourceKey, data);
+
+  convertMessageReadingsToSimulation(val, data.dataType);
+
+  increment('messages-received');
 }
 
 function toTime(t) {
@@ -286,22 +304,21 @@ function storeData(sourceKey, data) {
     g_data.get(sourceKey).shift();
   }
   g_data.get(sourceKey).push(data);
+
 }
 
 function onInterval() {
-  if (g_pause) {
-    return;
-  }
-
   g_data.forEach(function(dataList, sourceKey, map) {
     const newestData = dataList[dataList.length - 1];
     updateTableData(sourceKey, newestData);
     updateFieldCharts(sourceKey, dataList);
   });
+
+
 }
 
-function updateTableData(sourceKey, data) {
 
+function updateTableData(sourceKey, data) {
   const dataList = g_data.get(sourceKey);
   if (dataList.length > 10) {
     const firstTimestamp = dataList[0].sent;
@@ -323,6 +340,7 @@ function updateTableData(sourceKey, data) {
     const fieldValue = cutLongField(field.type, field.value);
     $('td#' + sourceKey + '_field' + i + '_value').html(fieldValue);
   }
+  
 }
 
 function updateFieldCharts(sourceKey, dataList) {
