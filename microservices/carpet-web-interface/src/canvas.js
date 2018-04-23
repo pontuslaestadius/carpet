@@ -19,16 +19,33 @@ var head_angle = 0;
 var head_offset = 0;
 var head_reading = 0;
 
+// Used for follower / leader mimicing.
+var prev_head_angle = 0;
+var prev_head_offset = 0;
+var prev_head_reading = 0;
+
+var follower = false;
+var leader = false;
+
 function front(val) {
+	prev_head_reading = head_reading;
 	head_reading = val*5;
 }
 
 function accel(val) {
+	prev_head_offset = head_offset;
 	head_offset = -val*60;
 }
 
 function angle(val) {
+	prev_head_angle = head_angle;
 	head_angle = val*2;
+}
+
+function rotateDraw(deg, fun) {
+	ctx.rotate(deg*Math.PI/180);
+	fun();
+	ctx.rotate(-deg*Math.PI/180);
 }
 
 function updateCanvas() {
@@ -43,6 +60,19 @@ function updateCanvas() {
 	ctx.translate( getWidth()/2, getHeight()/2);
 	ctx.rotate(deg*Math.PI/180);
 
+
+	if (leader || follower) {
+		if (follower && leader) {
+			follower = false;
+		}
+
+		if (leader) {
+			drawLeader();
+		} else {
+			drawFollower();
+		}
+
+	}
 	draw();
 
 	ctx.rotate(-deg*Math.PI/180);
@@ -78,20 +108,86 @@ Draws the components on the canvas.
 
 **/
 function draw() {
+
 	var ctx = getCtx();
- 	ctx.fillRect(0,0,5,5); 	
- 	ctx.drawImage(vehicle, 
- 		-car_width/2, -car_height/2 +y_offset, 
- 		car_width, car_height);
-	ctx.drawImage(cone, 
-		-car_width/2 +6, -car_height/2 +y_offset -front_reading +25, 
-		car_width, front_reading);
+
+	var w = car_width;
+	var h = car_height;
+	var y = y_offset;
+
+	if (follower || leader) {
+		w = w/2;
+		h = h/2;
+
+		if (leader) {
+			y = y-h/2;
+		} else {
+			y = y+h/2;
+			deg = partialEquation(prev_head_angle, deg);
+			y_offset = partialEquation(prev_head_offset, y_offset);
+
+			ctx.rotate(deg*Math.PI/180);
+		}
+
+	}
+
+ 	ctx.drawImage(vehicle, -w/2, -h/2 +y, w, h);
+	ctx.drawImage(cone, -w/2 +6, -h/2 +y -front_reading +25, w, front_reading);
+
+	if (follower) {
+		ctx.rotate(-deg*Math.PI/180);
+	}
+}
+
+function drawLeader() {
+	var ctx = getCtx();
+
+	var w = car_width/2;
+	var h = car_height/2;
+	var y = y_offset - h/2;
+
+	deg = partialEquation(prev_head_angle, deg);
+	y_offset = partialEquation(prev_head_offset, y_offset);
+
+	ctx.rotate(deg*Math.PI/180);
+
+	ctx.drawImage(vehicle, -w/2, +h/2 +y, w, h);
+
+	ctx.rotate(-deg*Math.PI/180);
+}
+
+function drawFollower() {
+	var ctx = getCtx();
+
+	var w = car_width/2;
+	var h = car_height/2;
+	var y = y_offset + h/2;
+
+	ctx.drawImage(vehicle, -w/2, -h*1.5 +y, w, h);
 }
 
 function clear() {
 	getCtx().clearRect(0, 0, getWidth(), getHeight());
 }
 
+function toggleFollow() { 
+	if (leader) {
+		leader = false;
+	}
+	follower = !follower; 
+}
+function toggleLead() { 
+	if (follower) {
+		follower = false;
+	}
+	leader = !leader; 
+}
+
 function getWidth() { return canvas.width; }
 function getHeight() { return canvas.height; }
 function getCtx() { return canvas.getContext('2d'); }
+
+function stopFollow() { follower = false; }
+function startFollow() { follower = true; }
+function stopLead() { leader = false; }
+function startLead() { leader = true; }

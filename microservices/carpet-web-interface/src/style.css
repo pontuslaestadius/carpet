@@ -3,6 +3,10 @@ span.dots {
   color: darkblue;
 }
 
+table {
+  font-size: 14px;
+}
+
 table#dataView {
   width: 80%;
 }
@@ -24,15 +28,15 @@ th.signal-type, th.signal-sender, th.signal-frequency, th.signal-name {
 }
 
 th.signal-timestamp {
-  min-width: 100px;
+  min-width: 50px;
 }
 
 td.field-name {
-  min-width: 200px;
+  min-width: 100px;
 }
 
 td.field-plot {
-  min-width: 300px;
+  min-width: 200px;
 }
 
   #box {
@@ -113,4 +117,9 @@ td.field-plot {
 
   img {
     display: none;
+  }
+
+  .btn {
+    margin: 20px;
+    float: left;
   }

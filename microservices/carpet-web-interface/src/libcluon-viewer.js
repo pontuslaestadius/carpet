@@ -48,7 +48,7 @@ function setupViewer() {
     if (window.location.host == "") {
       console.log("No WebSocket address provided. Connection ignored.");
         setInterval(mock_onInterval, Math.round(100 / g_renderFreq));
-        setInterval(mock_randomVals, Math.round(2000 / g_renderFreq));
+        setInterval(mock_randomVals, Math.round(1000 / g_renderFreq));
         return;
 
     } else {

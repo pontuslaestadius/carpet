@@ -12,8 +12,10 @@ for (var i = 0; i < size; i++) {
   table[i] = new Array(4);
 }
 
-var mock_random = new Array(3);
-mock_randomVals();
+var mock_max = 3;
+var mock_size = 0;
+var mock_random = new Array(mock_max);
+mock_randomVals(3);
 
 /**
 
@@ -94,6 +96,8 @@ Converts a data to that of a simulated message on the canvas.
 function convertMessageReadingsToSimulation(val, type) {
   type = parseInt(type);
   switch(type) {
+    case 1004:
+    mock_simulate(null, stopFollow);
     case 1039:
     mock_simulate(val, front);
         break;
@@ -160,10 +164,22 @@ function __send(socket, msg, id) {
   increment('messages-sent');
 }
 
+/**
 
-function mock_randomVals() {
-  for (var i = 0; i < mock_random.length; i++) {
-    mock_random[i] = parseInt(Math.random() * 30);
+Recursively sets a count mock data based on the number provided.
+
+**/
+function mock_randomVals(c) {
+  mock_random[mock_size++] = parseInt(Math.random() * 30);
+
+  if (mock_size >= mock_max) {
+    mock_size = 0;
+  }
+
+  if (c == null || c == 0) {
+    return;
+  } else {
+    mock_randomVals(c-1);
   }
 }
 
@@ -180,7 +196,11 @@ function mock_onInterval() {
 }
 
 function mock_simulate(id, fun) {
-    fun(id);
+    if (id == null) {
+      fun();
+    } else {
+      fun(id);
+    }
 }
 
 function simulate(id, fun) {
