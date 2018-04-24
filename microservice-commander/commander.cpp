@@ -72,7 +72,7 @@ commander::commander(){
     receivedMessage =
         std::make_shared<cluon::OD4Session>(CID,
           [this](cluon::data::Envelope &&envelope) noexcept {
-		std::cout << "OD4 Session " << std::endl;
+		std::cout << "OD4 Session ";
 		
 	// Should differentiate betwen input devices. 
 	if(envelope.dataType() == DISTANCE_READ) {
@@ -90,7 +90,7 @@ commander::commander(){
 	}
 
 
-
+	
 	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == IMU_READ) {
 
 	      // Set up response depending on the message type received through the od4 session.
@@ -121,10 +121,11 @@ commander::commander(){
                    }
 
 		   case STOP: {
+			std::cout << " A stop message was received, stopping and resetting steering... " << std::endl;
 			opendlv::proxy::PedalPositionReading speed;
 			opendlv::proxy::GroundSteeringReading angle;
-			speed.percent(0);
-			angle.steeringAngle(0);
+			speed.percent(0); // Stop moving.
+			angle.steeringAngle(0); // Reset steering angle.
 			receivedMessage->send(speed);
 			receivedMessage->send(angle);
 			break;
@@ -132,6 +133,8 @@ commander::commander(){
 
 		   case IMU_READ: {
 			std::cout << " received IMU data " << std::endl;
+			//ADD what will happen with IMU stuff..
+			//forwardedMessage->send(imuData);
 		   }
 
 		  // In the case we recieve rogue messages.
