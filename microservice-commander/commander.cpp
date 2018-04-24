@@ -75,7 +75,23 @@ commander::commander(){
 		std::cout << "OD4 Session " << std::endl;
 		
 	// Should differentiate betwen input devices. 
-	if(envelope.dataType().fromDevice() == 1510){
+	if(envelope.dataType() == DISTANCE_READ) {
+		opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
+		std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
+		if(dist.distance() < 35) {
+		  distRead += 1;		
+		}
+		if(distRead == 5) {
+		  Stop stopMove;
+		  receivedMessage->send(stopMove);
+		  distRead = 0;	
+		}		
+
+	}
+
+
+
+	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == IMU_READ) {
 
 	      // Set up response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
@@ -104,11 +120,15 @@ commander::commander(){
 		      	break;
                    }
 
-		   case DISTANCE_READ: { //TODO: Incorporate this for priority distribution.
-			opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
-			std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
-		      	break;
-                   }
+		   case STOP: {
+			opendlv::proxy::PedalPositionReading speed;
+			opendlv::proxy::GroundSteeringReading angle;
+			speed.percent(0);
+			angle.steeringAngle(0);
+			receivedMessage->send(speed);
+			receivedMessage->send(angle);
+			break;
+		   }
 
 		   case IMU_READ: {
 			std::cout << " received IMU data " << std::endl;
@@ -119,7 +139,7 @@ commander::commander(){
 		}
 	      }
 
-	   else{
+	   else if (envelope.dataType() == FOLLOW_REQUEST || envelope.dataType() == FOLLOW_RESPONSE || envelope.dataType() == STOP_FOLLOW || envelope.dataType() == FOLLOWER_STATUS){
 
 	      switch(envelope.dataType()) {
  	  	   case FOLLOW_REQUEST: {

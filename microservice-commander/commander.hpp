@@ -16,6 +16,7 @@ static const int TURN_DIRECTION = 1545;
 static const int MOVE_FORWARD = 1541;
 static const int DISTANCE_READ = 1039;
 static const int IMU_READ = 1038;
+static const int STOP = 1550;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
 //Follower
@@ -33,6 +34,8 @@ static const int FORWARDED_TURN = 1545;
 //If needed variables --------------
 static const int FORWARD_MOVE = 1041;
 static const int TURN_ANGLE = 1045;
+
+int distRead = 0;
 
 class commander{
 //Declare the public methods and variables.

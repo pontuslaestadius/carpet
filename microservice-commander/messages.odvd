@@ -6,6 +6,10 @@ message Move [id = 1541] {
   float percent [id = 1];
 }
 
+message Stop [id = 1550] {
+  float something [id = 1];
+}
+
 message opendlv.proxy.GroundSteeringReading [id = 1045] {
   float steeringAngle [id = 1];
 }
