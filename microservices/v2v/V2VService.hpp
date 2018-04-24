@@ -41,6 +41,7 @@ static const int IMU_READ = 0000; // Add real value.....
     static float LDS_MOVE = 0;
     static float LDS_TURN = 0;
     static float LDS_DIST = 0;
+    std::string groupId;
 
 //Follower Logic ....
 static float LATEST_SPEED = 0;

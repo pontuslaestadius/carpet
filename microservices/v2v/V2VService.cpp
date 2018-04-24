@@ -117,7 +117,6 @@ V2VService::V2VService() {
                        std::cout << "received '" << stopFollow.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
                
-
                        // Clear either follower or leader slot, depending on current role.
                        unsigned long len = sender.find(':');
                        if (sender.substr(0, len) == followerIp) {
@@ -128,6 +127,7 @@ V2VService::V2VService() {
                            leaderIp = "";
                            toLeader.reset();
                        }
+
                        break;
                    }
                    case FOLLOWER_STATUS: {
@@ -224,6 +224,29 @@ V2VService::V2VService() {
 
 		    case IMU_READ: { //IMU Data..TODO: Add message spec for it in the odvd file....
 			
+			break;
+		    }
+
+		    case FOLLOWER_STATUS: {
+			followerStatus();
+			break;
+		    }
+
+		    case FOLLOW_REQUEST: {
+			FollowRequest followReq = cluon::extractMessage<FollowRequest>(std::move(envelope));
+			followRequest(presentCars[groupId]);
+			break;
+		    }
+
+		    case FOLLOW_RESPONSE: {
+			followResponse();
+			break;
+		    }
+
+		    case STOP_FOLLOW: {
+			StopFollow stpFollow = cluon::extractMessage<StopFollow>(std::move(envelope));
+		    	if (presentCars.find(stpFollow.groupId()) != presentCars.end())
+                   		 stopFollow(presentCars[stpFollow.groupId()]);
 			break;
 		    }
 

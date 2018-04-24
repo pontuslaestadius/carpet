@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 12/4 - 2018
+  Last Updated: 23/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -66,7 +66,6 @@ int main(){
 	
 }
 
-
 // Control car through OD4 messages received etc.
 commander::commander(){	
     // Connects to od4 session with CID:170 (Can be changed in the header file, OBS: group6 range 170-179).
@@ -74,6 +73,9 @@ commander::commander(){
         std::make_shared<cluon::OD4Session>(CID,
           [this](cluon::data::Envelope &&envelope) noexcept {
 		std::cout << "OD4 Session " << std::endl;
+		
+	// Should differentiate betwen input devices. 
+	if(envelope.dataType().fromDevice() == 1510){
 
 	      // Set up response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
@@ -102,7 +104,7 @@ commander::commander(){
 		      	break;
                    }
 
-		   case DISTANCE_READ: { //TODO: Incorporate this for follower mode.
+		   case DISTANCE_READ: { //TODO: Incorporate this for priority distribution.
 			opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
 			std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
 		      	break;
@@ -112,25 +114,46 @@ commander::commander(){
 			std::cout << " received IMU data " << std::endl;
 		   }
 
+		  // In the case we recieve rogue messages.
+                  default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
+		}
+	      }
+
+	   else{
+
+	      switch(envelope.dataType()) {
  	  	   case FOLLOW_REQUEST: {
 			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			std::cout << "Follow-Request received in commander." << std::endl;
+			std::cout << " Follow-Request received in commander. " << std::endl;
+			forwardedMessage->send(frq);
 			break;
 		   }
-		   // So we can be sure it goes through...
-		   case FORWARD_MOVE: {
-			opendlv::proxy::PedalPositionReading steer = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
+
+	  	 case FOLLOW_RESPONSE: {
+			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
+			std::cout << "Follow-Response received in commander. " << std::endl;
+			forwardedMessage->send(frp);
 			break;
-		   }
-		   // So we can be sure it goes through...
-		   case TURN_ANGLE: {
-			opendlv::proxy::GroundSteeringReading moverPer = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
+ 	 	  }
+
+	  	 case STOP_FOLLOW: {
+			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
+			std::cout << " Stop-Follow received in commander. " << std::endl;
+			forwardedMessage->send(stf);
 			break;
-		   }
+	  	 }
+
+	  	 case FOLLOWER_STATUS: {
+			FollowerStatus fls = cluon::extractMessage<FollowerStatus>(std::move(envelope));
+			std::cout << " Follower-Status request received in commander. " << std::endl;
+			forwardedMessage->send(fls);
+			break;
+		 }
 
 		  // In the case we recieve rogue messages.
                   default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
               }
+	}
     });
 
 
