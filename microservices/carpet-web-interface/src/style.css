@@ -94,16 +94,10 @@ td.field-plot {
     body, .wrapper {
         background-color: lightblue;
     }
-
-  li:hover > input {
+    
+  li input {
     height: auto;
     width: 100%;
-  }
-
-  li input {
-    height: 5px;
-    width: 5px;
-    transition: 0.26s ease-in-out;
   }
 
   canvas {

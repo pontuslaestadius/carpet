@@ -12,18 +12,16 @@ int main() {
 
     std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 
-	while (1) {
-        int choice;
-        std::string groupId;
-        std::cout << "Which message would you like to send?" << std::endl;
         std::cout << "(1) AnnouncePresence" << std::endl;
         std::cout << "(2) FollowRequest" << std::endl;
         std::cout << "(3) FollowResponse" << std::endl;
         std::cout << "(4) StopFollow" << std::endl;
         std::cout << "(5) LeaderStatus" << std::endl;
         std::cout << "(6) FollowerStatus" << std::endl;
-        std::cout << "(#) Nothing, just quit." << std::endl;
-        std::cout << ">> ";
+
+	while (1) {
+        int choice;
+        std::string groupId;
         std::cin >> choice;
 
         switch (choice) {
@@ -47,6 +45,8 @@ int main() {
             }
             case 5: v2vService->leaderStatus(50, 0, 100); break;
             case 6: v2vService->followerStatus(); break;
+
+
             default: exit(0);
         }
     }
@@ -142,7 +142,7 @@ V2VService::V2VService() {
                       LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
 
                       addTimeStackListener();
-                      TimeStack::getInstance()->push(leaderStatus);
+                      getInstance()->push(leaderStatus);
 
                       break;
                    }
