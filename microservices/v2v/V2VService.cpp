@@ -190,7 +190,7 @@ V2VService::V2VService() {
 
 		    case FOLLOW_REQUEST: {
 			FollowRequest followReq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			followRequest(presentCars[groupId]);
+			followRequest(presentCars["12"]);
 			break;
 		    }
 
@@ -201,8 +201,8 @@ V2VService::V2VService() {
 
 		    case STOP_FOLLOW: {
 			StopFollow stpFollow = cluon::extractMessage<StopFollow>(std::move(envelope));
-		    	if (presentCars.find(stpFollow.groupId()) != presentCars.end())
-                   		 stopFollow(presentCars[stpFollow.groupId()]);
+		    	if (presentCars.find("12") != presentCars.end())
+                   		 stopFollow(presentCars["12"]);
 			break;
 		    }
 
