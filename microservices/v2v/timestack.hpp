@@ -26,7 +26,6 @@ pthread_t listener;
 TimeStack *p_inst;
 
 inline void push(LeaderStatus ls);
-void executeOrder66(LeaderStatus leaderStatus);
 TimeStack* getInstance();
 
 /**
@@ -80,7 +79,6 @@ public:
 		uint32_t waitUntil = nextLeaderStatus.timestamp() +AFTER;
 
 		if (start < waitUntil) {
-			printf("Pop wait, %d\n", (waitUntil - start));
 			usleep((waitUntil - start) * TOMS);
 		}
 		
@@ -88,7 +86,6 @@ public:
 	};
 
 	inline void push(LeaderStatus ls) {
-		std::cout << "Follower Queue {" << this->readyQueue->size() << "}" << std::endl;
 		this->readyQueue->push(ls);
 	};
 };
@@ -134,8 +131,6 @@ void* loopListener(void*) {
 		
 		//int time = leaderStatus.distanceTraveled() * 5 * 6;
 
-		printf("Executing (speed: %f,angle: %f, for %dms)\n", leaderStatus.speed(), leaderStatus.steeringAngle(), time);
-
 		{
 			Turn turn;
 			turn.steeringAngle(leaderStatus.steeringAngle());
@@ -146,6 +141,8 @@ void* loopListener(void*) {
 			od4.send(turn);
 			od4.send(move);
 		}
+
+		/*
 
 		usleep(125 * TOMS);
 
@@ -159,6 +156,8 @@ void* loopListener(void*) {
 			od4.send(turn);
 			od4.send(move);
 		}
+
+		*/
 	}
 }
 
@@ -184,7 +183,7 @@ inline void addTimeStackListener() {
 		// push a leaderstatus with an distance offset from the leader.
       if (firstTime) {
       	LeaderStatus firstTimer;
-      	firstTimer.speed(0.1);
+      	firstTimer.speed(0.2);
       	firstTimer.distanceTraveled(DISTANCEFROMLEADER);
       	firstTimer.steeringAngle(0);
       	getInstance()->push(firstTimer);

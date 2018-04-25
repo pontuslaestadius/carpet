@@ -160,7 +160,7 @@ function onMessageReceived(lc, msg) {
 
 function toTime(t) {
   const milliseconds = t.seconds * 1000 + t.microseconds / 1000;
-  return "" + milliseconds + "ms";
+  return  milliseconds + "";
   //return moment(milliseconds).format('YYYY-MM-DD hh:mm:ss');
 }
 
@@ -172,7 +172,7 @@ function cutLongField(type, value) {
 }
 
 function addTableData(sourceKey, data) {
-  
+
   if($('tr#' + sourceKey).length == 0) {
 
     const name = data.payload.name;
