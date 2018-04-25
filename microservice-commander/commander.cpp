@@ -81,6 +81,9 @@ commander::commander(){
 		if(dist.distance() < 35) {
 		  distRead += 1;		
 		}
+		else{
+		  distRead = 0;
+		}
 		if(distRead == 5) {
 		  Stop stopMove;
 		  receivedMessage->send(stopMove);
@@ -90,7 +93,6 @@ commander::commander(){
 	}
 
 
-	
 	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
 
 	      // Set up response depending on the message type received through the od4 session.
@@ -100,9 +102,9 @@ commander::commander(){
                         Turn trn = cluon::extractMessage<Turn>(std::move(envelope)); // Should be enough??
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 			opendlv::proxy::GroundSteeringReading msgSteering;			
-		        msgSteering.steeringAngle(trn.steeringAngle()-5); // Turn appropriately, For forwarding to follower;
+		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately
 			receivedMessage->send(msgSteering);
-			std::cout << "'TURN' message sent to car with angle " << trn.steeringAngle() << std::endl;
+			std::cout << "'TURN' message sent to car with angle " << (trn.steeringAngle()) << std::endl;
 			forwardedMessage->send(trn);
 		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
@@ -139,7 +141,11 @@ commander::commander(){
 
 		   case ANNOUNCE_PRESENCE: {
 			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
-			presence->send(ap);
+			AnnouncePresence ap2;
+			std::cout << " AP: " << ap.groupId() << "  " << ap.vehicleIp() << std::endl;
+			ap2.vehicleIp(ap.vehicleIp());
+			ap2.groupId(ap.groupId());
+			presence->send(ap2);
 			break;
 		   }
 		}
