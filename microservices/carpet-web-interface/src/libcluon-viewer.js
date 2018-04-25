@@ -160,6 +160,7 @@ function onMessageReceived(lc, msg) {
 
 function toTime(t) {
   const milliseconds = t.seconds * 1000 + t.microseconds / 1000;
+  return "" + milliseconds + "ms";
   return moment(milliseconds).format('YYYY-MM-DD hh:mm:ss');
 }
 
