@@ -142,9 +142,9 @@ commander::commander(){
 		   case ANNOUNCE_PRESENCE: {
 			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
 			AnnouncePresence ap2;
-			std::cout << " AP: " << ap.groupId() << "  " << ap.vehicleIp() << std::endl;
-			ap2.vehicleIp(ap.vehicleIp());
-			ap2.groupId(ap.groupId());
+			ap2.vehicleIp("192.168.43.135");
+			ap2.groupId("6");
+			std::cout << " Sending AP: " << ap2.groupId() << "  " << ap2.vehicleIp() << std::endl;
 			presence->send(ap2);
 			break;
 		   }
