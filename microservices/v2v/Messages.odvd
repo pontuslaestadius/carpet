@@ -36,7 +36,6 @@ message AnnouncePresence [id = 1001] {
 }
 
 message FollowRequest [id = 1002] {
-  string groupId [id = 1];
 }
 
 message FollowResponse [id = 1003] {

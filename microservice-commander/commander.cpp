@@ -185,6 +185,10 @@ commander::commander(){
 		}
 
               }
+	
+	else if(envelope.dataType() == 8){
+		;
+	}
 
 	else{
 	   std::cout << " Unknown message type of id: " << envelope.dataType() << std::endl;
