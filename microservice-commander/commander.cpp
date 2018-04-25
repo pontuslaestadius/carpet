@@ -100,7 +100,7 @@ commander::commander(){
                         Turn trn = cluon::extractMessage<Turn>(std::move(envelope)); // Should be enough??
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 			opendlv::proxy::GroundSteeringReading msgSteering;			
-		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately, For forwarding to follower;
+		        msgSteering.steeringAngle(trn.steeringAngle()-5); // Turn appropriately, For forwarding to follower;
 			receivedMessage->send(msgSteering);
 			std::cout << "'TURN' message sent to car with angle " << trn.steeringAngle() << std::endl;
 			forwardedMessage->send(trn);
@@ -112,7 +112,7 @@ commander::commander(){
 			Move mo = cluon::extractMessage<Move>(std::move(envelope));
 			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
 			opendlv::proxy::PedalPositionReading msgPedal;
-			msgPedal.percent(mo.percent()+5); // Move forward. For forwarding to follower.
+			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
 			receivedMessage->send(msgPedal); //Sends a command to the motor telling it to move.
 			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
 			forwardedMessage->send(mo);
