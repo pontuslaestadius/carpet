@@ -13,7 +13,7 @@ registerkey(); // This is not displayed
 registerkey(38, "percent", 1541, ["range", 0.0], "forward");
 registerkey(); // This is not displayed
 registerkey(37, "steeringAngle", 1045, [-15, 0], "left");
-registerkey(40, "percent", 1541, [-0.3, 0.0]);
+registerkey(40, "percent", 1541, [-0.25, 0.0], "reverse");
 registerkey(39, "steeringAngle", 1045, [15, 0], "right");
 
 registerkey();registerkey();registerkey(); // Create some whitespace

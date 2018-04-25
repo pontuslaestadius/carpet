@@ -17,7 +17,8 @@ var mock_size = 0;
 var mock_random = new Array(mock_max);
 mock_randomVals(3);
 
-var speed = 0.0;
+var delay = 0;
+var maxDelay = 2;
 
 /**
 
@@ -70,9 +71,9 @@ function newRangeSlider() {
   var range = document.createElement("input");
     range.type = "range";
     range.min = "0.0";
-    range.max = "0.25";
+    range.max = "0.24";
     range.value = "0.1";
-    range.step = "0.01";
+    range.step = "0.02";
     return range;
 }
 
@@ -89,15 +90,25 @@ function validateKey(k, s) {
   // Range sliders ignore if the key is alread pressed.
   var val = table[Math.abs(k)][2];
   if (val == "range") {
-    var qs = document.querySelector("#\\3" + parseInt(k/10) + " " + k%10 + " input");
+    var kabs = Math.abs(k);
+    var qs = document.querySelector("#\\3" + parseInt(kabs/10) + " " + kabs%10 + " input");
 
     if (k < 0) {
       qs.value = 0.0;
     } else {
-      if (qs.value < 0.25) {
-        qs.value = qs.value +0.01;
+      if (delay-- <= 0) {
+        delay = maxDelay;
+      } else {
+        return;
+      }
+
+      if (qs.value < parseFloat(qs.max)) {
+        qs.value = parseFloat(qs.value) + parseFloat(qs.step);
+      } else {
+        return;
       }
     }
+      document.getElementById(Math.abs(k)).style.backgroundColor = s;
     send(k);
     return;
   }

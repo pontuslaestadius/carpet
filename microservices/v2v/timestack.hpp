@@ -16,9 +16,10 @@ using std::queue;
 class TimeStack;
 
 #define AFTER 1000 //ms
-#define MINMSG 5 //nr
+#define MINMSG 8 //nr
 #define DISTANCEFROMLEADER 100 //cm
-#define TOMS 1000 
+#define TOMS 1000 //to ms
+#define INTERNALCHANNEL 170 //od4
 bool hasListener = false;	// Indicates if there is already a listening thread.
 bool firstTime = true;		// Used to set the initial distance from the leader vehicle.
 pthread_t listener;
@@ -63,10 +64,9 @@ public:
 	**/
 	LeaderStatus pop() {
 
+		// Gaurantees that it will only return when is appropriate.
 		while (this->empty()) {
-			printf("Pop sleep\n");
 			usleep(100 * TOMS);
-			printf("Pop wake\n");
 		}
 
 		timeval now;
@@ -88,10 +88,8 @@ public:
 	};
 
 	inline void push(LeaderStatus ls) {
-		printf("pushed leaderstatus to queue %d\n", this->readyQueue->size());
-
-		this->readyQueue->push(ls); // <--------------------------------------------- Causes segmentation fault.
-
+		std::cout << "Follower Queue {" << this->readyQueue->size() << "}" << std::endl;
+		this->readyQueue->push(ls);
 	};
 };
 
@@ -116,23 +114,40 @@ it will terminate.
 
 **/
 void* loopListener(void*) {
-	std::cout << "loopListener" << std::endl;
+
+    cluon::OD4Session od4{INTERNALCHANNEL};
+
+    if(od4.isRunning() == 0) {
+       throw std::domain_error("no od4 running, are you connected to the interwebs?");
+    }
 
 	while (hasListener) {
-		std::cout << "loopListener new loop" << std::endl;
 
 		if (getInstance()->empty()) {
-			std::cout << "loopListener ended, no messages" << std::endl;
 			hasListener = false;
 			return nullptr;
 		}
 
-        std::cout << "Popping" << std::endl;
+		LeaderStatus leaderStatus = getInstance()->pop();
 
-		LeaderStatus ls = getInstance()->pop();
-		executeOrder66(ls);
+		// Execute the leader status popped.
+		
+		int time = leaderStatus.distanceTraveled() * 5 * 6;
+
+		printf("Executing (speed: %f,angle: %f, for %dms)\n", leaderStatus.speed(), leaderStatus.steeringAngle(), time);
+
+		usleep(time * TOMS);
+		{
+			Turn turn;
+			turn.steeringAngle(leaderStatus.steeringAngle());
+
+			Move move;
+			move.percent(leaderStatus.speed());
+
+			od4.send(turn);
+			od4.send(move);
+		}
 	}
-		std::cout << "loopListener ended" << std::endl;
 }
 
 /**
@@ -154,26 +169,14 @@ inline void addTimeStackListener() {
         return;
       }
 
+		// push a leaderstatus with an distance offset from the leader.
       if (firstTime) {
-      	std::cout << "and it's the first time. ";
-      	// push a leaderstatus with 1m offset.
       	LeaderStatus firstTimer;
       	firstTimer.speed(0.1);
       	firstTimer.distanceTraveled(DISTANCEFROMLEADER);
       	firstTimer.steeringAngle(0);
-
-      	std::cout << "So I made a LeaderStatus, ";
-
       	getInstance()->push(firstTimer);
-
-      	std::cout << "and added it to the global instance. " << std::endl;
       }
 
   	}
-}
-
-// Follower #2 executing the commands.
-void executeOrder66(LeaderStatus leaderStatus) {
-
-	printf("Executing (%f, %f, %f)\n", leaderStatus.speed(), leaderStatus.steeringAngle(), leaderStatus.distanceTraveled());
 }
