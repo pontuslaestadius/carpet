@@ -9,25 +9,25 @@
 #include "messages.hpp"
 #include <iostream>
 
-//ID's for messages and session.
+//ID's for messages and session. ---------
 static const int CID = 170;
 static const int forwardCID = 171;
 static const int TURN_DIRECTION = 1545;
 static const int MOVE_FORWARD = 1541;
 static const int DISTANCE_READ = 1039;
-static const int IMU_READ = 1038;
+static const int IMU_READ = 1038; //TODO: change to appropriate Id..
 static const int STOP = 1550;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
-//Follower
+//Follower -----------
 static const int FOLLOW_REQUEST = 1002;
 static const int FOLLOW_RESPONSE = 1003;
 static const int STOP_FOLLOW = 1004;
 static const int FOLLOWER_STATUS = 3001;
-//Leader
+//Leader -------------
 static const int LEADER_STATUS = 2001;
 
-// OD4 171 test variables
+// OD4 171 test variables --------------
 static const int FORWARDED_MOVE = 1541;
 static const int FORWARDED_TURN = 1545;
 
@@ -53,6 +53,7 @@ private:
 	//Declares the od4 session as well as steering and pedal variables for testing and output.
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
 	std::shared_ptr<cluon::OD4Session> forwardedMessage;
+	std::shared_ptr<cluon::OD4Session> presence;
 
 
 	//Test variables for V2V ----

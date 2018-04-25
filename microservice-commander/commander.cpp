@@ -21,7 +21,7 @@ int main(){
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	
 	// Enter the chosen set of movements. OBS: This is for testing.
-	 int choice;
+	/* int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay)); // Delay to give the program a chance to print the OD4 outcome.
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
@@ -59,7 +59,7 @@ int main(){
 	   case 10:{  break;
 	   }
 	   default: ; // Empty since ghost inputs apparently happen from time to time.
-	}
+	}*/
 	
 
     }
@@ -91,7 +91,7 @@ commander::commander(){
 
 
 	
-	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == IMU_READ) {
+	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
 
 	      // Set up response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
@@ -99,7 +99,7 @@ commander::commander(){
 			// Unpacks the envelope and extracts the contained message. (Should potentially identify steering and move commands automatically).
                         Turn trn = cluon::extractMessage<Turn>(std::move(envelope)); // Should be enough??
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
-			opendlv::proxy::GroundSteeringReading msgSteering;
+			opendlv::proxy::GroundSteeringReading msgSteering;			
 		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately, For forwarding to follower;
 			receivedMessage->send(msgSteering);
 			std::cout << "'TURN' message sent to car with angle " << trn.steeringAngle() << std::endl;
@@ -112,7 +112,7 @@ commander::commander(){
 			Move mo = cluon::extractMessage<Move>(std::move(envelope));
 			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
 			opendlv::proxy::PedalPositionReading msgPedal;
-			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
+			msgPedal.percent(mo.percent()+5); // Move forward. For forwarding to follower.
 			receivedMessage->send(msgPedal); //Sends a command to the motor telling it to move.
 			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
 			forwardedMessage->send(mo);
@@ -120,7 +120,7 @@ commander::commander(){
 		      	break;
                    }
 
-		   case STOP: {
+		   case STOP: { // Works as a sort of emergency break...
 			std::cout << " A stop message was received, stopping and resetting steering... " << std::endl;
 			opendlv::proxy::PedalPositionReading speed;
 			opendlv::proxy::GroundSteeringReading angle;
@@ -137,8 +137,11 @@ commander::commander(){
 			//forwardedMessage->send(imuData);
 		   }
 
-		  // In the case we recieve rogue messages.
-                  default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
+		   case ANNOUNCE_PRESENCE: {
+			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
+			presence->send(ap);
+			break;
+		   }
 		}
 	      }
 
@@ -173,9 +176,12 @@ commander::commander(){
 			break;
 		 }
 
-		  // In the case we recieve rogue messages.
-                  default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
+		}
+
               }
+
+	else{
+	   std::cout << " Unknown message type of id: " << envelope.dataType() << std::endl;
 	}
     });
 
@@ -224,6 +230,13 @@ commander::commander(){
 	}*/
 	  
     });
+
+    presence =
+        std::make_shared<cluon::OD4Session>(250,
+          [this](cluon::data::Envelope &&envelope) noexcept {
+
+    });
+
 
 }
 

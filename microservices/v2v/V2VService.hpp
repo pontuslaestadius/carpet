@@ -35,7 +35,7 @@ static const int FOLLOW_RESPONSE = 1003;
 static const int STOP_FOLLOW = 1004;
 static const int LEADER_STATUS = 2001;
 static const int FOLLOWER_STATUS = 3001;
-static const int IMU_READ = 0000; // Add real value.....
+static const int IMU_READ = 1038; // Add real value.....
    
  //Keeps track of LeaderStatus values so that we can correctly send to follower.
     static float LDS_MOVE = 0;
