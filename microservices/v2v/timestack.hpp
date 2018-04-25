@@ -132,17 +132,29 @@ void* loopListener(void*) {
 
 		// Execute the leader status popped.
 		
-		int time = leaderStatus.distanceTraveled() * 5 * 6;
+		//int time = leaderStatus.distanceTraveled() * 5 * 6;
 
 		printf("Executing (speed: %f,angle: %f, for %dms)\n", leaderStatus.speed(), leaderStatus.steeringAngle(), time);
 
-		usleep(time * TOMS);
 		{
 			Turn turn;
 			turn.steeringAngle(leaderStatus.steeringAngle());
 
 			Move move;
 			move.percent(leaderStatus.speed());
+
+			od4.send(turn);
+			od4.send(move);
+		}
+
+		usleep(125 * TOMS);
+
+		{
+			Turn turn;
+			turn.steeringAngle(0.0);
+
+			Move move;
+			move.percent(0.0);
 
 			od4.send(turn);
 			od4.send(move);

@@ -17,8 +17,8 @@ var mock_size = 0;
 var mock_random = new Array(mock_max);
 mock_randomVals(3);
 
-var delay = 0;
-var maxDelay = 2;
+var delay = -1;
+var maxDelay = 4;
 
 /**
 
@@ -73,7 +73,7 @@ function newRangeSlider() {
     range.min = "0.0";
     range.max = "0.24";
     range.value = "0.1";
-    range.step = "0.02";
+    range.step = "0.01";
     return range;
 }
 
@@ -95,6 +95,7 @@ function validateKey(k, s) {
 
     if (k < 0) {
       qs.value = 0.0;
+      delay = -1;
     } else {
       if (delay-- <= 0) {
         delay = maxDelay;
@@ -103,7 +104,14 @@ function validateKey(k, s) {
       }
 
       if (qs.value < parseFloat(qs.max)) {
-        qs.value = parseFloat(qs.value) + parseFloat(qs.step);
+        if (parseFloat(qs.value) < 0.1) {
+          delay = -1;
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
+        } else { 
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step);
+
+        }
+
       } else {
         return;
       }
