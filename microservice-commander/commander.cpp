@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 12/4 - 2018
+  Last Updated: 23/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -21,7 +21,7 @@ int main(){
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	
 	// Enter the chosen set of movements. OBS: This is for testing.
-	 int choice;
+	/* int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay)); // Delay to give the program a chance to print the OD4 outcome.
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
@@ -59,13 +59,12 @@ int main(){
 	   case 10:{  break;
 	   }
 	   default: ; // Empty since ghost inputs apparently happen from time to time.
-	}
+	}*/
 	
 
     }
 	
 }
-
 
 // Control car through OD4 messages received etc.
 commander::commander(){	
@@ -73,7 +72,28 @@ commander::commander(){
     receivedMessage =
         std::make_shared<cluon::OD4Session>(CID,
           [this](cluon::data::Envelope &&envelope) noexcept {
-		std::cout << "OD4 Session " << std::endl;
+		std::cout << "OD4 Session ";
+		
+	// Should differentiate betwen input devices. 
+	if(envelope.dataType() == DISTANCE_READ) {
+		opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
+		std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
+		if(dist.distance() < 35) {
+		  distRead += 1;		
+		}
+		else{
+		  distRead = 0;
+		}
+		if(distRead == 5) {
+		  Stop stopMove;
+		  receivedMessage->send(stopMove);
+		  distRead = 0;	
+		}		
+
+	}
+
+
+	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
 
 	      // Set up response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
@@ -81,10 +101,10 @@ commander::commander(){
 			// Unpacks the envelope and extracts the contained message. (Should potentially identify steering and move commands automatically).
                         Turn trn = cluon::extractMessage<Turn>(std::move(envelope)); // Should be enough??
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
-			opendlv::proxy::GroundSteeringReading msgSteering;
-		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately, For forwarding to follower;
+			opendlv::proxy::GroundSteeringReading msgSteering;			
+		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately
 			receivedMessage->send(msgSteering);
-			std::cout << "'TURN' message sent to car with angle " << trn.steeringAngle() << std::endl;
+			std::cout << "'TURN' message sent to car with angle " << (trn.steeringAngle()) << std::endl;
 			forwardedMessage->send(trn);
 		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
@@ -102,30 +122,73 @@ commander::commander(){
 		      	break;
                    }
 
-		   case DISTANCE_READ: { //TODO: Incorporate this for follower mode.
-			opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
-			std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
-		      	break;
-                   }
+		   case STOP: { // Works as a sort of emergency break...
+			std::cout << " A stop message was received, stopping and resetting steering... " << std::endl;
+			opendlv::proxy::PedalPositionReading speed;
+			opendlv::proxy::GroundSteeringReading angle;
+			speed.percent(0); // Stop moving.
+			angle.steeringAngle(0); // Reset steering angle.
+			receivedMessage->send(speed);
+			receivedMessage->send(angle);
+			break;
+		   }
 
+		   case IMU_READ: {
+			std::cout << " received IMU data " << std::endl;
+			//ADD what will happen with IMU stuff..
+			//forwardedMessage->send(imuData);
+		   }
+
+		   case ANNOUNCE_PRESENCE: {
+			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
+			AnnouncePresence ap2;
+			ap2.vehicleIp("192.168.43.135");
+			ap2.groupId("6");
+			std::cout << " Sending AP: " << ap2.groupId() << "  " << ap2.vehicleIp() << std::endl;
+			presence->send(ap2);
+			break;
+		   }
+		}
+	      }
+
+	   else if (envelope.dataType() == FOLLOW_REQUEST || envelope.dataType() == FOLLOW_RESPONSE || envelope.dataType() == STOP_FOLLOW || envelope.dataType() == FOLLOWER_STATUS){
+
+	      switch(envelope.dataType()) {
  	  	   case FOLLOW_REQUEST: {
 			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			std::cout << "Follow-Request received in commander." << std::endl;
+			std::cout << " Follow-Request received in commander. " << std::endl;
+			forwardedMessage->send(frq);
 			break;
 		   }
 
-		   case 1041: {
-			opendlv::proxy::PedalPositionReading steer = cluon::extractMessage<opendlv::proxy::PedalPositionReading>(std::move(envelope));
+	  	 case FOLLOW_RESPONSE: {
+			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
+			std::cout << "Follow-Response received in commander. " << std::endl;
+			forwardedMessage->send(frp);
 			break;
-		   }
-		   case 1045: {
-			opendlv::proxy::GroundSteeringReading moverPer = cluon::extractMessage<opendlv::proxy::GroundSteeringReading>(std::move(envelope));
-			break;
-		   }
+ 	 	  }
 
-		  // In the case we recieve rogue messages.
-                  default: std::cout << "No matching case for " << envelope.dataType() << ", wrong message type!" << std::endl;
+	  	 case STOP_FOLLOW: {
+			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
+			std::cout << " Stop-Follow received in commander. " << std::endl;
+			forwardedMessage->send(stf);
+			break;
+	  	 }
+
+	  	 case FOLLOWER_STATUS: {
+			FollowerStatus fls = cluon::extractMessage<FollowerStatus>(std::move(envelope));
+			std::cout << " Follower-Status request received in commander. " << std::endl;
+			forwardedMessage->send(fls);
+			break;
+		 }
+
+		}
+
               }
+
+	else{
+	   std::cout << " Unknown message type of id: " << envelope.dataType() << std::endl;
+	}
     });
 
 
@@ -173,6 +236,13 @@ commander::commander(){
 	}*/
 	  
     });
+
+    presence =
+        std::make_shared<cluon::OD4Session>(250,
+          [this](cluon::data::Envelope &&envelope) noexcept {
+
+    });
+
 
 }
 

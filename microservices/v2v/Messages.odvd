@@ -2,8 +2,20 @@ message Turn [id = 1545] {
   float steeringAngle [id = 1];
 }
 
+message Stop [id = 1550] {
+  float something [id = 1];
+}
+
 message Move [id = 1541] {
   float percent [id = 1];
+}
+
+message DistanceTraveled [id = 1546]{
+  float distanceTraveled [id = 1];
+}
+
+message Time [id = 1548] {
+  uint32 timestamp [id = 1];
 }
 
 message opendlv.proxy.GroundSteeringReading [id = 1045] {
@@ -24,12 +36,14 @@ message AnnouncePresence [id = 1001] {
 }
 
 message FollowRequest [id = 1002] {
+  string groupId [id = 1];
 }
 
 message FollowResponse [id = 1003] {
 }
 
 message StopFollow [id = 1004] {
+  string groupId [id = 1];
 }
 
 message LeaderStatus [id = 2001] {
