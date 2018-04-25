@@ -1,6 +1,7 @@
 #ifndef V2V_PROTOCOL_DEMO_V2VSERVICE_H
 #define V2V_PROTOCOL_DEMO_V2VSERVICE_H
 
+
 #include <iomanip>
 #include <unistd.h>
 #include <sys/time.h>
@@ -18,7 +19,7 @@
 
 /** ADD YOUR CAR_IP AND GROUP_ID HERE:  *****************/
 
-static const std::string YOUR_CAR_IP    = "10.132.91.239";
+static const std::string YOUR_CAR_IP    = "127.0.0.1";
 static const std::string YOUR_GROUP_ID  = "6";
 
 /********************************************************/

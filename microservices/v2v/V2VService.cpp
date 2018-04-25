@@ -1,13 +1,18 @@
 /* 
  * Created by: V2V group
  * Maintainer: Kosara Golemshinska
- * Contributor: Sebastian Fransson
- * Last modified: 12.04.2018
+ * Contributor: Sebastian Fransson, Pontus Laestadius
+ * Last modified: 21.04.2018
  */
 
 #include "V2VService.hpp"
+#include "timestack.hpp"
 
 int main() {
+<<<<<<< HEAD
+  std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
+	while (1) {}
+=======
 	
 	
 
@@ -51,6 +56,7 @@ int main() {
             default: exit(0);
         }*/
     }
+>>>>>>> commander
 }
 
 /**
@@ -140,15 +146,18 @@ V2VService::V2VService() {
                        break;
                    }
                    case LEADER_STATUS: {
-                       LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
-                       std::cout << "received '" << leaderStatus.LongName()
-                                 << "' from '" << sender << "'!" << std::endl;
-		       std::cout << "Leaderstatus contained Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle()
-		        << " Distance: " << leaderStatus.distanceTraveled() << std::endl;
+                      LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
 
+<<<<<<< HEAD
+                      addTimeStackListener();
+                      getInstance()->push(leaderStatus);
+
+                      break;
+=======
                        /* TODO: implement follow logic */
 			// ---------------
                        break;
+>>>>>>> commander
                    }
 			
                    default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
@@ -369,3 +378,4 @@ T V2VService::decode(std::string data) {
     tmp.accept(v);
     return tmp;
 }
+

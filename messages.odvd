@@ -24,12 +24,15 @@ message AnnouncePresence [id = 1001] {
 }
 
 message FollowRequest [id = 1002] {
+  int nothing [id = 1];
 }
 
 message FollowResponse [id = 1003] {
+  int nothing [id = 1];
 }
 
 message StopFollow [id = 1004] {
+  int nothing [id = 1];
 }
 
 message LeaderStatus [id = 2001] {
@@ -40,4 +43,5 @@ message LeaderStatus [id = 2001] {
 }
 
 message FollowerStatus [id = 3001] {
+  int nothing [id = 1];
 }

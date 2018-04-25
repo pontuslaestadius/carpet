@@ -33,13 +33,13 @@ function front(val) {
 }
 
 function accel(val) {
-	prev_head_offset = head_offset;
-	head_offset = -val*60;
+	//prev_head_offset = head_offset;
+	//head_offset = -val*10;
 }
 
 function angle(val) {
 	prev_head_angle = head_angle;
-	head_angle = val*2;
+	head_angle = -val*2;
 }
 
 function rotateDraw(deg, fun) {
@@ -49,12 +49,13 @@ function rotateDraw(deg, fun) {
 }
 
 function updateCanvas() {
+		clear();
+
 	
 	deg = partialEquation(head_angle, deg);
 	y_offset = partialEquation(head_offset, y_offset);
 	front_reading = partialEquation(head_reading, front_reading);
 
-	clear();
 	var ctx = getCtx();
 
 	ctx.translate( getWidth()/2, getHeight()/2);

@@ -17,6 +17,9 @@ var mock_size = 0;
 var mock_random = new Array(mock_max);
 mock_randomVals(3);
 
+var delay = -1;
+var maxDelay = 4;
+
 /**
 
 Register a key, these are listed in layout.js to handle user input.
@@ -67,9 +70,9 @@ Creates a range slider and returns it.
 function newRangeSlider() {
   var range = document.createElement("input");
     range.type = "range";
-    range.min = "0";
-    range.max = "0.5";
-    range.value = "0.2";
+    range.min = "0.0";
+    range.max = "0.24";
+    range.value = "0.1";
     range.step = "0.01";
     return range;
 }
@@ -80,8 +83,47 @@ Validates that the provided key is registered and sends it forward.
 
 **/
 function validateKey(k, s) {
-  if (table[Math.abs(k)][0] == null || 
-    document.getElementById(Math.abs(k)).style.backgroundColor == s) {
+  if (table[Math.abs(k)][0] == null) {
+    return;
+  }
+
+  // Range sliders ignore if the key is alread pressed.
+  var val = table[Math.abs(k)][2];
+  if (val == "range") {
+    var kabs = Math.abs(k);
+    var qs = document.querySelector("#\\3" + parseInt(kabs/10) + " " + kabs%10 + " input");
+
+    if (k < 0) {
+      qs.value = 0.0;
+      delay = -1;
+    } else {
+      if (delay-- <= 0) {
+        delay = maxDelay;
+      } else {
+        return;
+      }
+
+      if (qs.value < parseFloat(qs.max)) {
+        if (parseFloat(qs.value) < 0.1) {
+          delay = -1;
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
+        } else { 
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step);
+
+        }
+
+      } else {
+        return;
+      }
+    }
+      document.getElementById(Math.abs(k)).style.backgroundColor = s;
+    send(k);
+    return;
+  }
+
+
+
+  if (document.getElementById(Math.abs(k)).style.backgroundColor == s) {
     return;
   }
   document.getElementById(Math.abs(k)).style.backgroundColor = s;
@@ -135,7 +177,7 @@ function send(k) {
 
   var jsonMessageToBeSent = "{\"" + table[k][0] + "\":" + val + "}";
   if (table[k][0] == null || table[k][2+add] == null) {
-    jsonMessageToBeSent = "{}";
+    jsonMessageToBeSent = "{\"nothing\": 0}";
   } 
 
   __send(ws, jsonMessageToBeSent, table[k][1]);

@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(v2v)
 set(CMAKE_CXX_STANDARD 14)
 
+find_package (Threads)
 find_package(libcluon REQUIRED)
+
 include_directories(SYSTEM ${CLUON_INCLUDE_DIRS})
 
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/Messages.cpp
