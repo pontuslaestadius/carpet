@@ -54,7 +54,7 @@ public:
 
 	**/
 	bool empty() {
-		return this->readyQueue->size() < MINMSG && 
+		return this->readyQueue->size() > MINMSG && 
 		(this->distanceToTravelUntilCollision - this->readyQueue->front().distanceTraveled()) < DISTANCEFROMLEADER;
 	}
 
