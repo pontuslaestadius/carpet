@@ -20,7 +20,7 @@
 /** ADD YOUR CAR_IP AND GROUP_ID HERE:  *****************/
 
 static const std::string YOUR_CAR_IP    = "127.0.0.1";
-static const std::string YOUR_GROUP_ID  = "6";
+static const std::string YOUR_GROUP_ID  = "12";
 
 /********************************************************/
 /** DON'T CHANGE STUFF BELOW THIS LINE. *****************/
@@ -52,7 +52,7 @@ static float LATEST_TIME = 0;
 
 class V2VService {
 public:
-    std::map <std::string, std::string> presentCars; //static?
+    std::map <std::string, std::string> presentCars;
 
     V2VService();
     

@@ -21,7 +21,7 @@ int main(){
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	
 	// Enter the chosen set of movements. OBS: This is for testing.
-	/* int choice;
+	 /* int choice;
 	 std::this_thread::sleep_for(std::chrono::milliseconds(delay)); // Delay to give the program a chance to print the OD4 outcome.
        	 std::cout << "(1) testMove" << std::endl;
          std::cout << "(2) testTurnLeft" << std::endl;
@@ -105,6 +105,8 @@ commander::commander(){
 		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately
 			receivedMessage->send(msgSteering);
 			std::cout << "'TURN' message sent to car with angle " << (trn.steeringAngle()) << std::endl;
+			
+			if(!follow)
 			forwardedMessage->send(trn);
 		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
@@ -117,6 +119,8 @@ commander::commander(){
 			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
 			receivedMessage->send(msgPedal); //Sends a command to the motor telling it to move.
 			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
+
+			if(!follow)
 			forwardedMessage->send(mo);
 			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
 		      	break;
@@ -163,6 +167,7 @@ commander::commander(){
 
 	  	 case FOLLOW_RESPONSE: {
 			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
+			follow = true;
 			std::cout << "Follow-Response received in commander. " << std::endl;
 			forwardedMessage->send(frp);
 			break;
@@ -171,6 +176,7 @@ commander::commander(){
 	  	 case STOP_FOLLOW: {
 			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
 			std::cout << " Stop-Follow received in commander. " << std::endl;
+			follow = false;
 			forwardedMessage->send(stf);
 			break;
 	  	 }
@@ -275,7 +281,6 @@ void commander::testTurnRight(){
 }
 
 void commander::testStop(){
-	Move testStop;
-	testStop.percent(0.0);
-	receivedMessage->send(testStop);
+	FollowRequest frpp;
+	receivedMessage->send(frpp);
 }

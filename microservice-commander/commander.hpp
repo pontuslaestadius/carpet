@@ -40,6 +40,7 @@ int distRead = 0;
 class commander{
 //Declare the public methods and variables.
 public:
+	bool follow;
 	commander();
 	
 	// Test methods for OD4 values.
