@@ -1,7 +1,7 @@
 /*
   Author: Sebastian Fransson
   Created: 4/4 - 2018
-  Last Updated: 23/4 - 2018
+  Last Updated: 26/4 - 2018
 
   Inspired by V2VProtocol: https://github.com/DIT168-V2V-responsibles/v2v-protocol
 */
@@ -75,7 +75,7 @@ commander::commander(){
 		std::cout << "OD4 Session ";
 		
 	// Should differentiate betwen input devices. 
-	if(envelope.dataType() == DISTANCE_READ) {
+/*	if(envelope.dataType() == DISTANCE_READ) {
 		opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
 		std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
 		if(dist.distance() < 35) {
@@ -90,10 +90,10 @@ commander::commander(){
 		  distRead = 0;	
 		}		
 
-	}
+	}*/
 
 
-	else if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
+	if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
 
 	      // Set up response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
@@ -124,8 +124,8 @@ commander::commander(){
 
 		   case STOP: { // Works as a sort of emergency break...
 			std::cout << " A stop message was received, stopping and resetting steering... " << std::endl;
-			opendlv::proxy::PedalPositionReading speed;
-			opendlv::proxy::GroundSteeringReading angle;
+			Move speed;
+			Turn angle;
 			speed.percent(0); // Stop moving.
 			angle.steeringAngle(0); // Reset steering angle.
 			receivedMessage->send(speed);
@@ -186,7 +186,7 @@ commander::commander(){
 
               }
 	
-	else if(envelope.dataType() == 8){
+	else if(envelope.dataType() == 8){ //Semms to be a common message being catched from somewhere unknown.
 		;
 	}
 

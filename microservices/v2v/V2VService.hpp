@@ -52,7 +52,7 @@ static float LATEST_TIME = 0;
 
 class V2VService {
 public:
-    std::map <std::string, std::string> presentCars;
+    std::map <std::string, std::string> presentCars; //static?
 
     V2VService();
     
