@@ -15,7 +15,7 @@ using std::queue;
 
 class TimeStack;
 
-#define AFTER 500 //ms
+#define AFTER 2100 //ms
 #define MINMSG 8 //nr
 #define DISTANCEFROMLEADER 100 //cm
 #define TOMS 1000 //to ms
@@ -154,6 +154,7 @@ void* loopListener(void*) {
 			return nullptr;
 		}
 
+
 		// Pop a leader status.
 		LeaderStatus leaderStatus = getInstance()->pop();
 
@@ -163,6 +164,8 @@ void* loopListener(void*) {
 
 		turn.steeringAngle(leaderStatus.steeringAngle());
 		move.percent(leaderStatus.speed());
+
+		std::cout << "[TIMESTACK]: " << leaderStatus.speed() << " " << leaderStatus.steeringAngle() << " " <<  leaderStatus.distanceTraveled() << std::endl;
 
 		od4.send(turn);
 		od4.send(move);
