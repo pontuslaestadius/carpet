@@ -103,13 +103,16 @@ function validateKey(k, s) {
         return;
       }
 
+      // Increments depending on the speed.
       if (qs.value < parseFloat(qs.max)) {
+
         if (parseFloat(qs.value) < 0.1) {
           delay = -1;
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*3;
+        } else if (parseFloat(qs.value) < 0.18) {
           qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
-        } else { 
+        } else {
           qs.value = parseFloat(qs.value) + parseFloat(qs.step);
-
         }
 
       } else {
