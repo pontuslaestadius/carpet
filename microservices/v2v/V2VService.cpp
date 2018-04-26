@@ -12,7 +12,7 @@
 
 int main() {
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
-	while (1) {
+	while (1) {  /* <(^.^<) | (>^.^)> */
           /* int choice;
         std::string groupId;
         std::cout << "Which message would you like to send?" << std::endl;
@@ -146,6 +146,8 @@ V2VService::V2VService() {
 
                       addTimeStackListener();
                       getInstance()->push(leaderStatus);
+
+                      V2VService::followerStatus();
 
                       break;
 

@@ -1,5 +1,8 @@
 /*
 Copyright 2018 @ Pontus Laestadius
+
+interfaces between events and the code.
+
 */
 var mid = 9999;
 var size = 128;
@@ -12,10 +15,6 @@ for (var i = 0; i < size; i++) {
   table[i] = new Array(4);
 }
 
-var mock_max = 3;
-var mock_size = 0;
-var mock_random = new Array(mock_max);
-mock_randomVals(3);
 
 var delay = -1;
 var maxDelay = 4;
@@ -37,57 +36,12 @@ function registerkey(character, field, messageid, values, label) {
   addIndicator(character, label);
 }
 
-
-/**
-
-Generates HTML code for the indicator.
-
-**/
-function addIndicator(code, label) {
-  var node = document.createElement("LI");
-
-  if (code == null) {
-    node.style.opacity = "0.0";
-  } else {
-    if (label == null || label == "") {
-      label = table[code][0];
-    }
-    node.id = code;
-
-    var text_node = document.createElement("b");
-    text_node.innerText = label;
-
-
-    node.appendChild(text_node);
-  }
-  document.getElementById("box").appendChild(node);
-
-  if (isRangeSlider(code)) {
-    node.appendChild(newRangeSlider());
-  }
-}
-
-/**
-
-Creates a range slider and returns it.
-
-**/
-function newRangeSlider() {
-  var range = document.createElement("input");
-    range.type = "range";
-    range.min = "0.0";
-    range.max = "0.24";
-    range.value = "0.1";
-    range.step = "0.01";
-    return range;
-}
-
 /**
 
 Validates that the provided key is registered and sends it forward.
 
 **/
-function validateKey(k, s) {
+async function validateKey(k, s) {
   if (table[Math.abs(k)][0] == null) {
     return;
   }
@@ -111,34 +65,38 @@ function validateKey(k, s) {
         return;
       }
 
-      // Increments depending on the speed.
-      if (qs.value < parseFloat(qs.max)) {
+      var rangevalue = parseFloat(qs.value);
 
-        if (parseFloat(qs.value) < 0.07) {
-          delay = -1;
-          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*7;
-        } else if (parseFloat(qs.value) < 0.18) {
-          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
-        } else {
-          qs.value = parseFloat(qs.value) + parseFloat(qs.step);
-        }
-
-        element.innerText = qs.value;
-
-
-      } else {
+      if ((qs.value >= parseFloat(qs.max))) {
         return;
       }
+
+
+      var rmax = 0.10;
+      if (parseFloat(qs.value) < rmax) {
+        delay = -1;
+        setBackground(k, s);
+        for (var i = 0; i < rmax; i += parseFloat(qs.step)) {
+          qs.value = i;
+          element.innerText = qs.value;
+          send(k);
+          await sleep(25 +(rmax - i)*3);
+        }
+
+      } else if (rangevalue < 0.18) {
+        delay--;
+        qs.value = rangevalue + parseFloat(qs.step)*2;
+      } else {
+        qs.value = rangevalue + parseFloat(qs.step);
+      }
+
+      element.innerText = qs.value;
+
     }
-    document.getElementById(Math.abs(k)).style.backgroundColor = s;
-    send(k);
-    return;
+
   }
 
-  if (document.getElementById(Math.abs(k)).style.backgroundColor == s) {
-    return;
-  }
-  document.getElementById(Math.abs(k)).style.backgroundColor = s;
+  setBackground(k, s);
   send(k);
 }
 
@@ -218,43 +176,8 @@ function __send(socket, msg, id) {
   increment('messages-sent');
 }
 
-/**
-
-Recursively sets a count mock data based on the number provided.
-
-**/
-function mock_randomVals(c) {
-  mock_random[mock_size++] = parseInt(Math.random() * 30);
-
-  if (mock_size >= mock_max) {
-    mock_size = 0;
-  }
-
-  if (c == null || c == 0) {
-    return;
-  } else {
-    mock_randomVals(c-1);
-  }
-}
-
 function render() {
   updateCanvas();
-}
-
-function mock_onInterval() {
-
-  mock_simulate(mock_random[0] *1.1, front);
-  mock_simulate((mock_random[1] / 19.32) -1, accel);
-  mock_simulate(mock_random[2] -15, angle);
-  updateCanvas();
-}
-
-function mock_simulate(id, fun) {
-    if (id == null) {
-      fun();
-    } else {
-      fun(id);
-    }
 }
 
 function simulate(id, fun) {
@@ -266,16 +189,6 @@ function simulate(id, fun) {
 
   var text = dom.innerText;
   fun(parseInt(text));
-}
-
-/**
-
-Increment the inner value of an element.
-
-**/
-function increment(id) {
-  let tmp = document.getElementById(id).innerText;
-  document.getElementById(id).innerText = parseInt(tmp) +1;
 }
 
 window.onkeydown = function(e) {
@@ -292,4 +205,12 @@ function isRangeSlider(code) {
 
 function isLetter(str) {
   return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function delm(k) {
+  return document.getElementById(Math.abs(k));
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

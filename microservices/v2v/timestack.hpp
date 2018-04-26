@@ -15,11 +15,12 @@ using std::queue;
 
 class TimeStack;
 
-#define AFTER 650 //ms
+#define AFTER 2100 //ms
 #define MINMSG 8 //nr
 #define DISTANCEFROMLEADER 100 //cm
 #define TOMS 1000 //to ms
 #define INTERNALCHANNEL 170 //od4
+
 bool hasListener = false;	// Indicates if there is already a listening thread.
 bool firstTime = true;		// Used to set the initial distance from the leader vehicle.
 pthread_t listener;
@@ -48,11 +49,12 @@ public:
 
 	/**
 	
-	Determines if there are enough gap between the follower
+	Determines if there are enough gap between the follower and 
+	enough messages to perform the next action safely.
 
 	**/
 	bool empty() {
-		return this->readyQueue->size() < MINMSG &&
+		return this->readyQueue->size() > MINMSG && 
 		(this->distanceToTravelUntilCollision - this->readyQueue->front().distanceTraveled()) < DISTANCEFROMLEADER;
 	}
 
@@ -84,6 +86,7 @@ public:
 
 		// Sleep until it is time to excecute.
 		if (start < waitUntil) {
+			std::cout << "sleep for: " << (waitUntil - start) << " ms" << std::endl;
 			usleep((waitUntil - start) * TOMS);
 		}
 		
@@ -152,15 +155,18 @@ void* loopListener(void*) {
 			return nullptr;
 		}
 
+
 		// Pop a leader status.
 		LeaderStatus leaderStatus = getInstance()->pop();
 
 		// Converts the leader status to internal messages and send them to the commander.
 		Turn turn;
-		turn.steeringAngle(leaderStatus.steeringAngle());
-
 		Move move;
+
+		turn.steeringAngle(leaderStatus.steeringAngle());
 		move.percent(leaderStatus.speed());
+
+		std::cout << "[TIMESTACK]: " << leaderStatus.speed() << " " << leaderStatus.steeringAngle() << " " <<  leaderStatus.distanceTraveled() << std::endl;
 
 		od4.send(turn);
 		od4.send(move);
@@ -185,17 +191,19 @@ inline void addTimeStackListener() {
       int result = pthread_create(&listener, NULL, loopListener, NULL);
 
       if (result != 0) {
-        std::cerr << "Can't create phread for Follower Listener" << std::endl;
+        std::cerr << "Can't create pthread for Follower Listener" << std::endl;
         return;
       }
 
 		// push a leaderstatus with an distance offset from the leader.
       if (firstTime) {
+      	/*
       		LeaderStatus firstTimer;
 	      	firstTimer.speed(0.14);
 	      	firstTimer.distanceTraveled(DISTANCEFROMLEADER);
 	      	firstTimer.steeringAngle(0);
 	      	getInstance()->push(firstTimer);
+	      	*/
       }
 
   	}
