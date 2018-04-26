@@ -19,13 +19,8 @@
 
 /** ADD YOUR CAR_IP AND GROUP_ID HERE:  *****************/
 
-<<<<<<< HEAD
-static const std::string YOUR_CAR_IP    = "127.0.0.1";
-static const std::string YOUR_GROUP_ID  = "12";
-=======
 static const std::string YOUR_CAR_IP    = "192.168.43.135";
 static const std::string YOUR_GROUP_ID  = "6";
->>>>>>> queueFollower
 
 /********************************************************/
 /** DON'T CHANGE STUFF BELOW THIS LINE. *****************/
