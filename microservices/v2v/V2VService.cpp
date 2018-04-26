@@ -8,6 +8,8 @@
 #include "V2VService.hpp"
 #include "timestack.hpp"
 
+#define LEADERCAR = "12"
+
 int main() {
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 	while (1) {
@@ -143,6 +145,7 @@ V2VService::V2VService() {
                       getInstance()->push(leaderStatus);
 
                       break;
+
                    }
 			
                    default: std::cout << "¯\\_(ツ)_/¯" << std::endl;
@@ -191,6 +194,13 @@ V2VService::V2VService() {
 			break;
 		    }
 
+		    case FOLLOW_REQUEST: {
+			FollowRequest followReq = cluon::extractMessage<FollowRequest>(std::move(envelope));
+			std::cout << " Follow Request V2V sent to " << presentCars[LEADERCAR] << std::endl;
+		        if (presentCars.find(LEADERCAR) != presentCars.end())
+                    		followRequest(presentCars[LEADERCAR]);
+			break;
+		    }
 
 		    case FOLLOW_RESPONSE: {
 			followResponse();
@@ -199,8 +209,8 @@ V2VService::V2VService() {
 
 		    case STOP_FOLLOW: {
 			StopFollow stpFollow = cluon::extractMessage<StopFollow>(std::move(envelope));
-		    	if (presentCars.find("12") != presentCars.end())
-                   		 stopFollow(presentCars["12"]);
+		    	if (presentCars.find(LEADERCAR) != presentCars.end())
+                   		 stopFollow(presentCars[LEADERCAR]);
 			break;
 		    }
 

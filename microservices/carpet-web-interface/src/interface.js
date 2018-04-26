@@ -53,7 +53,12 @@ function addIndicator(code, label) {
       label = table[code][0];
     }
     node.id = code;
-    node.innerText = label;
+
+    var text_node = document.createElement("b");
+    text_node.innerText = label;
+
+
+    node.appendChild(text_node);
   }
   document.getElementById("box").appendChild(node);
 
@@ -92,8 +97,11 @@ function validateKey(k, s) {
   if (val == "range") {
     var kabs = Math.abs(k);
     var qs = document.querySelector("#\\3" + parseInt(kabs/10) + " " + kabs%10 + " input");
+    var element = document.querySelector("#\\3" + parseInt(kabs/10) + " " + kabs%10 + " b");
+
 
     if (k < 0) {
+      element.innerText = table[-k][0];
       qs.value = 0.0;
       delay = -1;
     } else {
@@ -103,25 +111,29 @@ function validateKey(k, s) {
         return;
       }
 
+      // Increments depending on the speed.
       if (qs.value < parseFloat(qs.max)) {
-        if (parseFloat(qs.value) < 0.1) {
-          delay = -1;
-          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
-        } else { 
-          qs.value = parseFloat(qs.value) + parseFloat(qs.step);
 
+        if (parseFloat(qs.value) < 0.07) {
+          delay = -1;
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*7;
+        } else if (parseFloat(qs.value) < 0.18) {
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
+        } else {
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step);
         }
+
+        element.innerText = qs.value;
+
 
       } else {
         return;
       }
     }
-      document.getElementById(Math.abs(k)).style.backgroundColor = s;
+    document.getElementById(Math.abs(k)).style.backgroundColor = s;
     send(k);
     return;
   }
-
-
 
   if (document.getElementById(Math.abs(k)).style.backgroundColor == s) {
     return;

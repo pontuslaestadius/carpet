@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 FROM pipill/armhf-alpine:edge
-MAINTAINER Christian Berger "christian.berger@gu.se"
 
 RUN [ "cross-build-start" ]
 
