@@ -13,7 +13,7 @@
 int main() {
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 	while (1) {
-         /*  int choice;
+          /* int choice;
         std::string groupId;
         std::cout << "Which message would you like to send?" << std::endl;
         std::cout << "(1) AnnouncePresence" << std::endl;
@@ -45,8 +45,11 @@ int main() {
                 else std::cout << "Sorry, unable to locate that groups vehicle!" << std::endl;
                 break;
             }
-            case 5: v2vService->leaderStatus(50, 0, 100); break;
+            case 5: v2vService->leaderStatus(0.20, 0, 100); break;
             case 6: v2vService->followerStatus(); break;
+            case 7: v2vService->leaderStatus(0.20, 15, 100); break;
+            case 8: v2vService->leaderStatus(0.20, -15, 100); break;
+            case 9: v2vService->leaderStatus(0, 0, 100); break;
             default: exit(0);
 	  }*/
 	}

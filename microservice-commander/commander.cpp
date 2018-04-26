@@ -10,7 +10,7 @@
 int main(){
 	
 	std::shared_ptr<commander> commanderService = std::make_shared<commander>();
-	const int delay = 2000; // 2 second delay.
+	const int delay = 450; // 2 second delay.
 	std::cout << "Starting service.." << std::endl;
 	// Wait so that we know that the service started properly and that the OD4 has been initialized.
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
@@ -60,7 +60,9 @@ int main(){
 	   }
 	   default: ; // Empty since ghost inputs apparently happen from time to time.
 	}*/
-	
+	if(follow){
+	   commanderService->sendFollowerStatus();
+	}
 
     }
 	
@@ -283,4 +285,9 @@ void commander::testTurnRight(){
 void commander::testStop(){
 	FollowRequest frpp;
 	receivedMessage->send(frpp);
+}
+
+void commander::sendFollowerStatus(){
+	FollowerStatus fst;
+	forwardedMessage->send(fst);	
 }

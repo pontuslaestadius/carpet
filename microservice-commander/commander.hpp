@@ -35,12 +35,12 @@ static const int FORWARDED_TURN = 1545;
 static const int FORWARD_MOVE = 1041;
 static const int TURN_ANGLE = 1045;
 
+static bool follow = false;
 int distRead = 0;
 
 class commander{
 //Declare the public methods and variables.
 public:
-	bool follow;
 	commander();
 	
 	// Test methods for OD4 values.
@@ -48,6 +48,7 @@ public:
 	void testTurnLeft();
 	void testTurnRight();
 	void testStop();
+	void sendFollowerStatus();
 
 //Declare private methods and variables.
 private:
