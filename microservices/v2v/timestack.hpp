@@ -15,7 +15,7 @@ using std::queue;
 
 class TimeStack;
 
-#define AFTER 1000 //ms
+#define AFTER 650 //ms
 #define MINMSG 8 //nr
 #define DISTANCEFROMLEADER 100 //cm
 #define TOMS 1000 //to ms
@@ -37,7 +37,7 @@ when the next element is popped.
 class TimeStack {
 private:
 	queue<LeaderStatus> *readyQueue = new queue<LeaderStatus>;
-	int distanceToTravelUntilCollision = 0;
+	float distanceToTravelUntilCollision = 0;
 
 public:
 	TimeStack() {}
@@ -48,11 +48,11 @@ public:
 
 	/**
 	
-	Determines if there are enough messages to currently follow.
+	Determines if there are enough gap between the follower
 
 	**/
 	bool empty() {
-		return this->readyQueue->size() < MINMSG && 
+		return this->readyQueue->size() < MINMSG &&
 		(this->distanceToTravelUntilCollision - this->readyQueue->front().distanceTraveled()) < DISTANCEFROMLEADER;
 	}
 
@@ -97,6 +97,8 @@ public:
 		// Ignore duplicate messages being received.
 		if (this->readyQueue->size() > 0) {
 			LeaderStatus front = this->readyQueue->front();
+
+			// If identifical to last message.
 			if (
 				front.speed() == ls.speed() &&
 				front.steeringAngle() == ls.steeringAngle() &&
@@ -152,7 +154,7 @@ void* loopListener(void*) {
 
 		// Pop a leader status.
 		LeaderStatus leaderStatus = getInstance()->pop();
-		
+
 		// Converts the leader status to internal messages and send them to the commander.
 		Turn turn;
 		turn.steeringAngle(leaderStatus.steeringAngle());
@@ -163,6 +165,7 @@ void* loopListener(void*) {
 		od4.send(turn);
 		od4.send(move);
 	}
+	
 }
 
 /**

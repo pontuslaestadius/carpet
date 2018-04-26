@@ -150,11 +150,11 @@ function drawLeader() {
 	deg = partialEquation(prev_head_angle, deg);
 	y_offset = partialEquation(prev_head_offset, y_offset);
 
-	ctx.rotate(deg*Math.PI/180);
+	ctx.rotate(deg/2*Math.PI/180);
 
 	ctx.drawImage(vehicle, -w/2, +h/2 +y, w, h);
 
-	ctx.rotate(-deg*Math.PI/180);
+	ctx.rotate(-deg/2*Math.PI/180);
 }
 
 function drawFollower() {
