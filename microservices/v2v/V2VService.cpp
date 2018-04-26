@@ -2,7 +2,7 @@
  * Created by: V2V group
  * Maintainer: Kosara Golemshinska
  * Contributor: Sebastian Fransson, Pontus Laestadius
- * Last modified: 21.04.2018
+ * Last modified: 26.04.2018
  */
 
 #include "V2VService.hpp"
@@ -148,7 +148,10 @@ V2VService::V2VService() {
 
 		    case FOLLOW_REQUEST: {
 			FollowRequest followReq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			followRequest(presentCars["12"]);
+			std::cout << " Follow Request V2V sent to " << presentCars["12"] << std::endl;
+		        if (presentCars.find("12") != presentCars.end())
+                    		followRequest(presentCars["12"]);
+			//followRequest(presentCars["12"]);
 			break;
 		    }
 

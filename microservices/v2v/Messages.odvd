@@ -1,29 +1,21 @@
-message Turn [id = 1545] {
-  float steeringAngle [id = 1];
-}
-
-message Stop [id = 1550] {
-  float something [id = 1];
-}
-
-message Move [id = 1541] {
-  float percent [id = 1];
-}
-
-message DistanceTraveled [id = 1546]{
-  float distanceTraveled [id = 1];
-}
-
-message Time [id = 1548] {
-  uint32 timestamp [id = 1];
-}
-
 message opendlv.proxy.GroundSteeringReading [id = 1045] {
   float steeringAngle [id = 1];
 }
 
 message opendlv.proxy.PedalPositionReading [id = 1041] {
   float percent [id = 1];
+}
+
+message Turn [id = 1545] {
+  float steeringAngle [id = 1];
+}
+
+message Move [id = 1541] {
+  float percent [id = 1];
+}
+
+message Stop [id = 1550]{
+  float something [id = 1];
 }
 
 message opendlv.proxy.DistanceReading [id = 1039] {
@@ -36,27 +28,24 @@ message AnnouncePresence [id = 1001] {
 }
 
 message FollowRequest [id = 1002] {
-  string groupId [id = 1];
+  int nothing [id = 1];
 }
 
 message FollowResponse [id = 1003] {
+  int nothing [id = 1];
 }
 
 message StopFollow [id = 1004] {
-  string groupId [id = 1];
+  int nothing [id = 1];
 }
 
 message LeaderStatus [id = 2001] {
   uint32 timestamp [id = 1];
   float speed [id = 2];
   float steeringAngle [id = 3];
-  float distanceTraveled [id = 4];
+  uint8 distanceTraveled [id = 4];
 }
 
 message FollowerStatus [id = 3001] {
-  uint32 timestamp [id = 1];
-  uint8 speed [id = 2];
-  uint8 steeringAngle [id = 3];
-  uint8 distanceFront [id = 4];
-  uint8 distanceTraveled [id = 5];
+  int nothing [id = 1];
 }
