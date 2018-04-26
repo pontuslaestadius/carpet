@@ -60,9 +60,9 @@ int main(){
 	   }
 	   default: ; // Empty since ghost inputs apparently happen from time to time.
 	}*/
-	if(follow){
-	   commanderService->sendFollowerStatus();
-	}
+	//if(follow){
+	//   commanderService->sendFollowerStatus();
+	//}
 
     }
 	
@@ -107,8 +107,6 @@ commander::commander(){
 		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately
 			receivedMessage->send(msgSteering);
 			std::cout << "'TURN' message sent to car with angle " << (trn.steeringAngle()) << std::endl;
-			
-			if(!follow)
 			forwardedMessage->send(trn);
 		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
@@ -121,8 +119,6 @@ commander::commander(){
 			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
 			receivedMessage->send(msgPedal); //Sends a command to the motor telling it to move.
 			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
-
-			if(!follow)
 			forwardedMessage->send(mo);
 			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
 		      	break;
@@ -169,7 +165,7 @@ commander::commander(){
 
 	  	 case FOLLOW_RESPONSE: {
 			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
-			follow = true;
+			//follow = true;
 			std::cout << "Follow-Response received in commander. " << std::endl;
 			forwardedMessage->send(frp);
 			break;
@@ -178,7 +174,7 @@ commander::commander(){
 	  	 case STOP_FOLLOW: {
 			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
 			std::cout << " Stop-Follow received in commander. " << std::endl;
-			follow = false;
+			//follow = false;
 			forwardedMessage->send(stf);
 			break;
 	  	 }

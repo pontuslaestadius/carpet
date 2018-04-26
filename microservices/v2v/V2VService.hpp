@@ -18,9 +18,8 @@
 #include "Messages.hpp"
 
 /** ADD YOUR CAR_IP AND GROUP_ID HERE:  *****************/
-
-static const std::string YOUR_CAR_IP    = "192.168.43.136";
-static const std::string YOUR_GROUP_ID  = "12";
+static const std::string YOUR_CAR_IP    = "192.168.43.135";
+static const std::string YOUR_GROUP_ID  = "6";
 
 /********************************************************/
 /** DON'T CHANGE STUFF BELOW THIS LINE. *****************/

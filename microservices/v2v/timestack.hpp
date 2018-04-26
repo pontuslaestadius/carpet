@@ -85,7 +85,6 @@ public:
 		uint32_t waitUntil = nextLeaderStatus.timestamp() +AFTER;
 
 		// Sleep until it is time to excecute.
-		if (start < waitUntil) {
 			std::cout << "sleep for: " << (waitUntil - start) << " ms" << std::endl;
 			usleep((waitUntil - start) * TOMS);
 		}

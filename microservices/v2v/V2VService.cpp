@@ -8,6 +8,7 @@
 #include "V2VService.hpp"
 #include "timestack.hpp"
 
+
 #define LEADERCAR "12"
 
 int main() {
@@ -97,7 +98,7 @@ V2VService::V2VService() {
                        FollowRequest followRequest = decode<FollowRequest>(msg.second);
                        std::cout << "received '" << followRequest.LongName()
                                  << "' from '" << sender << "'!" << std::endl;
-			toCommander->send(followRequest);
+			//toCommander->send(followRequest);
 
                        // After receiving a FollowRequest, check first if there is currently no car already following.
                        if (followerIp.empty()) {
@@ -143,8 +144,17 @@ V2VService::V2VService() {
                    }
                    case LEADER_STATUS: {
                       LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
+		      /*std::cout << "Leaderstatus with Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle() <<
+			 " Distance: " << leaderStatus.distanceTraveled() << std::endl; 
+		      opendlv::proxy::GroundSteeringReading msgSteering;
+		      opendlv::proxy::PedalPositionReading msgPedal;
+		      msgPedal.percent(leaderStatus.speed());
+		      msgSteering.steeringAngle(leaderStatus.steeringAngle());      
 
-                      addTimeStackListener();
+		      toCommander->send(msgSteering);
+		      toCommander->send(msgPedal);*/
+                      
+		      addTimeStackListener();
                       getInstance()->push(leaderStatus);
 
                       V2VService::followerStatus();
