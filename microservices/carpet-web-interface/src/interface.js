@@ -116,7 +116,7 @@ function validateKey(k, s) {
 
         if (parseFloat(qs.value) < 0.07) {
           delay = -1;
-          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*8;
+          qs.value = parseFloat(qs.value) + parseFloat(qs.step)*7;
         } else if (parseFloat(qs.value) < 0.18) {
           qs.value = parseFloat(qs.value) + parseFloat(qs.step)*2;
         } else {

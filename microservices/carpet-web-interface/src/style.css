@@ -87,12 +87,17 @@ td.field-plot {
     }
 
     .wrapper {
-    	width: 49.5vw;
-    	height: 49.5vh;
+    	width: 45.5vw;
+    	height: 45.5vh;
+      border: 15px solid #91bbff;
     }
 
-    body, .wrapper {
-        background-color: lightblue;
+    .wrapper {
+        background-color: #b5d1ff;
+    }
+
+    body {
+      background-color: #91bbff;
     }
     
   li input {
@@ -114,6 +119,7 @@ td.field-plot {
   }
 
   .btn {
-    margin: 20px;
+    margin: 5px;
     float: left;
+    width: 100px;
   }
