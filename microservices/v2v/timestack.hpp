@@ -86,6 +86,7 @@ public:
 
 		// Sleep until it is time to excecute.
 		if (start < waitUntil) {
+			std::cout << "sleep for: " << (waitUntil - start) << " ms" << std::endl;
 			usleep((waitUntil - start) * TOMS);
 		}
 		
@@ -196,11 +197,13 @@ inline void addTimeStackListener() {
 
 		// push a leaderstatus with an distance offset from the leader.
       if (firstTime) {
+      	/*
       		LeaderStatus firstTimer;
 	      	firstTimer.speed(0.14);
 	      	firstTimer.distanceTraveled(DISTANCEFROMLEADER);
 	      	firstTimer.steeringAngle(0);
 	      	getInstance()->push(firstTimer);
+	      	*/
       }
 
   	}
