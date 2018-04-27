@@ -6,7 +6,7 @@
  */
 
 #include "V2VService.hpp"
-#include "timestack.hpp"
+//#include "timestack.hpp"
 
 
 #define LEADERCAR "12"
@@ -144,7 +144,7 @@ V2VService::V2VService() {
                    }
                    case LEADER_STATUS: {
                       LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
-		      /*std::cout << "Leaderstatus with Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle() <<
+		      std::cout << "Leaderstatus with Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle() <<
 			 " Distance: " << leaderStatus.distanceTraveled() << std::endl; 
 		      opendlv::proxy::GroundSteeringReading msgSteering;
 		      opendlv::proxy::PedalPositionReading msgPedal;
@@ -152,10 +152,10 @@ V2VService::V2VService() {
 		      msgSteering.steeringAngle(leaderStatus.steeringAngle());      
 
 		      toCommander->send(msgSteering);
-		      toCommander->send(msgPedal);*/
+		      toCommander->send(msgPedal);
                       
-		      addTimeStackListener();
-                      getInstance()->push(leaderStatus);
+		     // addTimeStackListener();
+                      //getInstance()->push(leaderStatus);
 
                       V2VService::followerStatus();
 
