@@ -76,13 +76,7 @@ async function validateKey(k, s) {
       if (parseFloat(qs.value) < rmax) {
         delay = -1;
         setBackground(k, s);
-        for (var i = 0; i < rmax; i += parseFloat(qs.step)) {
-          qs.value = i;
-          element.innerText = qs.value;
-          send(k);
-          await sleep(25 +(rmax - i)*3);
-        }
-
+        qs.value = rmax;
       } else if (rangevalue < 0.18) {
         delay--;
         qs.value = rangevalue + parseFloat(qs.step)*2;
