@@ -58,6 +58,7 @@ public:
     
     int single_car;
 
+    void leaderSender();
     void announcePresence();
     void followRequest(std::string vehicleIp);
     void followResponse();

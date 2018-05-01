@@ -34,7 +34,6 @@ static const int FORWARDED_TURN = 1545;
 static const int FORWARD_MOVE = 1041;
 static const int TURN_ANGLE = 1045;
 
-//static bool follow = false;
 int distRead = 0; //Keep track of the number of distance reads within range.
 
 class commander{
