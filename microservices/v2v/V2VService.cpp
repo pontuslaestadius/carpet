@@ -13,10 +13,8 @@
 
 int main() {
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
-<<<<<<< HEAD
-=======
+
 	v2vService->leaderSender();
->>>>>>> commander
 	while (1) {  /* <(^.^<) | (>^.^)> */ }
 }
 
@@ -108,31 +106,10 @@ V2VService::V2VService() {
                    }
                    case LEADER_STATUS: {
                       LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
-<<<<<<< HEAD
+       
+              		     addTimeStackListener();
+                       getInstance()->push(leaderStatus);
 
-                      /*
-=======
-		     /* std::cout << "Leaderstatus with Speed: " << leaderStatus.speed() << " Angle: " << leaderStatus.steeringAngle() <<
-			 " Distance: " << leaderStatus.distanceTraveled() << std::endl; 
->>>>>>> commander
-		      opendlv::proxy::GroundSteeringReading msgSteering;
-		      opendlv::proxy::PedalPositionReading msgPedal;
-		      msgPedal.percent(leaderStatus.speed());
-		      msgSteering.steeringAngle(leaderStatus.steeringAngle());      
-
-		      toCommander->send(msgSteering);
-<<<<<<< HEAD
-		      toCommander->send(msgPedal);
-          */
-                      
-		     addTimeStackListener();
-         getInstance()->push(leaderStatus);
-=======
-		      toCommander->send(msgPedal); */
-                      
-		      addTimeStackListener();
-                      getInstance()->push(leaderStatus);
->>>>>>> commander
 
                       V2VService::followerStatus();
 
@@ -174,13 +151,7 @@ V2VService::V2VService() {
                     		followRequest(presentCars[LEADERCAR]);
 			break;
 		    }
-
-<<<<<<< HEAD
-		    case IMU_READ: { //IMU Data..TODO: Add message spec for it in the odvd file....
-
-			break;
-		    }
-
+        
 		    case FOLLOWER_STATUS: {
 			followerStatus();
 			break;
@@ -191,10 +162,7 @@ V2VService::V2VService() {
 			break;
 		    }
 
-		    case STOP_FOLLOW: {
-=======
 		    case STOP_FOLLOW: { //Receives a stopFollow from the commander and detatches our vehicle from the leader.
->>>>>>> commander
 			StopFollow stpFollow = cluon::extractMessage<StopFollow>(std::move(envelope));
 		    	if (presentCars.find(LEADERCAR) != presentCars.end()) // Checks if the vehicle we wish to follow is within the list of accessable IPs.
                    		 stopFollow(presentCars[LEADERCAR]);

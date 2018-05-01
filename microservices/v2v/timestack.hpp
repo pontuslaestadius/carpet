@@ -1,11 +1,8 @@
 /*
-
 Author: Pontus Laestadius
 
-Purpose:
-
-Handles all LeaderStatus messages received and interprets them correctly according to distance, time, speed and angle.
-
+Handles all LeaderStatus messages received and interprets them correctly
+according to distance, time, speed and angle.
 */
 
 #include <unistd.h>
@@ -19,273 +16,198 @@ using std::queue;
 
 class TimeStack;
 
-#define AFTER 000 //ms
-#define MINMSG 8 //nr
-#define DISTANCEFROMLEADER 100 //cm
-#define TOMS 1000 //to ms
-#define INTERNALCHANNEL 170 //od4
+#define AFTER 0                 // ms
+#define MINMSG 0                // nr
+#define DISTANCEFROMLEADER 100  // cm
+#define DELAY 1300              // ms
+#define TOMS 1000               // to ms
+#define INTERNALCHANNEL 170     // od4
 
-bool hasListener = false;	// Indicates if there is already a listening thread.
-bool firstTime = true;		// Used to set the initial distance from the leader vehicle.
-bool debug = true;
-bool disableDistance = true; // Makes the timestack function for vehicles without DistanceTraveled implemented.
+bool hasListener = false;  // Indicates if there is already a listening thread.
+bool disableDistance = true;  // Makes the timestack function for vehicles
+                              // without DistanceTraveled implemented.
 pthread_t listener;
-TimeStack *p_inst; // Pointer instance.
+TimeStack *p_inst;  // Pointer instance.
+float prev_speed = 0;
+uint32_t ms_from_last_msg = 0;
+
+cluon::OD4Session od4{INTERNALCHANNEL};
 
 // These two methods are used externally, and are thus defined here.
 inline void push(LeaderStatus ls);
-TimeStack* getInstance();
+TimeStack *getInstance();
+void *loopListener(void *);
 inline void addTimeStackListener();
 bool basicallyZero(float val);
+void pushOffsetFromLeader(float distance);
+void artificalDelay(uint32_t timestamp);
 
 /**
-
-Unifies all output to the cout by prepending a notation.
-
-**/
-bool debug_mode() {
-	if (debug) {
-		std::cout << "[TIMESTACK]: ";
-	}
-	return debug;
-}
-
-/**
-
-Wrapper around a std::queue<LeaderStatus> which uses a time-release
-when the next element is popped.
-
-**/
+  Wrapper around a std::queue<LeaderStatus> which uses a time-release when the
+  next element is popped.
+    **/
 class TimeStack {
-private:
-	queue<LeaderStatus> *readyQueue = new queue<LeaderStatus>;
-	float distanceToTravelUntilCollision = DISTANCEFROMLEADER;
+ private:
+  queue<LeaderStatus> *readyQueue = new queue<LeaderStatus>;
+  float distanceToTravelUntilCollision = DISTANCEFROMLEADER;
 
-public:
-	TimeStack() {}
-	~TimeStack() {
-		free(this->readyQueue);
-		free(this);
-	};
+ public:
+  TimeStack() {}
+  ~TimeStack() {
+    free(this->readyQueue);
+    free(this);
+  };
 
-	/**
-	
-	Determines if there are enough gap between the follower and 
-	enough messages to perform the next action safely.
+  /**
+    Determines if there are enough gap between the follower and enough
+    messages to perform the next action safely.
+      **/
+  bool empty() {
+    int size = this->readyQueue->size();
+    // If we have no items, there is no reason to check other cases.
+    if (size == 0) {
+      return true;
+    }
+    float speed = this->readyQueue->front().speed();
+    // If we are slowing down, we allow the following message.
+    float tmp_speed = prev_speed;
+    prev_speed = speed;
+    if (speed < tmp_speed) {
+      return false;
+    }
 
-	**/
-	bool empty() {
-		int size = this->readyQueue->size();
+    // If we are not using distance, use number of queued messages as the choice
+    // if we determine the execution to be 'empty' or ready.
+    if (disableDistance) {
+      return size < MINMSG;
+    } else {
+      return size < MINMSG &&
+             // Makes sure that if we pop an item, we are not closer than
+             // DISTANCEFROMLEADER to the leader vehicle.
+             (this->distanceToTravelUntilCollision -
+              this->readyQueue->front().distanceTraveled()) <
+                 DISTANCEFROMLEADER;
+    }
+  }
 
-		if (size == 0) {
-			return true;
-		}
+  /**
+    Blocks until it determines it's the correct time to execute the next
+    message, it garantuees to always return a LeaderStatus or wait forever.
+      **/
+  LeaderStatus pop() {
+    // Gaurantees that it will only return when is appropriate.
+    while (this->empty()) {
+      usleep(100 * TOMS);
+    }
+    // Retrieve the item.
+    LeaderStatus nextLeaderStatus = this->readyQueue->front();
+    this->readyQueue->pop();
+    // Adds a delay if we are using delay based readings.
+    artificalDelay(nextLeaderStatus.timestamp());
+    // Deduct the distance to travel from the distance to the leader.
+    this->distanceToTravelUntilCollision -= nextLeaderStatus.distanceTraveled();
+    return nextLeaderStatus;
+  };
 
-		int speed = this->readyQueue->front().speed();
-		if (basicallyZero(speed)) {
-			return false;
-		}
+  /**
+    Pushes a LeaderStatus to the queue if it is not identical to the last
+    message received.
+      **/
+  inline void push(LeaderStatus ls) {
+    // Ignore duplicate messages being received.
+    if (this->readyQueue->size() > 0) {
+      LeaderStatus front = this->readyQueue->front();
 
-		if (disableDistance) {
-			return size < MINMSG;
-		} else {
-			return size < MINMSG && 
-			// Makes sure that if we pop an item, we are not closer than DISTANCEFROMLEADER to the leader vehicle.
-			(this->distanceToTravelUntilCollision - this->readyQueue->front().distanceTraveled()) < DISTANCEFROMLEADER;
-		}
-
-	}
-
-	/**
-
-	Blocks until it determines it's the correct time to 
-	execute the next message, it garantuees to always
-	return a LeaderStatus or wait forever.
-
-	**/
-	LeaderStatus pop() {
-
-		// Gaurantees that it will only return when is appropriate.
-		while (this->empty()) {
-			usleep(100 * TOMS);
-		}
-
-		// Generate a timestamp to compare with the leaderstatus.
-		timeval now;
-		gettimeofday(&now, nullptr);
-		uint32_t start = (uint32_t) now.tv_usec / 1000;
-
-		// Retrieve the item.
-		LeaderStatus nextLeaderStatus = this->readyQueue->front();
-		this->readyQueue->pop();
-
-		// Release the element AFTER a certain time from the initial received time.
-		uint32_t waitUntil = nextLeaderStatus.timestamp() +AFTER;
-
-		// Sleep until it is time to excecute.
-		int wait = (waitUntil - start);
-		if(wait > 0){
-				if (debug_mode()) {
-					std::cout << "Execute next message in: " << wait << " ms" << std::endl;
-				}
-			//usleep(wait * TOMS);
-		}
-		
-		// Deduct the distance to travel from the distance to the leader.
-		this->distanceToTravelUntilCollision -= nextLeaderStatus.distanceTraveled();
-
-		return nextLeaderStatus;
-	};
-
-	/**
-
-	Pushes a LeaderStatus to the queue if it is not identical to the last message received.
-
-	**/
-	inline void push(LeaderStatus ls) {
-
-		// Ignore duplicate messages being received.
-		if (this->readyQueue->size() > 0) {
-			LeaderStatus front = this->readyQueue->front();
-
-			// If identifical to last message.
-			if (
-				basicallyZero(front.speed()) == basicallyZero(ls.speed()) &&
-				basicallyZero(front.steeringAngle()) == basicallyZero(ls.steeringAngle()) &&
-				basicallyZero(front.distanceTraveled()) == basicallyZero(ls.distanceTraveled())
-				) {
-
-				return;
-			}
-			
-		}
-
-		// Add the distance to th e car so we know it is further away.
-		this->distanceToTravelUntilCollision += ls.distanceTraveled();
-
-		if (debug_mode() && !disableDistance) {
-			std::cout << "Distance to the leader: " << this->distanceToTravelUntilCollision << std::endl;
-		}
-
-		this->readyQueue->push(ls);
-	};
+      // If 'identifical' to last message.
+      if (basicallyZero(front.speed()) == basicallyZero(ls.speed()) &&
+          basicallyZero(front.steeringAngle()) ==
+              basicallyZero(ls.steeringAngle()) &&
+          basicallyZero(front.distanceTraveled()) ==
+              basicallyZero(ls.distanceTraveled())) {
+        return;
+      }
+    }
+    // Add the distance to the car so we know it is further away.
+    this->distanceToTravelUntilCollision += ls.distanceTraveled();
+    // The speed is not delayed and thus sent directly when received.
+    Move move;
+    move.percent(ls.speed());
+    od4.send(move);
+    this->readyQueue->push(ls);
+  };
 };
 
 /**
-
 Returns a global singleton instance of a TimeStack.
-
 **/
-TimeStack* getInstance() {
-	if (!p_inst) {
-		p_inst = new TimeStack();
-	}
-	return p_inst;
+TimeStack *getInstance() {
+  if (!p_inst) {
+    p_inst = new TimeStack();
+  }
+  return p_inst;
 }
 
 /**
-
-Blocks while there is exists messages to extrapolate. 
-Once there are no messages currently requiring attention.
-it will terminate.
-
+Blocks while there is exists messages to extrapolate. Once there are no messages
+currently requiring attention. it will terminate.
 **/
-void* loopListener(void*) {
-
-	cluon::OD4Session od4{INTERNALCHANNEL};
-
-	if(od4.isRunning() == 0) {
-	   throw std::domain_error("no od4 running, are you connected to the interwebs?");
-	}
-
-	if (debug_mode()) {
-		std::cout << "Started listening" << std::endl;
-	}
-
-	Turn turn;
-	Move move;
-
-	// Makes external cancellation possible, without knowing the thread reference.
-	while (hasListener) {
-
-		// If we have no more messages to execute, we have no purpose to follow.
-		if (getInstance()->empty()) {
-
-			if (debug_mode()) {
-				std::cout << "Stopped listening" << std::endl;
-			}
-
-			hasListener = false;
-			return nullptr;
-		}
-
-		LeaderStatus leaderStatus = getInstance()->pop();
-
-		if (debug_mode()) {
-			std::cout << leaderStatus.speed() << " " 
-			<< leaderStatus.steeringAngle() << " " 
-			<< leaderStatus.distanceTraveled() << " "
-			<< leaderStatus.timestamp() << " "
-			<< std::endl;
-		}
-
-		// Converts the leader status to internal messages and send them to the commander.
-
-		turn.steeringAngle(leaderStatus.steeringAngle());
-		move.percent(leaderStatus.speed());
-
-		od4.send(turn);
-		od4.send(move);
-		usleep(leaderStatus.distanceTraveled() * TOMS * 10);
-	}
-
+void *loopListener(void *) {
+  // Initial delay between sterring commands of the leader vehicle.
+  usleep(DELAY * TOMS);
+  Turn turn;
+  // Makes external cancellation possible, without knowing the thread reference.
+  while (hasListener) {
+    // If we have no more messages to execute, we have no purpose to follow.
+    if (getInstance()->empty()) {
+      hasListener = false;
+      return nullptr;
+    }
+    LeaderStatus leaderStatus = getInstance()->pop();
+    // Converts the leader status to internal messages.
+    turn.steeringAngle(leaderStatus.steeringAngle());
+    od4.send(turn);
+    usleep(125 * TOMS);
+  }
 }
 
 /**
-
-Adds a listener if one does not already exist,
-This starts up a listener loop which decides 
-when the next message is suppose to be interpreted.
-
+Adds a listener if one does not already exist, This starts up a listener loop
+which decides when the next message is suppose to be interpreted.
 **/
 inline void addTimeStackListener() {
-
-	// Make sure there can only be one.
-	if (false == hasListener) {
-		hasListener = true;
-
-		// Spawn a loop thread for popping leader status messages.
-		int result = pthread_create(&listener, NULL, loopListener, NULL);
-
-		  if (result != 0) {
-			std::cerr << "Can't create pthread for Follower Listener" << std::endl;
-		  }
-
-		  // We attach a starting offset meter from the vehicle in front of us.
-		  if (firstTime) {
-		  	pushOffsetFromLeader(DISTANCEFROMLEADER);
-		  }
-	}
-}
-
-
-void pushOffsetFromLeader(float distance) {
-	firstTime = false;
-  	LeaderStatus firstMeter;
-  	firstMeter.speed(0.15);
-  	firstMeter.distanceTraveled(distance);
-  	firstMeter.steeringAngle(0);
-
-  	getInstance()->push(firstMeter);
-
-	LeaderStatus firstMeterStop;
-  	firstMeterStop.speed(0);
-  	firstMeterStop.distanceTraveled(0);
-  	firstMeterStop.steeringAngle(0);
-
-  	getInstance()->push(firstMeterStop);
+  // Make sure there can only be one.
+  if (false == hasListener) {
+    hasListener = true;
+    // Spawn a loop thread for popping leader status messages.
+    int result = pthread_create(&listener, NULL, loopListener, NULL);
+    if (result != 0) {
+      std::cerr << "Can't create pthread-follower-listener. Error code: "
+                << result << std::endl;
+    }
+  }
 }
 
 bool basicallyZero(float val) {
-	return val <= 0.03 && val >= -0.03;
+  float zeroish = 0.03;
+  return val <= zeroish && val >= -zeroish;
+}
+
+/**
+Sleeps for a set amount of time after the given timestamp.
+**/
+void artificalDelay(uint32_t timestamp) {
+  // If we are adding an artifical delay.
+  if (AFTER > 0) {
+    // This is a copycat if the way the initial timestamps are generated to match.
+    timeval now;
+    gettimeofday(&now, nullptr);
+    uint32_t start = (uint32_t)now.tv_usec / 1000;
+    // Release the element AFTER a certain time from the initial received time.
+    uint32_t waitUntil = timestamp + AFTER;
+    // Sleep until it is time to excecute.
+    int wait = (waitUntil - start);
+    if (wait > 0) {
+      usleep(wait * TOMS);
+    }
+  }
 }
