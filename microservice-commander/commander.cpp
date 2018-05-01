@@ -74,10 +74,10 @@ commander::commander(){
     receivedMessage =
         std::make_shared<cluon::OD4Session>(CID,
           [this](cluon::data::Envelope &&envelope) noexcept {
-		std::cout << "OD4 Session ";
-		
-	// Should differentiate betwen input devices. 
-/*	if(envelope.dataType() == DISTANCE_READ) {
+		std::cout << "OD4 Session "; 
+
+	//Read the data received from the ultrasonic and look for values within a specified range.
+	/*if(envelope.dataType() == DISTANCE_READ) {
 		opendlv::proxy::DistanceReading dist = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
 		std::cout << "received 'DISTANCE' from ultrasonic with distance  " << dist.distance() << std::endl;
 		if(dist.distance() < 35) {
@@ -86,22 +86,21 @@ commander::commander(){
 		else{
 		  distRead = 0;
 		}
-		if(distRead == 5) {
+		if(distRead == 8) {
 		  Stop stopMove;
-		  receivedMessage->send(stopMove);
+		  receivedMessage->send(stopMove); //send an emergency stop to the vehicle.
 		  distRead = 0;	
-		}		
+		}*/
 
-	}*/
-
+	}
 
 	if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
 
-	      // Set up response depending on the message type received through the od4 session.
+	      // Response depending on the message type received through the od4 session.
               switch (envelope.dataType()) {
-                   case TURN_DIRECTION: { // Remember to check at what angle it wants to turn.
-			// Unpacks the envelope and extracts the contained message. (Should potentially identify steering and move commands automatically).
-                        Turn trn = cluon::extractMessage<Turn>(std::move(envelope)); // Should be enough??
+                   case TURN_DIRECTION: {
+			// Unpacks the envelope and extracts the contained message.
+                        Turn trn = cluon::extractMessage<Turn>(std::move(envelope));
                         std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 			opendlv::proxy::GroundSteeringReading msgSteering;			
 		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately
@@ -135,12 +134,6 @@ commander::commander(){
 			break;
 		   }
 
-		   case IMU_READ: {
-			std::cout << " received IMU data " << std::endl;
-			//ADD what will happen with IMU stuff..
-			//forwardedMessage->send(imuData);
-		   }
-
 		   case ANNOUNCE_PRESENCE: {
 			AnnouncePresence ap = cluon::extractMessage<AnnouncePresence>(std::move(envelope));
 			AnnouncePresence ap2;
@@ -165,7 +158,6 @@ commander::commander(){
 
 	  	 case FOLLOW_RESPONSE: {
 			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
-			//follow = true;
 			std::cout << "Follow-Response received in commander. " << std::endl;
 			forwardedMessage->send(frp);
 			break;
@@ -174,7 +166,6 @@ commander::commander(){
 	  	 case STOP_FOLLOW: {
 			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
 			std::cout << " Stop-Follow received in commander. " << std::endl;
-			//follow = false;
 			forwardedMessage->send(stf);
 			break;
 	  	 }
@@ -189,8 +180,9 @@ commander::commander(){
 		}
 
               }
-	
-	else if(envelope.dataType() == 8){ //Semms to be a common message being catched from somewhere unknown.
+
+	//Semms to be a common message being catched from somewhere unknown.
+	else if(envelope.dataType() == 8 || envelope.dataType() == 1045 || envelope.dataType() == 1041){ 
 		;
 	}
 
@@ -207,9 +199,9 @@ commander::commander(){
 */
     forwardedMessage =
         std::make_shared<cluon::OD4Session>(forwardCID,
-          [this](cluon::data::Envelope &&envelope) noexcept {
+          [this](cluon::data::Envelope &&envelope) noexcept { // OD4 channel to V2Vservice
 
-	/*switch(envelope.dataType()){
+	/*switch(envelope.dataType()){ // Test receives.
 
 	   //TODO: Create follower reactions.... Used for testing sending as of now.
 	   case FORWARDED_MOVE: {
@@ -259,6 +251,9 @@ commander::commander(){
 	Used to test od4 sending and receiving.
 */
 
+void commander::sendLeaderStatus(){
+	
+}
 
 void commander::testMove(){
 	Move testMove;
