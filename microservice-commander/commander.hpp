@@ -15,7 +15,6 @@ static const int forwardCID = 171;
 static const int TURN_DIRECTION = 1545;
 static const int MOVE_FORWARD = 1541;
 static const int DISTANCE_READ = 1039;
-static const int IMU_READ = 1038; //TODO: change to appropriate Id..
 static const int STOP = 1550;
 //V2V id's --------
 static const int ANNOUNCE_PRESENCE = 1001;
@@ -35,8 +34,8 @@ static const int FORWARDED_TURN = 1545;
 static const int FORWARD_MOVE = 1041;
 static const int TURN_ANGLE = 1045;
 
-static bool follow = false;
-int distRead = 0;
+//static bool follow = false;
+int distRead = 0; //Keep track of the number of distance reads within range.
 
 class commander{
 //Declare the public methods and variables.
@@ -56,15 +55,6 @@ private:
 	std::shared_ptr<cluon::OD4Session> receivedMessage;
 	std::shared_ptr<cluon::OD4Session> forwardedMessage;
 	std::shared_ptr<cluon::OD4Session> presence;
-
-
-	//Test variables for V2V ----
-	AnnouncePresence apTest;
-	FollowRequest frqTest;
-	FollowResponse flrTest;
-	StopFollow stpTest;
-	FollowerStatus flstatTest;
-	LeaderStatus ldrstatTest;
 
 };
 
