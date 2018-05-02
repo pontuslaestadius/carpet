@@ -101,25 +101,19 @@ commander::commander(){
                    case TURN_DIRECTION: {
 			// Unpacks the envelope and extracts the contained message.
                         Turn trn = cluon::extractMessage<Turn>(std::move(envelope));
-                        std::cout << "received 'TURN' with angle  " << trn.steeringAngle() << " from controller'" << std::endl; 
 			opendlv::proxy::GroundSteeringReading msgSteering;			
 		        msgSteering.steeringAngle(trn.steeringAngle()); // Turn appropriately
 			receivedMessage->send(msgSteering);
-			std::cout << "'TURN' message sent to car with angle " << (trn.steeringAngle()) << std::endl;
 			forwardedMessage->send(trn);
-		        std::cout << "'TURN' message with angle " << trn.steeringAngle() << " sent to v2v" << std::endl;
                         break;
 		   }
 
 		   case MOVE_FORWARD: {
 			Move mo = cluon::extractMessage<Move>(std::move(envelope));
-			std::cout << "received 'MOVE' from controller with speed  " << mo.percent() << std::endl;
 			opendlv::proxy::PedalPositionReading msgPedal;
 			msgPedal.percent(mo.percent()); // Move forward. For forwarding to follower.
 			receivedMessage->send(msgPedal); //Sends a command to the motor telling it to move.
-			std::cout << "'MOVE' message sent to car with speed " << mo.percent() << std::endl;
 			forwardedMessage->send(mo);
-			std::cout << "'MOVE' message with speed " << msgPedal.percent() <<  " sent to v2v" << std::endl;
 		      	break;
                    }
 
@@ -151,28 +145,24 @@ commander::commander(){
 	      switch(envelope.dataType()) {
  	  	   case FOLLOW_REQUEST: {
 			FollowRequest frq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			std::cout << " Follow-Request received in commander. " << std::endl;
 			forwardedMessage->send(frq);
 			break;
 		   }
 
 	  	 case FOLLOW_RESPONSE: {
 			FollowResponse frp = cluon::extractMessage<FollowResponse>(std::move(envelope));
-			std::cout << "Follow-Response received in commander. " << std::endl;
 			forwardedMessage->send(frp);
 			break;
  	 	  }
 
 	  	 case STOP_FOLLOW: {
 			StopFollow stf = cluon::extractMessage<StopFollow>(std::move(envelope));
-			std::cout << " Stop-Follow received in commander. " << std::endl;
 			forwardedMessage->send(stf);
 			break;
 	  	 }
 
 	  	 case FOLLOWER_STATUS: {
 			FollowerStatus fls = cluon::extractMessage<FollowerStatus>(std::move(envelope));
-			std::cout << " Follower-Status request received in commander. " << std::endl;
 			forwardedMessage->send(fls);
 			break;
 		 }

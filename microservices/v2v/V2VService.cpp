@@ -15,7 +15,7 @@ int main() {
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 
 	v2vService->leaderSender();
-	while (1) {  /* <(^.^<) | (>^.^)> */ }
+	//while (1) {  /* <(^.^<) | (>^.^)> */ }
 }
 
 /**
@@ -128,25 +128,18 @@ V2VService::V2VService() {
 		switch(envelope.dataType()){
 		    case RECEIVED_MOVE: { //Move message from commander
 			Move forwardMsg = cluon::extractMessage<Move>(std::move(envelope));
-			//std::cout << "Received 'Move' request from commander with speed " << forwardMsg.percent() << std::endl;
 			LDS_MOVE = forwardMsg.percent(); // Keep track of the last move command.
-			//std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
-			//leaderStatus(forwardMsg.percent(), LDS_TURN, LDS_DIST); // Send leaderstatus with new speed.
 			break;
 		    }
 		    
 		    case RECEIVED_TURN: { //Turn message from commander
 			Turn steerMsg = cluon::extractMessage<Turn>(std::move(envelope));
-			//std::cout << "Received 'Turn' request from commander with angle " << steerMsg.steeringAngle() << std::endl;
 			LDS_TURN = steerMsg.steeringAngle(); // Keep track of the last turning angle.
-			//std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
-			//leaderStatus(LDS_MOVE, steerMsg.steeringAngle(), LDS_DIST); // Send leaderstatus with new turning angle.
 			break;
 		    }
 
 		    case FOLLOW_REQUEST: { //Receives a followRequest from the commander and acts appropriately.
 			FollowRequest followReq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			std::cout << " Follow Request V2V sent to " << presentCars[LEADERCAR] << std::endl;
 		        if (presentCars.find(LEADERCAR) != presentCars.end()) // Checks if the vehicle we wish to follow is within the list of accessable IPs.
                     		followRequest(presentCars[LEADERCAR]);
 			break;
@@ -177,13 +170,11 @@ V2VService::V2VService() {
     toCommander = 
 	std::make_shared<cluon::OD4Session>(170, [this](cluon::data::Envelope &&envelope) noexcept {
 	});
-	  
 }
 
 void V2VService::leaderSender(){
-    while(1){	
+    while(1){
 	leaderStatus(LDS_MOVE, LDS_TURN, LDS_DIST);
-	std::cout << "Leaderstatus with Speed: " << LDS_MOVE << " Angle: " << LDS_TURN << " Distance: " << LDS_DIST << std::endl; 
 	std::this_thread::sleep_for(std::chrono::milliseconds(125));
     }
 }
