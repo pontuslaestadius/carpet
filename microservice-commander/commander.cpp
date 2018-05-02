@@ -90,9 +90,9 @@ commander::commander(){
 		  Stop stopMove;
 		  receivedMessage->send(stopMove); //send an emergency stop to the vehicle.
 		  distRead = 0;	
-		}*/
+		}
 
-	}
+	}*/
 
 	if(envelope.dataType() == TURN_DIRECTION || envelope.dataType() == MOVE_FORWARD || envelope.dataType() == STOP || envelope.dataType() == ANNOUNCE_PRESENCE) {
 
@@ -250,10 +250,6 @@ commander::commander(){
 	Testing methods. 
 	Used to test od4 sending and receiving.
 */
-
-void commander::sendLeaderStatus(){
-	
-}
 
 void commander::testMove(){
 	Move testMove;
