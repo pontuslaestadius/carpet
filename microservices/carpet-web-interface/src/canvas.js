@@ -8,11 +8,13 @@ const car_height = 300;
 var y_offset = 0;
 var front_reading = 30;
 var deg = 0;
+var road_offset = 0;
 
 // Image resources
 var canvas = document.getElementById("canvas");
 var vehicle = document.getElementById("image");
 var cone = document.getElementById("cone");
+var road = document.getElementById("road");
 
 // Ideal positions from the last readings.
 var head_angle = 0;
@@ -27,14 +29,15 @@ var prev_head_reading = 0;
 var follower = false;
 var leader = false;
 
+
 function front(val) {
 	prev_head_reading = head_reading;
 	head_reading = val*5;
 }
 
 function accel(val) {
-	//prev_head_offset = head_offset;
-	//head_offset = -val*10;
+	prev_head_offset = head_offset;
+	head_offset = -val*5;
 }
 
 function angle(val) {
@@ -59,8 +62,9 @@ function updateCanvas() {
 	var ctx = getCtx();
 
 	ctx.translate( getWidth()/2, getHeight()/2);
-	ctx.rotate(deg*Math.PI/180);
+	ctx.rotate(deg*Math.PI/180 /2);
 
+	drawRoad();
 
 	if (leader || follower) {
 		if (follower && leader) {
@@ -76,7 +80,7 @@ function updateCanvas() {
 	}
 	draw();
 
-	ctx.rotate(-deg*Math.PI/180);
+	ctx.rotate(-deg*Math.PI/180 /2);
 	ctx.translate( -getWidth()/2, -getHeight()/2);
 }
 
@@ -101,6 +105,38 @@ function partialEquation(ideal, current) {
 	}
 
 	return current;
+}
+
+
+/**
+
+Draws the road on the canvas.
+
+**/
+function drawRoad() {
+	if (follower || leader) {
+		return;
+	}
+
+	road_offset -= head_offset*2;
+
+	var w = car_width;
+	var h = car_height;
+
+	if (Math.abs(road_offset) > w*1.45) {
+		road_offset = 0;
+	}
+
+	var ctx = getCtx();
+	ctx.rotate(90*Math.PI/180);
+	var div = 1.5;
+	ctx.drawImage(road, -w/div -road_offset, -h/div, w*div, h*div);
+	ctx.drawImage(road, -w/div -road_offset -w*1.45, -h/div, w*div, h*div);
+	ctx.drawImage(road, -w/div -road_offset -(w*1.45)*2, -h/div, w*div, h*div);
+	ctx.drawImage(road, -w/div -road_offset -(w*1.45)*3, -h/div, w*div, h*div);
+	ctx.drawImage(road, -w/div -road_offset +(w*1.45)*1, -h/div, w*div, h*div);
+	ctx.drawImage(road, -w/div -road_offset +(w*1.45)*2, -h/div, w*div, h*div);
+	ctx.rotate(-90*Math.PI/180);
 }
 
 /**
