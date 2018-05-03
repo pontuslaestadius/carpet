@@ -15,7 +15,7 @@ for (var i = 0; i < size; i++) {
   table[i] = new Array(4);
 }
 
-
+// Used for range sliders.
 var delay = -1;
 var maxDelay = 4;
 
@@ -53,7 +53,6 @@ async function validateKey(k, s) {
     var qs = document.querySelector("#\\3" + parseInt(kabs/10) + " " + kabs%10 + " input");
     var element = document.querySelector("#\\3" + parseInt(kabs/10) + " " + kabs%10 + " b");
 
-
     if (k < 0) {
       element.innerText = table[-k][0];
       qs.value = 0.0;
@@ -70,7 +69,6 @@ async function validateKey(k, s) {
       if ((qs.value >= parseFloat(qs.max))) {
         return;
       }
-
 
       var rmax = 0.10;
       if (parseFloat(qs.value) < rmax) {

@@ -3,6 +3,10 @@ Author: Pontus Laestadius
 
 Handles all LeaderStatus messages received and interprets them correctly
 according to distance, time, speed and angle.
+
+Sources: 
+http://www.cplusplus.com/reference/queue/queue/
+
 */
 
 #include <unistd.h>
@@ -19,7 +23,7 @@ class TimeStack;
 #define AFTER 0                 // ms
 #define MINMSG 0                // nr
 #define DISTANCEFROMLEADER 100  // cm
-#define DELAY 1300              // ms
+#define DELAY 600              // ms
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
 
@@ -153,7 +157,7 @@ currently requiring attention. it will terminate.
 **/
 void *loopListener(void *) {
   // Initial delay between sterring commands of the leader vehicle.
-  usleep(DELAY * TOMS);
+  usleep((DELAY -DELAY*prev_speed) * TOMS);
   Turn turn;
   // Makes external cancellation possible, without knowing the thread reference.
   while (hasListener) {
@@ -187,6 +191,9 @@ inline void addTimeStackListener() {
   }
 }
 
+/**
+Values close to zero are evalulated as zero.
+**/
 bool basicallyZero(float val) {
   float zeroish = 0.03;
   return val <= zeroish && val >= -zeroish;

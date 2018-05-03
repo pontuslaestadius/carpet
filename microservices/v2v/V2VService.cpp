@@ -13,9 +13,7 @@
 
 int main() {
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
-
 	v2vService->leaderSender();
-	//while (1) {  /* <(^.^<) | (>^.^)> */ }
 }
 
 /**
@@ -110,7 +108,6 @@ V2VService::V2VService() {
               		     addTimeStackListener();
                        getInstance()->push(leaderStatus);
 
-
                       V2VService::followerStatus();
 
                       break;
@@ -144,7 +141,7 @@ V2VService::V2VService() {
                     		followRequest(presentCars[LEADERCAR]);
 			break;
 		    }
-        
+
 		    case FOLLOWER_STATUS: {
 			followerStatus();
 			break;
@@ -331,4 +328,3 @@ T V2VService::decode(std::string data) {
     tmp.accept(v);
     return tmp;
 }
-
