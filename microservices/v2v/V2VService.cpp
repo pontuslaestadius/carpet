@@ -105,8 +105,7 @@ V2VService::V2VService() {
                    case LEADER_STATUS: {
                       LeaderStatus leaderStatus = decode<LeaderStatus>(msg.second);
        
-              		     addTimeStackListener();
-                       getInstance()->push(leaderStatus);
+                      getInstance()->push(leaderStatus);
 
                       V2VService::followerStatus();
 

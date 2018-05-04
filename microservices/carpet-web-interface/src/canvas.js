@@ -8,6 +8,7 @@ const car_height = 300;
 var y_offset = 0;
 var front_reading = 30;
 var deg = 0;
+var zdeg = 0;
 var road_offset = 0;
 
 // Image resources
@@ -89,14 +90,18 @@ function updateCanvas() {
 Smooths out actions over a set of frames by the use of math.
 
 **/
-function partialEquation(ideal, current) {
+function partialEquation(ideal, current, speed) {
+	if (speed == null) {
+		speed = 1;
+	}
+
 	if (ideal == current) {
 		return ideal;
 	}
 
 	var ite = 8;
 	var dif = Math.abs(ideal -current);
-	var one_ite = ((ideal -current)/ite)+1;
+	var one_ite = speed*((ideal -current)/ite)+1;
 
 	if (dif <= 5) {
 		current = ideal;
@@ -118,25 +123,29 @@ function drawRoad() {
 		return;
 	}
 
-	road_offset -= head_offset*2;
+	road_offset += head_offset*8;
 
 	var w = car_width;
 	var h = car_height;
+	
+	var div = 1.4;
 
-	if (Math.abs(road_offset) > w*1.45) {
+	if (Math.abs(road_offset) >= w*div*0.95) {
 		road_offset = 0;
 	}
 
 	var ctx = getCtx();
+
 	ctx.rotate(90*Math.PI/180);
-	var div = 1.5;
-	ctx.drawImage(road, -w/div -road_offset, -h/div, w*div, h*div);
-	ctx.drawImage(road, -w/div -road_offset -w*1.45, -h/div, w*div, h*div);
-	ctx.drawImage(road, -w/div -road_offset -(w*1.45)*2, -h/div, w*div, h*div);
-	ctx.drawImage(road, -w/div -road_offset -(w*1.45)*3, -h/div, w*div, h*div);
-	ctx.drawImage(road, -w/div -road_offset +(w*1.45)*1, -h/div, w*div, h*div);
-	ctx.drawImage(road, -w/div -road_offset +(w*1.45)*2, -h/div, w*div, h*div);
+
+
+	// Repeats a road over the canvas.
+	for (var i = -3; i < 3; i++) {
+		ctx.drawImage(road, -w/div -road_offset +(w*(div*0.95))*i, -h/div, w*div, h*div);
+	}
+
 	ctx.rotate(-90*Math.PI/180);
+
 }
 
 /**
