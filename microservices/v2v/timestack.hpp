@@ -22,9 +22,9 @@ using std::queue;
 class TimeStack;
 
 #define AFTER 0                 // ms
-#define MINMSG 12                // nr
+#define MINMSG 5                // nr
 #define DISTANCEFROMLEADER 100  // cm
-#define DELAY 100              // ms
+#define DELAY 700              // ms
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
 #define MAXFOLLOWERSPEED 0.16   // -1 to 1
@@ -79,9 +79,6 @@ class TimeStack {
     // If we are slowing down, we allow the following message.
     float tmp_speed = prev_speed;
     prev_speed = speed;
-    if (speed < tmp_speed) {
-      return false;
-    }
 
     // If we are not using distance, use number of queued messages as the choice
     // if we determine the execution to be 'empty' or ready.
@@ -121,12 +118,11 @@ class TimeStack {
     message received.
       **/
   inline void push(LeaderStatus ls) {
+    /*
     // Ignore duplicate messages being received.
     if (this->readyQueue->size() > 0) {
       LeaderStatus front = this->readyQueue->front();
-
       // If 'identifical' to last message.
-      /*
       if (basicallyZero(front.speed()) == basicallyZero(ls.speed()) &&
           basicallyZero(front.steeringAngle()) ==
               basicallyZero(ls.steeringAngle()) &&
@@ -134,8 +130,8 @@ class TimeStack {
               basicallyZero(ls.distanceTraveled())) {
         return;
       }
-      */
-    }
+          }
+    */
     // Add the distance to the car so we know it is further away.
     this->distanceToTravelUntilCollision += ls.distanceTraveled();
     // The speed is not delayed and thus sent directly when received.
@@ -145,21 +141,22 @@ class TimeStack {
       spd = ls.speed();
     }
 
-    if (ls.speed() < -0.03) {
+    // Disallow negative values for following.
+    if (ls.speed() > -0.03) {
       return;
     }
 
     move.percent(spd);
     od4.send(move);
 
-    if (!basicallyZero(ls.steeringAngle() - steering)) {
+    //if (!basicallyZero(ls.steeringAngle() - steering)) {
         this->readyQueue->push(ls);
         steering = ls.steeringAngle(); 
 
         if (!getInstance()->empty()) {
           addTimeStackListener();
         }
-    }
+    //}
 
   };
 };
@@ -175,7 +172,7 @@ TimeStack *getInstance() {
 }
 
 /**
-Blocks while there is exists messages to extrapolate. Once there are no messages
+Blocks while there is  messages to extrapolate. Once there are no messages
 currently requiring attention. it will terminate.
 **/
 void *loopListener(void *) {
@@ -211,7 +208,7 @@ void *loopListener(void *) {
 
     od4.send(turn);    
     usleep(125 * TOMS);
-  }
+  }F
 }
 
 /**
