@@ -35,3 +35,11 @@ services:
 	restart: always
 	privileged: true
 	command: "/opt/IMU_Reading --cid =206 --freq=10"
+
+
+    carpet-imu:
+        image: carpet-imu:armhf
+        network_mode: "host"
+        restart: always
+        devices:
+        command: "/opt/imu"
