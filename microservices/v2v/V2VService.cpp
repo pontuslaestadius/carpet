@@ -11,7 +11,17 @@
 
 #define LEADERCAR "12"
 
-int main() {
+int main (int32_t argc, char **argv) {
+
+  auto commandlineArguments = cluon::getCommandlineArguments(argc, argv);
+  uint8_t const msg_count = std::stoi(commandlineArguments["minmsg"]);
+  uint8_t const spd= std::stoi(commandlineArguments["spd"]);
+
+  setMAXANGLE(std::stoi(commandlineArguments["maxangle"]));
+  setMINMSG(msg_count);
+  setSPEED(spd);
+
+
   std::shared_ptr<V2VService> v2vService = std::make_shared<V2VService>();
 	v2vService->leaderSender();
 }
