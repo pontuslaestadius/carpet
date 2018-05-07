@@ -14,7 +14,7 @@ function newRangeSlider() {
   var range = document.createElement("input");
     range.type = "range";
     range.min = "0.0";
-    range.max = "0.24";
+    range.max = "0.16";
     range.value = "0.1";
     range.step = "0.01";
     return range;

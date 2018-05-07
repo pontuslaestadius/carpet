@@ -12,6 +12,7 @@ http://www.cplusplus.com/reference/queue/queue/
 #include <unistd.h>
 #include <queue>
 #include <pthread.h>
+#include <math.h>
 
 #include "Messages.hpp"
 #include "V2VService.hpp"
@@ -21,11 +22,12 @@ using std::queue;
 class TimeStack;
 
 #define AFTER 0                 // ms
-#define MINMSG 0                // nr
+#define MINMSG 5                // nr
 #define DISTANCEFROMLEADER 100  // cm
-#define DELAY 600              // ms
+#define DELAY 700              // ms
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
+#define MAXFOLLOWERSPEED 0.16   // -1 to 1
 
 bool hasListener = false;  // Indicates if there is already a listening thread.
 bool disableDistance = true;  // Makes the timestack function for vehicles
@@ -34,6 +36,7 @@ pthread_t listener;
 TimeStack *p_inst;  // Pointer instance.
 float prev_speed = 0;
 uint32_t ms_from_last_msg = 0;
+float steering = 0;
 
 cluon::OD4Session od4{INTERNALCHANNEL};
 
@@ -76,9 +79,6 @@ class TimeStack {
     // If we are slowing down, we allow the following message.
     float tmp_speed = prev_speed;
     prev_speed = speed;
-    if (speed < tmp_speed) {
-      return false;
-    }
 
     // If we are not using distance, use number of queued messages as the choice
     // if we determine the execution to be 'empty' or ready.
@@ -118,10 +118,10 @@ class TimeStack {
     message received.
       **/
   inline void push(LeaderStatus ls) {
+    /*
     // Ignore duplicate messages being received.
     if (this->readyQueue->size() > 0) {
       LeaderStatus front = this->readyQueue->front();
-
       // If 'identifical' to last message.
       if (basicallyZero(front.speed()) == basicallyZero(ls.speed()) &&
           basicallyZero(front.steeringAngle()) ==
@@ -130,14 +130,34 @@ class TimeStack {
               basicallyZero(ls.distanceTraveled())) {
         return;
       }
-    }
+          }
+    */
     // Add the distance to the car so we know it is further away.
     this->distanceToTravelUntilCollision += ls.distanceTraveled();
     // The speed is not delayed and thus sent directly when received.
     Move move;
-    move.percent(ls.speed());
+    float spd = MAXFOLLOWERSPEED;
+    if (ls.speed() <= MAXFOLLOWERSPEED) {
+      spd = ls.speed();
+    }
+
+    // Disallow negative values for following.
+    if (ls.speed() > -0.03) {
+      return;
+    }
+
+    move.percent(spd);
     od4.send(move);
-    this->readyQueue->push(ls);
+
+    //if (!basicallyZero(ls.steeringAngle() - steering)) {
+        this->readyQueue->push(ls);
+        steering = ls.steeringAngle(); 
+
+        if (!getInstance()->empty()) {
+          addTimeStackListener();
+        }
+    //}
+
   };
 };
 
@@ -152,12 +172,14 @@ TimeStack *getInstance() {
 }
 
 /**
-Blocks while there is exists messages to extrapolate. Once there are no messages
+Blocks while there is  messages to extrapolate. Once there are no messages
 currently requiring attention. it will terminate.
 **/
 void *loopListener(void *) {
+
+  usleep((DELAY -DELAY*prev_speed*0.2) * TOMS);
+
   // Initial delay between sterring commands of the leader vehicle.
-  usleep((DELAY -DELAY*prev_speed) * TOMS);
   Turn turn;
   // Makes external cancellation possible, without knowing the thread reference.
   while (hasListener) {
@@ -168,10 +190,25 @@ void *loopListener(void *) {
     }
     LeaderStatus leaderStatus = getInstance()->pop();
     // Converts the leader status to internal messages.
-    turn.steeringAngle(leaderStatus.steeringAngle());
-    od4.send(turn);
+
+    // Converts rad to degress and sets a max.
+    float rad = leaderStatus.steeringAngle();
+
+    // Because our stupid V2V leader is sending Radians instead of SteeringAngle....
+    float f_angle = rad * 180 / M_PI;
+
+    float max_angle = 10;
+    if (f_angle > max_angle) {
+      f_angle = max_angle;
+    } else if (f_angle < -max_angle) {
+      f_angle = -max_angle;
+    }
+
+    turn.steeringAngle(f_angle);
+
+    od4.send(turn);    
     usleep(125 * TOMS);
-  }
+  }F
 }
 
 /**

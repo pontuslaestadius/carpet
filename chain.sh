@@ -2,7 +2,7 @@
 
 #################################
 ### Author: Pontus Laestadius ###
-### Last modified: 2018-02-27 ###
+### Last modified: 2018-05-04 ###
 #################################
 
 ## Provides a list of helpful shortcode commands which 
@@ -74,19 +74,6 @@ case $i in
 			docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
 
     ;;
-	--pull)
-	
-			docker pull $DOCKER_IMAGE
-
-    ;;
-	--push)
-	
-			# Bind the local with the remote.
-			docker tag $DOCKER_NAME $DOCKER_IMAGE
-			# Push them to the hub.
-			docker push $DOCKER_IMAGE
-
-	;;
 	-b|--build)
     	
     		docker build -t carpet_compile .
