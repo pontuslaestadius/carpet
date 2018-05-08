@@ -22,12 +22,11 @@ using std::queue;
 class TimeStack;
 
 #define AFTER 0                 // ms
-#define MINMSG 5                // nr
 #define DISTANCEFROMLEADER 100  // cm
-#define DELAY 700              // ms
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
-#define MAXFOLLOWERSPEED 0.16   // -1 to 1
+float ANGLEMULTIPLIER = 0.5;
+float MAXFOLLOWERSPEED = 0.16;   // -1 to 1
 
 bool hasListener = false;  // Indicates if there is already a listening thread.
 bool disableDistance = true;  // Makes the timestack function for vehicles
@@ -37,6 +36,9 @@ TimeStack *p_inst;  // Pointer instance.
 float prev_speed = 0;
 uint32_t ms_from_last_msg = 0;
 float steering = 0;
+int MINMSG = 12;
+int DELAY = 0;
+int max_angle = 5;
 
 cluon::OD4Session od4{INTERNALCHANNEL};
 
@@ -48,6 +50,29 @@ inline void addTimeStackListener();
 bool basicallyZero(float val);
 void pushOffsetFromLeader(float distance);
 void artificalDelay(uint32_t timestamp);
+float radToDeg(float rad);
+
+float setMINMSG(int nr) {
+  MINMSG = nr;
+}
+
+float setANGLEMUL(int ang) {
+  float m = ang;
+  ANGLEMULTIPLIER = m/100;
+}
+
+float setDELAY(int ms) {
+  DELAY = ms;
+}
+
+int setMAXANGLE(int ms) {
+  max_angle = ms;
+}
+
+float setSPEED(int spd) {
+  float m = spd;
+  MAXFOLLOWERSPEED = m/100;
+}
 
 /**
   Wrapper around a std::queue<LeaderStatus> which uses a time-release when the
@@ -118,20 +143,12 @@ class TimeStack {
     message received.
       **/
   inline void push(LeaderStatus ls) {
-    /*
-    // Ignore duplicate messages being received.
-    if (this->readyQueue->size() > 0) {
-      LeaderStatus front = this->readyQueue->front();
-      // If 'identifical' to last message.
-      if (basicallyZero(front.speed()) == basicallyZero(ls.speed()) &&
-          basicallyZero(front.steeringAngle()) ==
-              basicallyZero(ls.steeringAngle()) &&
-          basicallyZero(front.distanceTraveled()) ==
-              basicallyZero(ls.distanceTraveled())) {
-        return;
-      }
-          }
-    */
+
+    // Disallow negative values for following.
+    if (ls.speed() < -0.03) {
+      return;
+    }
+
     // Add the distance to the car so we know it is further away.
     this->distanceToTravelUntilCollision += ls.distanceTraveled();
     // The speed is not delayed and thus sent directly when received.
@@ -141,22 +158,15 @@ class TimeStack {
       spd = ls.speed();
     }
 
-    // Disallow negative values for following.
-    if (ls.speed() > -0.03) {
-      return;
-    }
-
     move.percent(spd);
     od4.send(move);
 
-    //if (!basicallyZero(ls.steeringAngle() - steering)) {
-        this->readyQueue->push(ls);
-        steering = ls.steeringAngle(); 
+    this->readyQueue->push(ls);
+    steering = ls.steeringAngle(); 
 
-        if (!getInstance()->empty()) {
-          addTimeStackListener();
-        }
-    //}
+    if (!getInstance()->empty()) {
+      addTimeStackListener();
+    }
 
   };
 };
@@ -177,8 +187,6 @@ currently requiring attention. it will terminate.
 **/
 void *loopListener(void *) {
 
-  usleep((DELAY -DELAY*prev_speed*0.2) * TOMS);
-
   // Initial delay between sterring commands of the leader vehicle.
   Turn turn;
   // Makes external cancellation possible, without knowing the thread reference.
@@ -189,26 +197,18 @@ void *loopListener(void *) {
       return nullptr;
     }
     LeaderStatus leaderStatus = getInstance()->pop();
-    // Converts the leader status to internal messages.
 
     // Converts rad to degress and sets a max.
     float rad = leaderStatus.steeringAngle();
 
     // Because our stupid V2V leader is sending Radians instead of SteeringAngle....
-    float f_angle = rad * 180 / M_PI;
-
-    float max_angle = 10;
-    if (f_angle > max_angle) {
-      f_angle = max_angle;
-    } else if (f_angle < -max_angle) {
-      f_angle = -max_angle;
-    }
+    float f_angle = radToDeg(rad);
 
     turn.steeringAngle(f_angle);
 
     od4.send(turn);    
     usleep(125 * TOMS);
-  }F
+  }
 }
 
 /**
@@ -254,4 +254,17 @@ void artificalDelay(uint32_t timestamp) {
       usleep(wait * TOMS);
     }
   }
+}
+
+float radToDeg(float rad) {/*
+  float f_angle = rad * 180 / M_PI;
+
+  if (f_angle > max_angle) {
+    f_angle = max_angle;
+  } else if (f_angle < -max_angle) {
+    f_angle = -max_angle;
+  }
+  return f_angle;
+  */
+  return rad*ANGLEMULTIPLIER;
 }

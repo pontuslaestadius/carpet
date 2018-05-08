@@ -38,42 +38,7 @@ case $i in
 			exit 0
 
 	;;
-	--run)
-
-			# If a container already exists and is running.
-			if [ "$(docker ps -aq -f status=running -f name=$DOCKER_NAME)" ]; then
-
-				# Without force, prompt the user with a choice.
-				if [ "${FORCE}" = "no" ];
-					then
-						# clean up with prompt, only works with bash and often not user shell.
-						echo "The container is already running. Do you want to continue? [Y/N]:"
-						read -n 1 REPLY
-						echo    # (optional) move to a new line
-
-					else # In force, the user has no option.
-						REPLY="Y" 
-					fi 
-
-
-				if [[ $REPLY =~ ^[Yy]$ ]];	# Use confirmation. Needs BASH not user shell.
-				then
-					docker stop $DOCKER_NAME
-				else
-					exit
-				fi
-
-			fi
-
-			# If a container already exists.
-			if [ "$(docker ps -aq -f status=exited -f name=$DOCKER_NAME)" ]; then
-				# cleanup
-				docker rm $DOCKER_NAME
-			fi
-
-			docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
-
-    ;;
+	
 	-b|--build)
     	
     		docker build -t carpet_compile .
@@ -103,11 +68,7 @@ case $i in
 			make
 
     ;;
-    -f|--force)
-    
-    		FORCE="yes"
-    
-    ;;
+
     -d|--delete)
     
     		docker rm $DOCKER_NAME
