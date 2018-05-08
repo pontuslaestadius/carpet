@@ -25,6 +25,7 @@ class TimeStack;
 #define DISTANCEFROMLEADER 100  // cm
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
+float ANGLEMULTIPLIER = 0.5;
 float MAXFOLLOWERSPEED = 0.16;   // -1 to 1
 
 bool hasListener = false;  // Indicates if there is already a listening thread.
@@ -53,6 +54,11 @@ float radToDeg(float rad);
 
 float setMINMSG(int nr) {
   MINMSG = nr;
+}
+
+float setANGLEMUL(int ang) {
+  float m = ang;
+  ANGLEMULTIPLIER = m/100;
 }
 
 float setDELAY(int ms) {
@@ -260,5 +266,5 @@ float radToDeg(float rad) {/*
   }
   return f_angle;
   */
-  return rad;
+  return rad*ANGLEMULTIPLIER;
 }
