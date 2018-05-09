@@ -144,7 +144,6 @@ V2VService::V2VService() {
 
 		    case FOLLOW_REQUEST: { //Receives a followRequest from the commander and acts appropriately.
 			FollowRequest followReq = cluon::extractMessage<FollowRequest>(std::move(envelope));
-			std::cout << " Follow Request V2V sent to " << presentCars[LEADERCAR] << std::endl;
 		        if (presentCars.find(LEADERCAR) != presentCars.end()) // Checks if the vehicle we wish to follow is within the list of accessable IPs.
                     		followRequest(presentCars[LEADERCAR]);
 			break;
@@ -175,14 +174,13 @@ V2VService::V2VService() {
     toCommander = 
 	std::make_shared<cluon::OD4Session>(170, [this](cluon::data::Envelope &&envelope) noexcept {
 	});
-	  
 }
 
 void V2VService::leaderSender(){
-  while(1){	
-  	leaderStatus(LDS_MOVE, LDS_TURN, LDS_DIST);
-  	std::this_thread::sleep_for(std::chrono::milliseconds(125));
-  }
+    while(1){
+	leaderStatus(LDS_MOVE, LDS_TURN, LDS_DIST);
+	std::this_thread::sleep_for(std::chrono::milliseconds(125));
+    }
 }
 
 /**
