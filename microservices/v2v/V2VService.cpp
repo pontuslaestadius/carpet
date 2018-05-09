@@ -2,7 +2,7 @@
  * Created by: V2V group
  * Maintainer: Kosara Golemshinska
  * Contributor: Sebastian Fransson, Pontus Laestadius
- * Last modified: 26.04.2018
+ * Last modified: 08.05.2018
  */
 
 #include "V2VService.hpp"
@@ -15,7 +15,7 @@ int main (int32_t argc, char **argv) {
 
   auto commandlineArguments = cluon::getCommandlineArguments(argc, argv);
 
-  //setMAXANGLE(std::stoi(commandlineArguments["maxangle"]));
+  // Sets commandline arguments for the following protocol.
   setANGLEMUL(std::stoi(commandlineArguments["anglemul"]));
   setMINMSG(std::stoi(commandlineArguments["minmsg"]));
   setSPEED(std::stoi(commandlineArguments["spd"]));

@@ -50,7 +50,6 @@ inline void addTimeStackListener();
 bool basicallyZero(float val);
 void pushOffsetFromLeader(float distance);
 void artificalDelay(uint32_t timestamp);
-float radToDeg(float rad);
 
 float setMINMSG(int nr) {
   MINMSG = nr;
@@ -65,10 +64,6 @@ float setDELAY(int ms) {
   DELAY = ms;
 }
 
-int setMAXANGLE(int ms) {
-  max_angle = ms;
-}
-
 float setSPEED(int spd) {
   float m = spd;
   MAXFOLLOWERSPEED = m/100;
@@ -77,6 +72,8 @@ float setSPEED(int spd) {
 /**
   Wrapper around a std::queue<LeaderStatus> which uses a time-release when the
   next element is popped.
+
+  The 'stack' part doesn't really fit with the current implemntation.
     **/
 class TimeStack {
  private:
@@ -94,19 +91,15 @@ class TimeStack {
     Determines if there are enough gap between the follower and enough
     messages to perform the next action safely.
       **/
-  bool empty() {
+  bool ready() {
     int size = this->readyQueue->size();
     // If we have no items, there is no reason to check other cases.
     if (size == 0) {
       return true;
     }
-    float speed = this->readyQueue->front().speed();
-    // If we are slowing down, we allow the following message.
-    float tmp_speed = prev_speed;
-    prev_speed = speed;
 
-    // If we are not using distance, use number of queued messages as the choice
-    // if we determine the execution to be 'empty' or ready.
+    /* If we are not using distance, use number of queued messages as the choice
+       if we determine the execution to be 'empty' or ready. */
     if (disableDistance) {
       return size < MINMSG;
     } else {
@@ -125,7 +118,7 @@ class TimeStack {
       **/
   LeaderStatus pop() {
     // Gaurantees that it will only return when is appropriate.
-    while (this->empty()) {
+    while (this->ready()) {
       usleep(100 * TOMS);
     }
     // Retrieve the item.
@@ -164,7 +157,7 @@ class TimeStack {
     this->readyQueue->push(ls);
     steering = ls.steeringAngle(); 
 
-    if (!getInstance()->empty()) {
+    if (!getInstance()->ready()) {
       addTimeStackListener();
     }
 
@@ -192,20 +185,18 @@ void *loopListener(void *) {
   // Makes external cancellation possible, without knowing the thread reference.
   while (hasListener) {
     // If we have no more messages to execute, we have no purpose to follow.
-    if (getInstance()->empty()) {
+    if (getInstance()->ready()) {
       hasListener = false;
       return nullptr;
     }
     LeaderStatus leaderStatus = getInstance()->pop();
-
-    // Converts rad to degress and sets a max.
     float rad = leaderStatus.steeringAngle();
 
-    // Because our stupid V2V leader is sending Radians instead of SteeringAngle....
-    float f_angle = radToDeg(rad);
+    // Because our stupid V2V leader is sending Radians.
+    // And because our car turns at a different steeringAngle than the leader.
+    float f_angle = rad*ANGLEMULTIPLIER;
 
     turn.steeringAngle(f_angle);
-
     od4.send(turn);    
     usleep(125 * TOMS);
   }
@@ -254,17 +245,4 @@ void artificalDelay(uint32_t timestamp) {
       usleep(wait * TOMS);
     }
   }
-}
-
-float radToDeg(float rad) {/*
-  float f_angle = rad * 180 / M_PI;
-
-  if (f_angle > max_angle) {
-    f_angle = max_angle;
-  } else if (f_angle < -max_angle) {
-    f_angle = -max_angle;
-  }
-  return f_angle;
-  */
-  return rad*ANGLEMULTIPLIER;
 }
