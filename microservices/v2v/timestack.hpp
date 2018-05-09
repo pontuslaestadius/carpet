@@ -47,7 +47,6 @@ inline void push(LeaderStatus ls);
 TimeStack *getInstance();
 void *loopListener(void *);
 inline void addTimeStackListener();
-bool basicallyZero(float val);
 void pushOffsetFromLeader(float distance);
 void artificalDelay(uint32_t timestamp);
 
@@ -55,13 +54,13 @@ float setMINMSG(int nr) {
   MINMSG = nr;
 }
 
+float setDELAY(int ms) {
+  DELAY = ms;
+}
+
 float setANGLEMUL(int ang) {
   float m = ang;
   ANGLEMULTIPLIER = m/100;
-}
-
-float setDELAY(int ms) {
-  DELAY = ms;
 }
 
 float setSPEED(int spd) {
@@ -73,7 +72,7 @@ float setSPEED(int spd) {
   Wrapper around a std::queue<LeaderStatus> which uses a time-release when the
   next element is popped.
 
-  The 'stack' part doesn't really fit with the current implemntation.
+  The 'stack' part doesn't really fit with the current implemntation of using a Queue.
     **/
 class TimeStack {
  private:
@@ -137,7 +136,9 @@ class TimeStack {
       **/
   inline void push(LeaderStatus ls) {
 
-    // Disallow negative values for following.
+    /* Disallow negative values for following.
+       This can break the 3d-printing axis on the vehicle, and
+       is thus disabled for safety. */
     if (ls.speed() < -0.03) {
       return;
     }
@@ -217,14 +218,6 @@ inline void addTimeStackListener() {
                 << result << std::endl;
     }
   }
-}
-
-/**
-Values close to zero are evalulated as zero.
-**/
-bool basicallyZero(float val) {
-  float zeroish = 0.03;
-  return val <= zeroish && val >= -zeroish;
 }
 
 /**
