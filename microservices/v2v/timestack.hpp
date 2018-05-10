@@ -25,6 +25,7 @@ class TimeStack;
 #define DISTANCEFROMLEADER 100  // cm
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
+
 float ANGLEMULTIPLIER = 0.5;
 float MAXFOLLOWERSPEED = 0.16;   // -1 to 1
 
@@ -47,7 +48,6 @@ inline void push(LeaderStatus ls);
 TimeStack *getInstance();
 void *loopListener(void *);
 inline void addTimeStackListener();
-void pushOffsetFromLeader(float distance);
 void artificalDelay(uint32_t timestamp);
 
 float setMINMSG(int nr) {
