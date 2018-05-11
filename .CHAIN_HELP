@@ -3,6 +3,7 @@ It is prefered to delete your build directory before running.
 
 
 	  --debug	  runs in debug mode using valgrind. Requires running --local first.
+-ci	  --travis	  runs the continous integration build for travis to compile all microservices.
 -h        --help          displays usages.
 -l        --local         builds without docker container and without ARM compilation. a.k.a locally.
 -d        --delete        deletes the carpet container if there exists one.

@@ -15,7 +15,7 @@ before_install:
   - sudo apt-get -y install docker-ce
 
 script:
-  - docker build -t carpet_compile:armhf -f Dockerfile.armhf .
+  - sh chain.sh --travis
 
 # Only build the master and development branch.
 branches:

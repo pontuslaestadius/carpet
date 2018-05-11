@@ -79,6 +79,17 @@ case $i in
 			cat $HELP
 			
     ;;
+    -ci|--travis)
+    
+			for dir in microservices/*/
+				do
+				    dir=${dir%*/}
+				    cd microservices/${dir##*/}
+				    sh *.sh
+				    cd ../../					
+				done
+			
+    ;;
     *)
     #	Invalid argument
     
