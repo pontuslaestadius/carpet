@@ -21,7 +21,6 @@ using std::queue;
 
 class TimeStack;
 
-#define AFTER 0                 // ms
 #define DISTANCEFROMLEADER 100  // cm
 #define TOMS 1000               // to ms
 #define INTERNALCHANNEL 170     // od4
@@ -47,8 +46,7 @@ cluon::OD4Session od4{INTERNALCHANNEL};
 inline void push(LeaderStatus ls);
 TimeStack *getInstance();
 void *loopListener(void *);
-inline void addTimeStackListener();
-void artificalDelay(uint32_t timestamp);
+inline void addListener();
 
 float setMINMSG(int nr) {
   MINMSG = nr;
@@ -123,8 +121,7 @@ class TimeStack {
     // Retrieve the item.
     LeaderStatus nextLeaderStatus = this->readyQueue->front();
     this->readyQueue->pop();
-    // Adds a delay if we are using delay based readings.
-    artificalDelay(nextLeaderStatus.timestamp());
+
     // Deduct the distance to travel from the distance to the leader.
     this->distanceToTravelUntilCollision -= nextLeaderStatus.distanceTraveled();
     return nextLeaderStatus;
@@ -159,7 +156,7 @@ class TimeStack {
     steering = ls.steeringAngle(); 
 
     if (!getInstance()->ready()) {
-      addTimeStackListener();
+      addListener();
     }
 
   };
@@ -207,7 +204,7 @@ void *loopListener(void *) {
 Adds a listener if one does not already exist, This starts up a listener loop
 which decides when the next message is suppose to be interpreted.
 **/
-inline void addTimeStackListener() {
+inline void addListener() {
   // Make sure there can only be one.
   if (false == hasListener) {
     hasListener = true;
@@ -216,26 +213,6 @@ inline void addTimeStackListener() {
     if (result != 0) {
       std::cerr << "Can't create pthread-follower-listener. Error code: "
                 << result << std::endl;
-    }
-  }
-}
-
-/**
-Sleeps for a set amount of time after the given timestamp.
-**/
-void artificalDelay(uint32_t timestamp) {
-  // If we are adding an artifical delay.
-  if (AFTER > 0) {
-    // This is a copycat if the way the initial timestamps are generated to match.
-    timeval now;
-    gettimeofday(&now, nullptr);
-    uint32_t start = (uint32_t)now.tv_usec / 1000;
-    // Release the element AFTER a certain time from the initial received time.
-    uint32_t waitUntil = timestamp + AFTER;
-    // Sleep until it is time to excecute.
-    int wait = (waitUntil - start);
-    if (wait > 0) {
-      usleep(wait * TOMS);
     }
   }
 }
