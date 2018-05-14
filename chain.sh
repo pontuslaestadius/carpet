@@ -2,7 +2,7 @@
 
 #################################
 ### Author: Pontus Laestadius ###
-### Last modified: 2018-02-23 ###
+### Last modified: 2018-05-04 ###
 #################################
 
 ## Provides a list of helpful shortcode commands which 
@@ -27,55 +27,18 @@ case $i in
 			ssh debian@192.168.8.1 -t 'sh run.sh'
 	
     ;;
-	--run)
-
-			# If a container already exists and is running.
-			if [ "$(docker ps -aq -f status=running -f name=$DOCKER_NAME)" ]; then
-
-				# Without force, prompt the user with a choice.
-				if [ "${FORCE}" = "no" ];
-					then
-						# clean up with prompt, only works with bash and often not user shell.
-						echo "The container is already running. Do you want to continue? [Y/N]:"
-						read -n 1 REPLY
-						echo    # (optional) move to a new line
-
-					else # In force, the user has no option.
-						REPLY="Y" 
-					fi 
-
-
-				if [[ $REPLY =~ ^[Yy]$ ]];	# Use confirmation. Needs BASH not user shell.
-				then
-					docker stop $DOCKER_NAME
-				else
-					exit
-				fi
-
-			fi
-
-			# If a container already exists.
-			if [ "$(docker ps -aq -f status=exited -f name=$DOCKER_NAME)" ]; then
-				# cleanup
-				docker rm $DOCKER_NAME
-			fi
-
-			docker run -d --net=host --name $DOCKER_NAME -v $PWD:/opt/sources $DOCKER_IMAGE /bin/sh
-
-    ;;
-	--pull)
-	
-			docker pull $DOCKER_IMAGE
-
-    ;;
-	--push)
-	
-			# Bind the local with the remote.
-			docker tag $DOCKER_NAME $DOCKER_IMAGE
-			# Push them to the hub.
-			docker push $DOCKER_IMAGE
+    -new-microservice)
+			
+			MS="microservices"
+			mkdir "$MS/$2"
+			mkdir "$MS/$2/src"
+			echo "Copying existing files to $MS/$2"
+			cp CMakeLists.txt "$MS/$2"
+			cp Dockerfile* "$MS/$2"
+			exit 0
 
 	;;
+	
 	-b|--build)
     	
     		docker build -t carpet_compile .
@@ -105,11 +68,7 @@ case $i in
 			make
 
     ;;
-    -f|--force)
-    
-    		FORCE="yes"
-    
-    ;;
+
     -d|--delete)
     
     		docker rm $DOCKER_NAME
@@ -118,6 +77,17 @@ case $i in
     -h|--help)
     
 			cat $HELP
+			
+    ;;
+    -ci|--travis)
+    
+			for dir in microservices/*/
+				do
+				    dir=${dir%*/}
+				    cd microservices/${dir##*/}
+				    sh *.sh
+				    cd ../../					
+				done
 			
     ;;
     *)

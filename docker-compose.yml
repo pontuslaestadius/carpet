@@ -6,7 +6,7 @@ services:
         restart: always
         volumes:
         - .:/opt/miniature.data
-        command: "/opt/od4/bin/odsupercomponent --cid=111 --verbose=1 --configuration=/opt/miniature.data/configuration"
+        command: "/opt/od4/bin/odsupercomponent --cid=170 --verbose=1 --configuration=/opt/miniature.data/configuration"
 
     proxy-miniature-pwm-motor:
         image: seresearch/2018-dit-168:v0.3.5-armhf
@@ -18,12 +18,55 @@ services:
         volumes:
         - /sys/:/sys/
         - /dev/:/dev/
-        command: "/opt/opendlv.miniature/bin/opendlv-proxy-miniature-pwm-motor --cid=111 --freq=50 --id=1"
+        command: "/opt/opendlv.miniature/bin/opendlv-proxy-miniature-pwm-motor --cid=170 --freq=50 --id=1"
 
-    # Carpet component
-    carpet:
-        image: carpet_compile:armhf
+       # Signal viewer
+    carpet-web-interface:    
+        image: carpet-web-interface:armhf
         depends_on:
-        - proxy-miniature-pwm-motor
+        - odsupercomponent
+        expose:
+        - "8081"
         network_mode: "host"
-        command: "/opt/carpet --cid=111 --freq=10"
+        privileged: true
+        command: "/opt/signal-viewer --cid=170"
+
+    # Obstacle avoidance microservice.
+    obstacle-avoidance:
+       image: obstacle-avoidance:armhf
+       restart: always
+       network_mode: "host"
+       privileged: true
+       depends_on:
+       - proxy-miniature-pwm-motor
+       command: "/opt/obstacle-avoidance --cid=170 --freq=5000"
+
+    # Commander microservice
+    commander:
+       image: microservice-commander:armhf
+       stdin_open: true
+       network_mode: "host"
+       depends_on:
+       - proxy-miniature-pwm-motor
+       command: "/opt/microservice-commander.Service"
+
+    v2v:
+       image: v2v:new_armhf
+       restart: always
+       network_mode: "host"
+       depends_on:
+       - odsupercomponent
+       command: "/opt/v2v.Service --minmsg=7 --spd=16 --maxangle=15 --anglemul=50"
+
+#    imu:
+#       image: imu:armhf
+#       depends_on: 
+#       - odsupercomponent
+#       restart: always
+#       network_mode: "host"
+#       privileged: true
+#       volumes:
+#       - /sys/:/sys/
+#       - /dev/:/dev/
+#       command: "/opt/imu"
+

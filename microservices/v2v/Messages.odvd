@@ -14,6 +14,10 @@ message Move [id = 1541] {
   float percent [id = 1];
 }
 
+message Stop [id = 1550]{
+  float something [id = 1];
+}
+
 message opendlv.proxy.DistanceReading [id = 1039] {
   float distance [id = 1];
 }
@@ -39,7 +43,7 @@ message LeaderStatus [id = 2001] {
   uint32 timestamp [id = 1];
   float speed [id = 2];
   float steeringAngle [id = 3];
-  uint8 distanceTraveled [id = 4];
+  float distanceTraveled [id = 4];
 }
 
 message FollowerStatus [id = 3001] {

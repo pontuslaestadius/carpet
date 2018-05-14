@@ -1,14 +1,13 @@
 Run with: bash chain.sh [ OPTIONS ]
 It is prefered to delete your build directory before running.
 
-	  --pull	  pulls the latest docker images from the docker hub.
-	  --push	  pushes the to the docker hub with the DOCKER_ID being the next argument.
+
 	  --debug	  runs in debug mode using valgrind. Requires running --local first.
-	  --run 	  runs a Docker container locally and can be combined using -f.
+-ci	  --travis	  runs the continous integration build for travis to compile all microservices.
 -h        --help          displays usages.
--f        --force         deletes ignores warnings and removes previous container when executing --run.
 -l        --local         builds without docker container and without ARM compilation. a.k.a locally.
 -d        --delete        deletes the carpet container if there exists one.
 -t	  --transfer	  saves the docker image and sends it to the device over ssh followed by execution.
 -ba	  --build-arm	  builds a docker image using the .armhf Dockerfile in current directory.
 -b        --build         builds a docker image using the default Dockerfile in current directory.
+-new-microservice	  needs 1 argument, can not be combined with other arguments. Creates a new microservice in the provided directory, using files in current directory.

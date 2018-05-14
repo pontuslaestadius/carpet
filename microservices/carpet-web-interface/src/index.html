@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Carpet web interface">
+    <meta name="author" content="Pontus Laestadius">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="library/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Carpet Web Interface</title>
+  </head>
+
+  <body>
+
+  <img id="image" src="resource/image.png">
+  <img id="cone" src="resource/cone.png">
+  <img id="road" src="resource/road.jpg">
+
+  <div id="content-wrapper">
+
+    <div class="wrapper" style="overflow-y: scroll;">
+      <table id="dataView" class="table">
+        <tr>
+          <th class="signal-type">Type</th>
+          <th class="signal-sender">Sender</th>
+          <th class="signal-name">Name</th>
+          <th class="signal-frequency">Frequency</th>
+          <th class="signal-timestamp">Timestamp</th>
+        </tr>
+      </table>
+      </div>
+
+      <div class="wrapper" style="height: 32vh;">
+        <table id="statistics-table" class="table">
+          <tr>
+            <th class="signal-type">Field</th>
+            <th class="signal-sender">#</th>
+          </tr>
+
+          <tr>
+            <td><b>messages loaded from specification</b></td>
+            <td id="messages-count">0</td>
+          </tr>
+
+          <tr>
+            <td><b>messages received</b></td>
+            <td id="messages-received">0</td>
+          </tr>
+
+          <tr>
+            <td><b>messages sent</b></td>
+            <td id="messages-sent">0</td>
+          </tr>
+        </table>
+                <div style="width: 50px; height: 200px;">        
+            <button class="btn btn-primary" onclick="toggleFollow()">Follow</button>
+            <button class="btn btn-primary" onclick="toggleLead()">Lead</button>
+        </div>
+      </div>
+
+      <div class="wrapper" style="height: 50.5vh">
+        <div id="status"></div>
+        <div id="box" style="opacity: 1.0"></div>
+      </div>
+
+      <div class="wrapper" style="height: 65.5vh; margin-top: -15vh; overflow: hidden !important;">
+        <canvas id="canvas" width="500px" height="600px">Your ancient web browser does not support canvas.</canvas>
+      </div>
+
+    </div>
+
+    <!-- Libraries -->
+    <script type="text/javascript" src="library/jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="library/popper.min.js"></script>
+    <script type="text/javascript" src="library/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="library/Chart.js"></script>
+    <script type="text/javascript" src="library/bootstrap.min.js"></script>
+    <script type="text/javascript" src="library/libcluon.js"></script>
+
+    <!-- Source code -->
+    <script type="text/javascript" src="libcluon-viewer.js"></script>
+    <script type="text/javascript" src="ui.js"></script>
+    <script type="text/javascript" src="mock.js"></script>
+    <script type="text/javascript" src="interface.js"></script>
+    <script type="text/javascript" src="layout.js"></script>
+    <script type="text/javascript" src="canvas.js"></script>
+
+  </body>
+</html>
+
+
+

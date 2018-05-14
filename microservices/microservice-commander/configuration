@@ -5,11 +5,10 @@ odsupercomponent.pulsetimeack.timeout = 5000 # (in milliseconds)
 odsupercomponent.pulsetimeack.exclude = odcockpit
 odcockpit.directoriesForSharedLibaries = /opt/opendlv.miniature
 
-carpet.deceleration.max = -0.5
-carpet.acceleration.max = 0.26
+carpet.deceleration.max = -1.0
+carpet.acceleration.max = 0.25
 carpet.steering.max = 38.0
 
 proxy-miniature-pwm-motor.names = steering,propulsion
 proxy-miniature-pwm-motor.types = servo,esc
 proxy-miniature-pwm-motor.channels = 1,2
-
