@@ -35,7 +35,6 @@ pthread_t listener;
 TimeStack *p_inst;  // Pointer instance.
 float prev_speed = 0;
 uint32_t ms_from_last_msg = 0;
-float steering = 0;
 int MINMSG = 12;
 int DELAY = 0;
 int max_angle = 5;
@@ -153,7 +152,6 @@ class TimeStack {
     od4.send(move);
 
     this->readyQueue->push(ls);
-    steering = ls.steeringAngle(); 
 
     if (!getInstance()->ready()) {
       addListener();
